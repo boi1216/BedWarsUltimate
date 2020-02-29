@@ -14,4 +14,6 @@ Please note that this plugin is not ready for being used on production servers a
 ## TODO
 - [ ] Customizable messages and scoreboard 
 - [ ] Custom team upgrades & shop prices
-- [ ] Better arena system
+- [ ] Use random as arena identifier
+- [ ] Rewrite arena setup
+- 
