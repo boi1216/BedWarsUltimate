@@ -4,6 +4,7 @@
 namespace BedWars\game;
 
 
+use BedWars\game\player\PlayerCache;
 use BedWars\game\Team;
 use BedWars\utils\Utils;
 use pocketmine\entity\Entity;
@@ -35,7 +36,6 @@ class Game
     const STATE_LOBBY = 0;
     const STATE_RUNNING = 1;
     const STATE_REBOOT = 2;
-
 
     /** @var BedWars $plugin */
     private $plugin;
@@ -112,14 +112,13 @@ class Game
     /** @var string $tierUpdateGen */
     private $tierUpdateGen = "diamond";
 
-    /** @var array $dynamicStats */
-    private $dynamicStats = array();
-
     /** @var array $placedBlocks */
     public $placedBlocks = array();
 
-    /** @var bool $needLoad */
-    private $needLoad = false;
+    /** @var PlayerCache[] $cachedPlayers */
+    private $cachedPlayers = array();
+
+
 
 
     /**
@@ -241,27 +240,6 @@ class Game
      * @return array
      */
     public function getAliveTeams() : array{
-      /*  $teams = [];
-
-       /* for($i = 1; $i < (count($this->teams)); $i++){
-            $players = [];
-            $team = array_values($this->teams)[$i];
-            foreach($team->getPlayers() as $p){
-                if(!$p->isOnline() || $p->level->getFolderName() !== $this->worldName){
-                    $this->quit($p);
-                    continue;
-                }
-
-                if($p->isAlive() && $team->hasBed()){
-                    $players[] = $p;
-                }
-            }
-
-            if(count($players) >= 1){
-                $teams[] = $team->getName();
-            }
-
-        }*/
         $teams = [];
         foreach($this->teams as $team){
             if(count($team->getPlayers()) <= 0 || !$team->hasBed())continue;
@@ -283,10 +261,7 @@ class Game
 
     public function stop() : void{
         foreach(array_merge($this->players, $this->spectators) as $player){
-            $player->setHealth($player->getMaxHealth());
-            $player->setFood(20);
-            $player->setGamemode(0);
-            $player->setNameTag($player->getName()); //TODO: save this before starting the game
+            $this->cachedPlayers[$player->getRawUniqueId()]->load();
             \BedWars\utils\Scoreboard::remove($player);
         }
 
@@ -309,12 +284,13 @@ class Game
             }
         }
 
-        $this->spectators = [];
-        $this->players = [];
+        $this->spectators = array();
+        $this->players = array();
         $this->winnerTeam = '';
         $this->startTime = 30;
         $this->rebootTime = 10;
         $this->generators = array();
+        $this->cachedPlayers = array();
         $this->state = self::STATE_LOBBY;
         $this->starting = false;
         $this->plugin->getServer()->unloadLevel($this->plugin->getServer()->getLevelByName($this->worldName));
@@ -418,11 +394,11 @@ class Game
              return;
          }
 
+         $this->cachedPlayers[$player->getRawUniqueId()] = new PlayerCache($player);
          $player->teleport($this->lobby);
          $this->players[$player->getRawUniqueId()] = $player;
 
          $this->broadcastMessage(TextFormat::GRAY . $player->getName() . " " . TextFormat::YELLOW . "has joined the game " . TextFormat::GOLD . "(" . TextFormat::AQUA .  count($this->players) . TextFormat::YELLOW . "/" . TextFormat::AQUA .  $this->maxPlayers . TextFormat::YELLOW .  ")");
-
          $player->getInventory()->clearAll();
          $a = 0;
          $items = array_fill(0, count($this->teams), Item::get(Item::WOOL));
@@ -476,7 +452,6 @@ class Game
                 $player->getInventory()->setItem($slot, Item::get(Item::COMPASS)->setCustomName(TextFormat::GREEN . "Tap to switch"));
             }
         }
-
     }
 
     /**
@@ -739,9 +714,7 @@ class Game
                  }
 
 
-
-
-             if(count($team = $this->getAliveTeams()) === 1){
+             if(count($team = $this->getAliveTeams()) === 1 && count($this->players) <= 1){
                  $this->winnerTeam = $team[0];
 
                  $this->state = self::STATE_REBOOT;

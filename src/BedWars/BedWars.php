@@ -50,7 +50,6 @@ class BedWars extends PluginBase
         'emerald' => ['item' => Item::EMERALD, 'spawnText' => true, 'spawnBlock' => true, 'refreshRate' => 60]
     ];
 
-
     public function onEnable() : void
     {
         @mkdir($this->getDataFolder());
@@ -75,14 +74,9 @@ class BedWars extends PluginBase
 
             $this->games[$jsonData['name']] = $game = new Game($this, $jsonData['name'], intval($jsonData['minPlayers']), intval($jsonData['playersPerTeam']), $jsonData['world'], $jsonData['lobby'], $jsonData['teamInfo'], $jsonData['generatorInfo']);
 
-            if(!empty($jsonData['lobby'])){
-                $split = explode(":", $jsonData['lobby']);
-                $game->setLobby(new Vector3(intval($split[0]), intval($split[1]), intval($split[2])), $split[3]);
-            }
-
-            if(!empty($jsonData['void_y'])){
-                $game->setVoidLimit(intval($jsonData['void_y']));
-            }
+            $split = explode(":", $jsonData['lobby']);
+            $game->setLobby(new Vector3(intval($split[0]), intval($split[1]), intval($split[2])), $split[3]);
+            $game->setVoidLimit(intval($jsonData['void_y']));
         }
 
         $this->getServer()->getCommandMap()->register("bedwars", new DefaultCommand($this));
@@ -145,7 +139,9 @@ class BedWars extends PluginBase
             'lobby',
             'world',
             'teamInfo',
-            'generatorInfo'
+            'generatorInfo',
+            'lobby',
+            'void_y'
         ];
 
         $error = 0;
