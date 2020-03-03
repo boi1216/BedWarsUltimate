@@ -30,6 +30,7 @@ class DefaultCommand extends PluginCommand
         'setpos' => "[gameName] [team] [spawn,shop,upgrade]",
         'setbed' => "[gameName] [team]",
         'setgenerator' => "[gameName] [generator] [game=null]",
+        'join' => "[gameName]"
 
     ];
 
@@ -303,7 +304,6 @@ class DefaultCommand extends PluginCommand
             $sender->sendMessage(BedWars::PREFIX . TextFormat::YELLOW . "Created new generator " . TextFormat::GREEN . "[game=" . $gameName . " | type=" . $generatorType . "]");
             break;
             case "best";
-
             if(!$sender instanceof Player) {
                 $sender->sendMessage(TextFormat::RED . "This command can be executed only in game");
                 return;
@@ -324,6 +324,11 @@ class DefaultCommand extends PluginCommand
             if(!$sender instanceof Player) {
                 $sender->sendMessage(TextFormat::RED . "This command can be executed only in game");
                 return;
+            }
+
+            if(!isset($args[1])){
+               $this->generateSubCommandUsage($args[0]);
+               return;
             }
             $gameName = $args[1];
 
