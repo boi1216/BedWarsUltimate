@@ -141,29 +141,8 @@ class Game
         }
 
         $this->maxPlayers = count($this->teams) * $playersPerTeam;
-
-
         $this->reload();
-
-        $this->plugin->getScheduler()->scheduleRepeatingTask(new class($this) extends Task{
-
-            private $plugin;
-
-            /**
-             *  constructor.
-             * @param Game $plugin
-             */
-            public function __construct(Game $plugin)
-            {
-                $this->plugin = $plugin;
-            }
-
-            public function onRun(int $currentTick)
-            {
-                $this->plugin->tick();
-            }
-        }, 20);
-
+        $this->plugin->getScheduler()->scheduleRepeatingTask(new GameTick($this), 20);
     }
 
     /**
