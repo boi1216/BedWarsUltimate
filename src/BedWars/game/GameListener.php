@@ -20,7 +20,9 @@ use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\event\player\PlayerMoveEvent;
 use pocketmine\event\player\PlayerQuitEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
+use pocketmine\event\entity\EntityExplodeEvent;
 use pocketmine\item\Item;
+use pocketmine\entity\object\PrimedTNT;
 use pocketmine\network\mcpe\protocol\ModalFormResponsePacket;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
@@ -75,6 +77,28 @@ class GameListener implements Listener
             $player->sendMessage(BedWars::PREFIX . TextFormat::GREEN . "Sign created");
 
         }
+    }
+
+    public function onExplode(EntityExplodeEvent $ev) : void{
+        $entity = $ev->getEntity();
+        if(!$entity instanceof PrimedTNT)return;
+        $level = $entity->level;
+        $game = null;
+        foreach ($level->getPlayers() as $player) {
+            if($g = $this->plugin->getPlayerGame($player) !== null){
+                $game = $g;
+            }
+        }
+        if($game == null)return;
+
+        $newList = array();
+
+        foreach($ev->getBlockList() as $block){
+            if(in_array(Utils::vectorToString(":", $block->asVector3()), $game->placedBlocks)){
+                $newList[] = $block;
+            }
+        }
+        $ev->setBlockList($newList);
     }
 
     /**
@@ -284,6 +308,10 @@ class GameListener implements Listener
                     }else{
                         $playerGame->placedBlocks[] = Utils::vectorToString(":", $event->getBlock());
                     }
+                }
+
+                if($event->getBlock()->getId() == Block::TNT){
+                    $event->getBlock()->ignite();
                 }
             }
         }
