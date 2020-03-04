@@ -30,7 +30,9 @@ class DefaultCommand extends PluginCommand
         'setpos' => "[gameName] [team] [spawn,shop,upgrade]",
         'setbed' => "[gameName] [team]",
         'setgenerator' => "[gameName] [generator] [game=null]",
-        'join' => "[gameName]"
+        'join' => "[gameName]",
+        'load' => "[gameName]",
+        'random' => "[playersPerTeam - OPTIONAL]"
 
     ];
 
@@ -62,8 +64,7 @@ class DefaultCommand extends PluginCommand
             case "list";
             $sender->sendMessage(TextFormat::BOLD . TextFormat::DARK_RED . "Arena List");
             foreach($this->getPlugin()->games as $game){
-                $sender->sendMessage(TextFormat::GREEN . $game->getName());
-                //todo: add other info
+                $sender->sendMessage(TextFormat::GRAY . "- " . TextFormat::GREEN . $game->getName() . " [" . count($game->players) . "/" . $game->getMaxPlayers() . "]");
             }
             break;
             case "create";
@@ -303,10 +304,19 @@ class DefaultCommand extends PluginCommand
 
             $sender->sendMessage(BedWars::PREFIX . TextFormat::YELLOW . "Created new generator " . TextFormat::GREEN . "[game=" . $gameName . " | type=" . $generatorType . "]");
             break;
-            case "best";
+            case "random";
             if(!$sender instanceof Player) {
                 $sender->sendMessage(TextFormat::RED . "This command can be executed only in game");
                 return;
+            }
+
+            $perTeam = null;
+            if(isset($args[1])){
+                if(!is_int($args[1])){
+                    $this->generateSubCommandUsage($args[0]);
+                    return;
+                }
+                $perTeam = $args[1];
             }
 
             $games = array_values($this->getPlugin()->arenas);
@@ -314,6 +324,9 @@ class DefaultCommand extends PluginCommand
             foreach($games as $game){
                 if(count($game->players) >= count($best->players)){
                     $best = $game;
+                    if($perTeam !== null && $game->playersPerTeam == $perTeam){
+                        $best = $game;
+                    }
                 }
             }
 
@@ -350,8 +363,19 @@ class DefaultCommand extends PluginCommand
 
             $playerGame->quit($sender);
             $sender->teleport($this->getPlugin()->getServer()->getDefaultLevel()->getSafeSpawn());
+            break;
+            case "load";
+            if(!isset($args[1])){
+                $this->generateSubCommandUsage($args[0]);
+                return;
+            }
 
+            if(!$this->getPlugin()->loadArena($args[1])){
+                $sender->sendMessage(BedWars::PREFIX . TextFormat::YELLOW . "Arena doesn't exist");
+                return;
+            }
 
+            $sender->sendMessage(BedWars::PREFIX . TextFormat::GREEN . "Arena {$args[1]} loaded");
             break;
         }
     }
@@ -368,6 +392,9 @@ class DefaultCommand extends PluginCommand
         $sender->sendMessage(TextFormat::GREEN . "/bedwars setpos " . TextFormat::YELLOW . "Set position [spawn,shop,upgrade] of a team");
         $sender->sendMessage(TextFormat::GREEN . "/bedwars setbed ". TextFormat::YELLOW . "Set bed position of a team");
         $sender->sendMessage(TextFormat::GREEN . "/bedwars setgenerator " . TextFormat::YELLOW . "Set generator of a team");
+        $sender->sendMessage(TextFormat::GREEN . "/bedwars load " . TextFormat::YELLOW . "Load arena");
+        $sender->sendMessage(TextFormat::GREEN . "/bedwars join " . TextFormat::YELLOW . "Join specific arena");
+        $sender->sendMessage(TextFormat::GREEN . "/bedwars random " . TextFormat::YELLOW . "Join random arena");
     }
 
     /**

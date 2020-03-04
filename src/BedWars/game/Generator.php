@@ -76,7 +76,6 @@ class Generator
 
         $this->dynamicSpawnTime = $repeatRate;
 
-
         if($this->spawnText){
             $text = TextFormat::YELLOW . "Tier " . TextFormat::RED . Utils::rome($this->tier) . "\n".
                 self::TITLE[$itemID] . "\n\n".
@@ -94,9 +93,7 @@ class Generator
                 new StringTag('GeometryName', 'geometry.player_head'),
                 new ByteArrayTag('GeometryData', FakeItemEntity::GEOMETRY)]));
            $fakeItem = new FakeItemEntity($position->level, $nbt);
-      //     $fakeItem->setImmobile(true);
            $fakeItem->setScale(1.4);
-           $fakeItem->setPrimarY($position->y + 2.3);
            $fakeItem->spawnToAll();
         }
     }
@@ -138,7 +135,6 @@ class Generator
 
     public function updateTier() : void{
         $this->tier++;
-
         //-20%
         $this->repeatRate = $this->repeatRate - ($this->repeatRate * 100 / 20);
     }

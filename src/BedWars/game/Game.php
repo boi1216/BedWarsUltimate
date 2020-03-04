@@ -3,9 +3,7 @@
 
 namespace BedWars\game;
 
-
 use BedWars\game\player\PlayerCache;
-use BedWars\game\Team;
 use BedWars\utils\Utils;
 use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityDamageByChildEntityEvent;
@@ -24,11 +22,6 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use BedWars\BedWars;
-
-//scoreboard
-use Miste\scoreboardspe\API\Scoreboard;
-use Miste\scoreboardspe\API\ScoreboardDisplaySlot;
-use Miste\scoreboardspe\API\ScoreboardSort;
 
 class Game
 {
@@ -714,7 +707,7 @@ class Game
                  }
 
 
-             if(count($team = $this->getAliveTeams()) === 1 && count($this->players) <= 1){
+             if(count($team = $this->getAliveTeams()) === 1 && count($this->players) == count($team[0]->getPlayers())){
                  $this->winnerTeam = $team[0];
 
                  $this->state = self::STATE_REBOOT;
@@ -736,19 +729,17 @@ class Game
                      }
                  }
                  $this->tierUpdateGen = $this->tierUpdateGen == 'diamond' ? 'emerald' : 'diamond';
-
              }
-
-
              break;
              case Game::STATE_REBOOT;
-             --$this->rebootTime;
              $team = $this->teams[$this->winnerTeam];
-
-             foreach($team->getPlayers() as $player){
-                 $player->addTitle(TextFormat::BOLD . TextFormat::GOLD . "VICTORY!");
+             if($this->rebootTime == 15){
+                 foreach($team->getPlayers() as $player){
+                     $player->addTitle(TextFormat::BOLD . TextFormat::GOLD . "VICTORY!");
+                 }
              }
 
+             --$this->rebootTime;
              if($this->rebootTime == 0){
                  $this->stop();
              }

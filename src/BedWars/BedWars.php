@@ -33,6 +33,9 @@ class BedWars extends PluginBase
     /** @var array $bedSetup */
     public $bedSetup = array();
 
+    /** @var string $serverWebsite */
+    public $serverWebsite;
+
     const TEAMS = [
         'blue' => "§1",
         'red' => "§c",
@@ -52,8 +55,13 @@ class BedWars extends PluginBase
 
     public function onEnable() : void
     {
-        @mkdir($this->getDataFolder());
+        $this->saveDefaultConfig();
+        $this->serverWebsite = $this->getConfig()->get('website');
+
         @mkdir($this->getDataFolder() . "arenas");
+        @mkdir($this->getDataFolder() . "skins");
+        $this->saveResource("skins/264.png");
+        $this->saveResource("skins/388.png");
 
         $this->signTick();
         $this->getServer()->getPluginManager()->registerEvents(new GameListener($this), $this);
@@ -125,6 +133,19 @@ class BedWars extends PluginBase
      */
     public function isGameLoaded(string $gameName) : bool{
         return isset($this->games[$gameName]);
+    }
+
+    public function loadArena(string $gameName) : bool{
+        $location = $this->getDataFolder() . "arenas/" . $gameName . ".json";
+        if(!is_file($location)){
+            return false;
+        }
+
+
+        $file = file_get_contents($location);
+        $jsonData = json_decode($file);
+        $this->games[$jsonData['name']] = $game = new Game($this, $jsonData['name'], intval($jsonData['minPlayers']), intval($jsonData['playersPerTeam']), $jsonData['world'], $jsonData['lobby'], $jsonData['teamInfo'], $jsonData['generatorInfo']);
+        return true;
     }
 
     /**

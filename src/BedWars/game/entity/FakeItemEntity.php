@@ -18,23 +18,7 @@ class FakeItemEntity extends Human
 
     /** @var int $gravity */
     protected $gravity = 0;
-
-    /** @var int $primarY */
-    private $primarY;
-
     public $width = 0.5, $height = 0.6;
-
-    /**
-     * @var string
-     */
-    private $step = "up";
-
-    /**
-     * @param int $primarY
-     */
-    public function setPrimarY(int $primarY) : void{
-        $this->primarY = $primarY;
-    }
 
     /**
      * @param int $currentTick
@@ -44,14 +28,11 @@ class FakeItemEntity extends Human
     {
 
         $this->yaw+=5.5;
-
-        $primar = $this->primarY;
-
+        //TODO: Add bouncing
         $this->move($this->motion->x, $this->motion->y, $this->motion->z);
         $this->updateMovement();
 
         parent::onUpdate($currentTick);
-
         return true;
     }
 
