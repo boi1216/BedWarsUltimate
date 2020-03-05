@@ -1,2 +1,6 @@
 #Website of your server displayed on scoreboard in-game
 website: www.example.net
+#Time of countdown before game starts
+start-time: 60
+#Time of countdown before game is restarted
+restart-time: 15

@@ -32,8 +32,8 @@ class DefaultCommand extends PluginCommand
         'setgenerator' => "[gameName] [generator] [game=null]",
         'join' => "[gameName]",
         'load' => "[gameName]",
-        'random' => "[playersPerTeam - OPTIONAL]"
-
+        'random' => "[playersPerTeam - OPTIONAL]",
+        'setmapname' => "[mapName]"
     ];
 
     /**
@@ -212,6 +212,24 @@ class DefaultCommand extends PluginCommand
 
             file_put_contents($location, json_encode(array_merge($jsonData, $positionData)));
             break;
+            case "setmapname";
+            if(!isset($args[1])){
+                $sender->sendMessage(BedWars::PREFIX . TextFormat::YELLOW . $this->generateSubCommandUsage($args[0]));
+                return;
+            }
+
+            $gameName = $args[1];
+            $location = $this->getPlugin()->getDataFolder() . "arenas/" . $gameName . ".json";
+            if(!is_file($location)){
+                $sender->sendMessage(BedWars::PREFIX . TextFormat::YELLOW . "Arena doesn't exist");
+                return;
+            }
+            $fileContent = file_get_contents($location);
+            $jsonData = json_decode($fileContent, true);
+            $jsonData['mapName'] = $args[1];
+            file_put_contents($location, json_encode($jsonData));
+            $sender->sendMessage(BedWars::PREFIX . TextFormat::YELLOW . "Map name was set to {$gameName}");
+            break;
             case "setpos";
             if(count($args) < 3){
                 $sender->sendMessage(BedWars::PREFIX . TextFormat::YELLOW . $this->generateSubCommandUsage($args[0]));
@@ -313,7 +331,7 @@ class DefaultCommand extends PluginCommand
             $perTeam = null;
             if(isset($args[1])){
                 if(!is_int($args[1])){
-                    $this->generateSubCommandUsage($args[0]);
+                    $sender->sendMessage(BedWars::PREFIX . TextFormat::YELLOW . $this->generateSubCommandUsage($args[0]));
                     return;
                 }
                 $perTeam = $args[1];
@@ -340,7 +358,7 @@ class DefaultCommand extends PluginCommand
             }
 
             if(!isset($args[1])){
-               $this->generateSubCommandUsage($args[0]);
+                $sender->sendMessage(BedWars::PREFIX . TextFormat::YELLOW . $this->generateSubCommandUsage($args[0]));
                return;
             }
             $gameName = $args[1];
@@ -366,12 +384,12 @@ class DefaultCommand extends PluginCommand
             break;
             case "load";
             if(!isset($args[1])){
-                $this->generateSubCommandUsage($args[0]);
+                $sender->sendMessage(BedWars::PREFIX . TextFormat::YELLOW . $this->generateSubCommandUsage($args[0]));
                 return;
             }
 
-            if(!$this->getPlugin()->loadArena($args[1])){
-                $sender->sendMessage(BedWars::PREFIX . TextFormat::YELLOW . "Arena doesn't exist");
+            if(!is_null($error = $this->getPlugin()->loadArena($args[1]))){
+                $sender->sendMessage(BedWars::PREFIX . TextFormat::YELLOW . $error);
                 return;
             }
 
@@ -389,6 +407,7 @@ class DefaultCommand extends PluginCommand
         $sender->sendMessage(TextFormat::GREEN . "/bedwars create " . TextFormat::YELLOW . "Create new game");
         $sender->sendMessage(TextFormat::GREEN . "/bedwars delete " . TextFormat::YELLOW . "Delete existing game");
         $sender->sendMessage(TextFormat::GREEN . "/bedwars setlobby " . TextFormat::YELLOW . "Set spawning position of a game");
+        $sender->sendMessage(TextFormat::GREEN . "/bedwars setmap " . TextFormat::YELLOW . "Set name of map (on join sign/in-game)");
         $sender->sendMessage(TextFormat::GREEN . "/bedwars setpos " . TextFormat::YELLOW . "Set position [spawn,shop,upgrade] of a team");
         $sender->sendMessage(TextFormat::GREEN . "/bedwars setbed ". TextFormat::YELLOW . "Set bed position of a team");
         $sender->sendMessage(TextFormat::GREEN . "/bedwars setgenerator " . TextFormat::YELLOW . "Set generator of a team");

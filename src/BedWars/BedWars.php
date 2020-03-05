@@ -36,6 +36,12 @@ class BedWars extends PluginBase
     /** @var string $serverWebsite */
     public $serverWebsite;
 
+    /** @var int $staticStartTime */
+    public $staticStartTime;
+
+    /** @var int $staticRestartTime */
+    public $staticRestartTime;
+
     const TEAMS = [
         'blue' => "§1",
         'red' => "§c",
@@ -57,6 +63,8 @@ class BedWars extends PluginBase
     {
         $this->saveDefaultConfig();
         $this->serverWebsite = $this->getConfig()->get('website');
+        $this->staticStartTime = (int)$this->getConfig()->get('start-time');
+        $this->staticRestartTime = (int)$this->getConfig()->get('restart-time');
 
         @mkdir($this->getDataFolder() . "arenas");
         @mkdir($this->getDataFolder() . "skins");
@@ -73,8 +81,6 @@ class BedWars extends PluginBase
             $jsonData = json_decode($fileContents, true);
 
             if(!$this->validateGame($jsonData)){
-                $arenaName = basename($fileContents, ".json");
-                $this->getLogger()->info(self::PREFIX . TextFormat::YELLOW . "Failed to load arena " . $arenaName . " because it's data are corrupted!");
                 continue;
             }
 
@@ -82,7 +88,7 @@ class BedWars extends PluginBase
                 $this->signs[$jsonData['name']] = $jsonData['signs'];
             }
 
-            $this->games[$jsonData['name']] = $game = new Game($this, $jsonData['name'], intval($jsonData['minPlayers']), intval($jsonData['playersPerTeam']), $jsonData['world'], $jsonData['lobby'], $jsonData['teamInfo'], $jsonData['generatorInfo']);
+            $this->games[$jsonData['name']] = $game = new Game($this, $jsonData);
 
             $split = explode(":", $jsonData['lobby']);
             $game->setLobby(new Vector3(intval($split[0]), intval($split[1]), intval($split[2])), $split[3]);
@@ -137,17 +143,20 @@ class BedWars extends PluginBase
         return isset($this->games[$gameName]);
     }
 
-    public function loadArena(string $gameName) : bool{
+    public function loadArena(string $gameName) : string{
         $location = $this->getDataFolder() . "arenas/" . $gameName . ".json";
         if(!is_file($location)){
-            return false;
+            return "Game doesn't exist";
         }
 
 
         $file = file_get_contents($location);
         $jsonData = json_decode($file);
-        $this->games[$jsonData['name']] = $game = new Game($this, $jsonData['name'], intval($jsonData['minPlayers']), intval($jsonData['playersPerTeam']), $jsonData['world'], $jsonData['lobby'], $jsonData['teamInfo'], $jsonData['generatorInfo']);
-        return true;
+        if(!$this->validateGame($jsonData)){
+            return "Failed to validate arena";
+        }
+        $this->games[$jsonData['name']] = $game = new Game($this, $jsonData);
+        return null;
     }
 
     /**
@@ -164,7 +173,8 @@ class BedWars extends PluginBase
             'teamInfo',
             'generatorInfo',
             'lobby',
-            'void_y'
+            'void_y',
+            'mapName'
         ];
 
         $error = 0;

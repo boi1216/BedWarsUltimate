@@ -138,7 +138,6 @@ class GameListener implements Listener
                 return;
             }
 
-
             foreach($playerGame->teams as $team){
                 if($team->getColor() == $teamColor){
 
@@ -184,7 +183,6 @@ class GameListener implements Listener
         if(!$player instanceof Player){
             return;
         }
-
 
         $playerGame = $this->plugin->getPlayerGame($player);
         if($playerGame !== null && $event->getTarget()->getFolderName() !== $playerGame->worldName)$playerGame->quit($player);

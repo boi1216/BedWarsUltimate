@@ -48,7 +48,7 @@ class SignUpdater extends Task
 
                 $tile->setText(TextFormat::BOLD . TextFormat::DARK_RED . "BedWars",
                     TextFormat::AQUA . "[" . count($game->players) . "/" . $game->getMaxPlayers() . "]",
-                    TextFormat::BOLD . TextFormat::GOLD . $game->getName(),
+                    TextFormat::BOLD . TextFormat::GOLD . $game->getMapName(),
                     $this->getStatus($game->getState()));
 
 

@@ -51,6 +51,9 @@ class Game
     /** @var string $lobbyName */
     private $lobbyName;
 
+    /** @var string $mapName */
+    private $mapName;
+
     /** @var int $state */
     private $state = self::STATE_LOBBY;
 
@@ -67,10 +70,10 @@ class Game
     private $lobby;
 
     /** @var int $startTime */
-    private $startTime = 30;
+    private $startTime;
 
     /** @var int $rebootTime */
-    private $rebootTime = 10;
+    private $rebootTime;
 
     /** @var int $voidY */
     private $voidY ;
@@ -111,36 +114,30 @@ class Game
     /** @var PlayerCache[] $cachedPlayers */
     private $cachedPlayers = array();
 
-
-
-
     /**
      * Game constructor.
      * @param BedWars $plugin
-     * @param string $arenaName
-     * @param int $minPlayers
-     * @param int $playersPerTeam
-     * @param string $worldName
-     * @param string $lobbyWorld
-     * @param array $teamInfo
-     * @param array $generatorInfo
+     * @param array $data
      */
-    public function __construct(BedWars $plugin, string $arenaName, int $minPlayers, int $playersPerTeam, string $worldName, string $lobbyWorld, array $teamInfo, array $generatorInfo)
+    public function __construct(BedWars $plugin, array $data)
     {
         $this->plugin = $plugin;
-        $this->gameName = $arenaName;
-        $this->minPlayers = $minPlayers;
-        $this->playersPerTeam = $playersPerTeam;
-        $this->worldName = $worldName;
-        $this->lobbyName = explode(":", $lobbyWorld)[3];
-        $this->teamInfo = $teamInfo;
-        $this->generatorInfo = !isset($generatorInfo[$this->gameName]) ? [] : $generatorInfo[$this->gameName];
+        $this->startTime = $plugin->staticStartTime;
+        $this->rebootTime = $plugin->staticRestartTime;
+        $this->gameName = $data['name'];
+        $this->minPlayers = $data['minPlayers'];
+        $this->playersPerTeam = $data['playersPerTeam'];
+        $this->worldName = $data['world'];
+        $this->lobbyName = explode(":", $data['lobby'])[3];
+        $this->mapName = $data['mapName'];
+        $this->teamInfo = $data['teamInfo'];
+        $this->generatorInfo = !isset($data['generatorInfo'][$this->gameName]) ? [] : $data['generatorInfo'][$this->gameName];
 
         foreach($this->teamInfo as $teamName => $data){
              $this->teams[$teamName] = new Team($teamName, BedWars::TEAMS[strtolower($teamName)]);
         }
 
-        $this->maxPlayers = count($this->teams) * $playersPerTeam;
+        $this->maxPlayers = count($this->teams) * $this->playersPerTeam;
         $this->reload();
         $this->plugin->getScheduler()->scheduleRepeatingTask(new GameTick($this), 20);
     }
@@ -182,6 +179,13 @@ class Game
     }
 
     /**
+     * @return string
+     */
+    public function getMapName() : string{
+        return $this->mapName;
+    }
+
+    /**
      * @return int
      */
     public function getMaxPlayers() : int{
@@ -196,7 +200,6 @@ class Game
             return;
         }
         $world->setAutoSave(false);
-
     }
 
     /**
@@ -387,7 +390,7 @@ class Game
         \BedWars\utils\Scoreboard::new($player, 'bedwars', TextFormat::BOLD . TextFormat::YELLOW . "Bed Wars");
 
         \BedWars\utils\Scoreboard::setLine($player, 1, " ");
-        \BedWars\utils\Scoreboard::setLine($player, 2, " " . TextFormat::WHITE ."Map: " . TextFormat::GREEN .  $this->worldName . str_repeat(" ", 3));
+        \BedWars\utils\Scoreboard::setLine($player, 2, " " . TextFormat::WHITE ."Map: " . TextFormat::GREEN .  $this->mapName . str_repeat(" ", 3));
         \BedWars\utils\Scoreboard::setLine($player, 3, " " . TextFormat::WHITE . "Players: " . TextFormat::GREEN . count($this->players) . "/" . $this->maxPlayers . str_repeat(" ", 3));
         \BedWars\utils\Scoreboard::setLine($player, 4, "  ");
         \BedWars\utils\Scoreboard::setLine($player, 5, " " . $this->starting ? TextFormat::WHITE . "Starting in " . TextFormat::GREEN .  $this->startTime . str_repeat(" ", 3) : TextFormat::GREEN . "Waiting for players..." . str_repeat(" ", 3));
@@ -463,12 +466,9 @@ class Game
     }
 
     private function checkLobby() : void{
-        if(!$this->starting && count($this->players) >= $this->minPlayers){
+        if(!$this->starting && count($this->players) >= $this->minPlayers) {
             $this->starting = true;
             $this->broadcastMessage(TextFormat::GREEN . "Countdown started");
-        }elseif($this->starting && count($this->players) < $this->minPlayers){
-            $this->starting = false;
-            $this->broadcastMessage(TextFormat::YELLOW . "Countdown stopped");
         }
     }
 
@@ -587,6 +587,11 @@ class Game
          switch($this->state) {
              case self::STATE_LOBBY;
                  if ($this->starting) {
+                     if($this->starting && count($this->players) < $this->minPlayers) {
+                         $this->starting = false;
+                         $this->broadcastMessage(TextFormat::YELLOW . "Countdown stopped");
+                     }
+
                      $this->startTime--;
 
                      foreach ($this->players as $player) {
@@ -624,7 +629,7 @@ class Game
                      \BedWars\utils\Scoreboard::remove($player);
                      \BedWars\utils\Scoreboard::new($player, 'bedwars', TextFormat::BOLD . TextFormat::YELLOW . "Bed Wars");
                      \BedWars\utils\Scoreboard::setLine($player, 1, " ");
-                     \BedWars\utils\Scoreboard::setLine($player, 2, " " . TextFormat::WHITE . "Map: " . TextFormat::GREEN . $this->worldName . str_repeat(" ", 3));
+                     \BedWars\utils\Scoreboard::setLine($player, 2, " " . TextFormat::WHITE . "Map: " . TextFormat::GREEN . $this->mapName . str_repeat(" ", 3));
                      \BedWars\utils\Scoreboard::setLine($player, 3, " " . TextFormat::WHITE . "Players: " . TextFormat::GREEN . count($this->players) . "/" . $this->maxPlayers . str_repeat(" ", 3));
                      \BedWars\utils\Scoreboard::setLine($player, 4, "  ");
                      \BedWars\utils\Scoreboard::setLine($player, 5, " " . ($this->starting ? TextFormat::WHITE . "Starting in " . TextFormat::GREEN . $this->startTime . str_repeat(" ", 3) : TextFormat::GREEN . "Waiting for players..." . str_repeat(" ", 3)));
