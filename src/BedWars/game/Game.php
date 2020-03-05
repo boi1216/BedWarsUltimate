@@ -218,6 +218,7 @@ class Game
             $players = [];
 
             foreach($team->getPlayers() as $player){
+                if(!$player->isOnline())continue;
                 if($player->isAlive() && $player->getLevel()->getFolderName() == $this->worldName){
                     $players[] = $player;
                 }
@@ -446,6 +447,10 @@ class Game
      */
     public function quit(Player $player) : void{
          if(isset($this->players[$player->getRawUniqueId()])){
+             $team = $this->plugin->getPlayerTeam($player);
+             if($team instanceof Team){
+                 $team->remove($player);
+             }
              unset($this->players[$player->getRawUniqueId()]);
          }
          if(isset($this->spectators[$player->getRawUniqueId()])){
