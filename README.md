@@ -1,6 +1,7 @@
 # BedWars - PocketMine Plugin
-Ultimate BedWars plugin for PocketMine 
-**Warning:** DO NOT TRUST OTHER PEOPLE SELLING FIXED VERSION OF THIS PLUGIN AS THEIR OWN, I AM ORIGINAL AUTHOR.
+Ultimate BedWars plugin for PocketMine<br>
+**Warning:** DO NOT TRUST OTHER PEOPLE SELLING FIXED VERSION OF THIS PLUGIN AS THEIR OWN, I AM ORIGINAL AUTHOR.<br>
+
 This plugin was originally designed for Hyperlands, but as it got leaked I decided to make it public.
 
 ![Image from game](https://i.imgur.com/X9zSs1u.png)</br>
