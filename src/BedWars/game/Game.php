@@ -131,6 +131,8 @@ class Game
         $this->lobbyName = explode(":", $data['lobby'])[3];
         $this->mapName = $data['mapName'];
         $this->teamInfo = $data['teamInfo'];
+        $this->voidY = $data['void_y'];
+        $this->lobby = Utils::stringToVector($data['lobby'], ":");
         $this->generatorInfo = !isset($data['generatorInfo'][$this->gameName]) ? [] : $data['generatorInfo'][$this->gameName];
 
         foreach($this->teamInfo as $teamName => $data){
@@ -230,7 +232,6 @@ class Game
             if(count($players) >= 1){
                 $teams[] = $team->getName();
             }
-
         }
         return $teams;
     }

@@ -8,11 +8,12 @@ use pocketmine\block\utils\SignText;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\Player;
-use pocketmine\plugin\PluginBase;
 use pocketmine\scheduler\Task;
 use pocketmine\tile\Sign;
 use pocketmine\utils\TextFormat;
 use pocketmine\math\Vector3;
+use pocketmine\plugin\Plugin;
+use pocketmine\plugin\PluginBase;
 use BedWars\command\DefaultCommand;
 use BedWars\game\Game;
 use BedWars\game\GameListener;
@@ -61,12 +62,16 @@ class BedWars extends PluginBase
 
     public function onEnable() : void
     {
+        $formAPI = $this->getServer()->getPluginManager()->getPlugin('FormAPI');
+        if($formAPI->getDescription()->getAuthors()[0] !== "jojoe77777"){
+                $this->getLogger()->error("Invalid dependency author | FormAPI");
+                $this->setEnabled(false);
+        }
+
         $this->saveDefaultConfig();
         $this->serverWebsite = $this->getConfig()->get('website');
-        $this->staticStartTime = (int)$this->getConfig()->get('start-time');
-        $this->staticRestartTime = (int)$this->getConfig()->get('restart-time');
 
-        @mkdir($this->getDataFolder() . "arenas");
+        @mkdir($this->getDataFolder() . "games");
         @mkdir($this->getDataFolder() . "skins");
         $this->saveResource("skins/264.png");
         $this->saveResource("skins/388.png");
@@ -76,7 +81,7 @@ class BedWars extends PluginBase
         );
         $this->getServer()->getPluginManager()->registerEvents(new GameListener($this), $this);
 
-        foreach(glob($this->getDataFolder() . "arenas/*.json") as $location){
+        foreach(glob($this->getDataFolder() . "games/*.json") as $location){
             $fileContents = file_get_contents($location);
             $jsonData = json_decode($fileContents, true);
 
@@ -89,49 +94,133 @@ class BedWars extends PluginBase
             }
 
             $this->games[$jsonData['name']] = $game = new Game($this, $jsonData);
-
-            $split = explode(":", $jsonData['lobby']);
-            $game->setLobby(new Vector3(intval($split[0]), intval($split[1]), intval($split[2])), $split[3]);
-            $game->setVoidLimit(intval($jsonData['void_y']));
         }
 
         $this->getServer()->getCommandMap()->register("bedwars", new DefaultCommand($this));
     }
 
     /**
-     * @param string $gameName
+     * @param string $id
      * @return array|null
      */
-    public function getArenaData(string $gameName) : ?array{
-        if(!$this->gameExists($gameName))return null;
+    public function getGameData(string $id) : ?array{
+        if(!$this->gameExists($id))return null;
 
-        $location = $this->getDataFolder() . "arenas/" . $gameName . ".json";
+        $location = $this->gamePath($id);
 
         $file = file_get_contents($location);
         return json_decode($file, true);
     }
 
     /**
-     * @param string $gameName
-     * @param array $gameData
-     * @return void
+     * @param string $id
+     * @param int $minPlayers
+     * @param int $playersPerTeam
+     * @param int $startTime
      */
-    public function writeArenaData(string $gameName, array $gameData) : void{
-        $location = $this->getDataFolder() . "arenas/" . $gameName . ".json";
-
-        file_put_contents($location, json_encode($gameData));
+    public function createGame(string $id, int $minPlayers, int $playersPerTeam, int $startTime) : void{
+        $dataStructure = [
+            'id' => $id,
+            'minPlayers' => $minPlayers,
+            'playersPerTeam' => $playersPerTeam,
+            'startTime' => $startTime,
+            'signs' => [],
+            'teamInfo' => [],
+            'generatorInfo' => []
+        ];
+        file_put_contents($this->gamePath($id), json_encode($dataStructure));
     }
 
     /**
-     * @param string $gameName
+     * @param string $id
+     */
+    public function deleteGame(string $id) : void{
+        unlink($this->gamePath($id));
+    }
+
+    /**
+     * @param string $id
+     * @param int $x
+     * @param int $y
+     * @param int $z
+     * @param string $levelName
+     */
+    public function setLobby(string $id, int $x, int $y, int $z, string $levelName) : void{
+        $file = file_get_contents($path = $this->gamePath($id));
+        $json = json_decode($file);
+
+        $json['lobby'] = implode(":", [$x,$y,$z,$levelName]);
+        file_put_contents($path, json_encode($json));
+    }
+
+    public function addGenerator(string $id, string $team, string $type, int $x, int $y, int $z) : void{
+
+    }
+
+    /**
+     * @param string $id
+     * @param string $team
+     * @param string $keyPos
+     * @param int $x
+     * @param int $y
+     * @param int $z
+     */
+    public function setTeamPosition(string $id, string $team, string $keyPos, int $x, int $y, int $z) : void{
+        $file = file_get_contents($path = $this->gamePath($id));
+        $json = json_decode($file);
+
+        $json['teamInfo'][$team][$keyPos . "Pos"] = implode(":", [$x, $y,$z]);
+        file_put_contents($path, json_encode($json));
+    }
+
+    /**
+     * @param string $id
+     * @return array
+     */
+    public function getTeams(string $id) : array{
+        $file = file_get_contents($this->gamePath($id));
+        $json = json_decode($file);
+
+        $teams = array();
+        foreach($json['teamInfo'] as $name => $data){
+            $teams[] = $name;
+        }
+        return $teams;
+    }
+
+    /**
+     * @param string $id
+     * @param string $team
+     */
+    public function addTeam(string $id, string $team){
+        $file = file_get_contents($path = $this->gamePath($id));
+        $json = json_decode($file);
+        $json['teamInfo'][$team] = ['spawnPos' => '', 'bedPos' => '', 'shopPos'];
+        file_put_contents($path, json_encode($json));
+    }
+
+    /**
+     * @param string $id
+     * @param string $team
      * @return bool
      */
-    public function gameExists(string $gameName) : bool {
-        $location = $this->getDataFolder() . "arenas/" . $gameName . ".json";
-        if(!is_file($location)){
+    public function teamExists(string $id, string $team) : bool{
+        $file = file_get_contents($this->gamePath($id));
+        if($file == null){
             return false;
         }
+        $json = json_decode($file);
+        return isset($json['teamInfo'][strtolower($team)]);
+    }
 
+    /**
+     * @param string $gameID
+     * @return bool
+     */
+    public function gameExists(string $gameID) : bool {
+        if(!is_file($this->gamePath($gameID))){
+            return false;
+        }
         return true;
     }
 
@@ -143,20 +232,12 @@ class BedWars extends PluginBase
         return isset($this->games[$gameName]);
     }
 
-    public function loadArena(string $gameName) : string{
-        $location = $this->getDataFolder() . "arenas/" . $gameName . ".json";
-        if(!is_file($location)){
-            return "Game doesn't exist";
-        }
-
-
-        $file = file_get_contents($location);
-        $jsonData = json_decode($file);
-        if(!$this->validateGame($jsonData)){
-            return "Failed to validate arena";
-        }
-        $this->games[$jsonData['name']] = $game = new Game($this, $jsonData);
-        return null;
+    /**
+     * @param string $id
+     * @return string
+     */
+    public function gamePath(string $id) : string{
+        return $this->getDataFolder() . "games/" . $id . ".json";
     }
 
     /**
