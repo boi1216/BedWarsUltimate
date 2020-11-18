@@ -1,4 +1,6 @@
 # BedWars - PocketMine Plugin
+
+# NEW REPO - https://github.com/boi1216/BedWars-Rewrite
 Ultimate BedWars plugin for PocketMine<br>
 **Warning:** DO NOT TRUST OTHER PEOPLE SELLING FIXED VERSION OF THIS PLUGIN AS THEIR OWN, I AM ORIGINAL AUTHOR.<br>
 
