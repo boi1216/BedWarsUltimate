@@ -1,6 +1,6 @@
 # BedWars - PocketMine Plugin
 
-# NEW REPO - https://github.com/boi1216/BedWars-Rewrite
+# should i release new bedwars ?
 Ultimate BedWars plugin for PocketMine<br>
 **Warning:** DO NOT TRUST OTHER PEOPLE SELLING FIXED VERSION OF THIS PLUGIN AS THEIR OWN, I AM ORIGINAL AUTHOR.<br>
 
@@ -21,6 +21,6 @@ Please note that this plugin is not ready for being used on production servers a
 - [ ] Custom team upgrades & shop prices
 - [ ] Use random as arena identifier
 - [ ] Rewrite arena setup
-
+.
 ## Contact
 **Discord** boi#1485 or https://discord.gg/XKaXcE4
