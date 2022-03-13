@@ -1,11 +1,8 @@
 # BedWars - PocketMine Plugin
 https://discord.gg/46wwD7k2
-https://discord.gg/46wwD7k2
-https://discord.gg/46wwD7k2
-https://discord.gg/46wwD7k2
-https://discord.gg/46wwD7k2
-https://discord.gg/46wwD7k2
-# should i release new bedwars ?
+Join discord for further info about updates etc..
+
+# PROJECT CONTINUED AS OF 13.03 2022
 Ultimate BedWars plugin for PocketMine<br>
 **Warning:** DO NOT TRUST OTHER PEOPLE SELLING FIXED VERSION OF THIS PLUGIN AS THEIR OWN, I AM ORIGINAL AUTHOR.<br>
 
