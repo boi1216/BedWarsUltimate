@@ -1,5 +1,5 @@
 # BedWars - PocketMine Plugin
-https://discord.gg/46wwD7k2
+https://discord.gg/FucEQJcKy3
 Join discord for further info about updates etc..
 
 # PROJECT CONTINUED AS OF 13.03 2022
