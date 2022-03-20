@@ -12,9 +12,12 @@ use pocketmine\item\Compass;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\Item;
-use pocketmine\level\Level;
+use pocketmine\item\ItemIdentifier;
+use pocketmine\item\ItemFactory;
+use pocketmine\item\ItemIds;
+use pocketmine\world\World;
 use pocketmine\level\Position;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\plugin\Plugin;
 use pocketmine\scheduler\Task;
 use pocketmine\utils\TextFormat;
@@ -46,7 +49,7 @@ class Game
     public $playersPerTeam;
 
     /** @var string $worldName */
-    public $worldName;
+    public $worldName = "world";
 
     /** @var string $lobbyName */
     private $lobbyName;
@@ -124,15 +127,15 @@ class Game
         $this->plugin = $plugin;
         $this->startTime = $plugin->staticStartTime;
         $this->rebootTime = $plugin->staticRestartTime;
-        $this->gameName = $data['name'];
+        $this->gameName = $data['id'];
         $this->minPlayers = $data['minPlayers'];
         $this->playersPerTeam = $data['playersPerTeam'];
-        $this->worldName = $data['world'];
+     //   $this->worldName = $data['world'];
         $this->lobbyName = explode(":", $data['lobby'])[3];
         $this->mapName = $data['mapName'];
         $this->teamInfo = $data['teamInfo'];
-        $this->voidY = $data['void_y'];
-        $this->lobby = Utils::stringToVector($data['lobby'], ":");
+     //   $this->voidY = $data['void_y'];
+        $this->lobby = Utils::stringToPosition(":", $data['lobby']);
         $this->generatorInfo = !isset($data['generatorInfo'][$this->gameName]) ? [] : $data['generatorInfo'][$this->gameName];
 
         foreach($this->teamInfo as $teamName => $data){
@@ -156,7 +159,7 @@ class Game
      * @param string $worldName
      */
     public function setLobby(Vector3 $lobby, string $worldName) : void{
-        $this->lobby = new Position($lobby->x, $lobby->y, $lobby->z, $this->plugin->getServer()->getLevelByName($worldName));
+        $this->lobby = new Position($lobby->x, $lobby->y, $lobby->z, $this->plugin->getServer()->getWorldManager()->getWorldByName($worldName));
     }
 
     /**
@@ -194,10 +197,10 @@ class Game
         return $this->maxPlayers;
     }
 
-    public function reload() : void{
-        $this->plugin->getServer()->loadLevel($this->worldName);
-        $world = $this->plugin->getServer()->getLevelByName($this->worldName);
-        if(!$world instanceof Level){
+    public function reload() : void{ //// ???
+        $this->plugin->getServer()->getWorldManager()->loadWorld($this->worldName);
+        $world = $this->plugin->getServer()->getWorldManager()->getWorldByName($this->worldName);
+        if(!$world instanceof World){
             $this->plugin->getLogger()->info(BedWars::PREFIX . TextFormat::YELLOW . "Failed to load arena " . $this->gameName . " because it's world does not exist!");
             return;
         }
@@ -238,7 +241,7 @@ class Game
 
     public function stop() : void{
         foreach(array_merge($this->players, $this->spectators) as $player){
-            $this->cachedPlayers[$player->getRawUniqueId()]->load();
+            $this->cachedPlayers[$player->getName()]->load();
             \BedWars\utils\Scoreboard::remove($player);
         }
 
@@ -303,7 +306,7 @@ class Game
              $this->respawnPlayer($player);
              $player->setNameTag(TextFormat::BOLD . $playerTeam->getColor() . strtoupper($playerTeam->getName()[0]) . " " .  TextFormat::RESET . $playerTeam->getColor() . $player->getName());
 
-             $this->trackingPositions[$player->getRawUniqueId()] = $playerTeam->getName();
+             $this->trackingPositions[$player->getName()] = $playerTeam->getName();
              $player->setSpawn(Utils::stringToVector(":",  $spawnPos = $this->teamInfo[$playerTeam->getName()]['spawnPos']));
          }
 
@@ -371,21 +374,23 @@ class Game
              return;
          }
 
-         $this->cachedPlayers[$player->getRawUniqueId()] = new PlayerCache($player);
+         $this->cachedPlayers[$player->getName()] = new PlayerCache($player);
          $player->teleport($this->lobby);
-         $this->players[$player->getRawUniqueId()] = $player;
+         $this->players[$player->getName()] = $player;
 
          $this->broadcastMessage(TextFormat::GRAY . $player->getName() . " " . TextFormat::YELLOW . "has joined the game " . TextFormat::GOLD . "(" . TextFormat::AQUA .  count($this->players) . TextFormat::YELLOW . "/" . TextFormat::AQUA .  $this->maxPlayers . TextFormat::YELLOW .  ")");
          $player->getInventory()->clearAll();
-         $a = 0;
-         $items = array_fill(0, count($this->teams), Item::get(Item::WOOL));
+      //   $a = 0;
+
+      //   $items = array_fill(0, count($this->teams), ItemFactory::getInstance()->get(ItemIds::WOOL));
          foreach($this->teams as $team){
-             $items[$a]->setDamage(Utils::colorIntoWool($team->getColor()));
-             $player->getInventory()->addItem($items[$a]);
-             $a++;
+            var_dump(Utils::colorIntoWool($team->getColor()));
+           //  $items[$a]->setDamage(Utils::colorIntoWool($team->getColor()));
+             $player->getInventory()->addItem(new Item(new ItemIdentifier(ItemIds::WOOL, Utils::colorIntoWool($team->getColor()))));
+         //    $a++;
          }
 
-         $player->getInventory()->setItem(8, Item::get(Item::COMPASS)->setCustomName(TextFormat::YELLOW . "Leave"));
+         $player->getInventory()->setItem(8, ItemFactory::getInstance()->get(ItemIds::COMPASS)->setCustomName(TextFormat::YELLOW . "Leave"));
          $this->checkLobby();
 
         \BedWars\utils\Scoreboard::new($player, 'bedwars', TextFormat::BOLD . TextFormat::YELLOW . "Bed Wars");
@@ -406,7 +411,7 @@ class Game
      * @param Player $player
      */
     public function trackCompass(Player $player) : void{
-        $currentTeam = $this->trackingPositions[$player->getRawUniqueId()];
+        $currentTeam = $this->trackingPositions[$player->getName()];
         $arrayTeam = $this->teams;
         $position = array_search($currentTeam, array_keys($arrayTeam));
         $teams = array_values($this->teams);
@@ -418,7 +423,7 @@ class Game
             $team = $teams[0]->getName();
         }
 
-        $this->trackingPositions[$player->getRawUniqueId()] = $team;
+        $this->trackingPositions[$player->getName()] = $team;
 
         $player->setSpawn(Utils::stringToVector(":",  $spawnPos = $this->teamInfo[$team]['spawnPos']));
         $player->setSpawn(Utils::stringToVector(":",  $spawnPos = $this->teamInfo[$team]['spawnPos']));
@@ -426,7 +431,7 @@ class Game
         foreach($player->getInventory()->getContents() as $slot => $item){
             if($item instanceof Compass){
                 $player->getInventory()->removeItem($item);
-                $player->getInventory()->setItem($slot, Item::get(Item::COMPASS)->setCustomName(TextFormat::GREEN . "Tap to switch"));
+                $player->getInventory()->setItem($slot, ItemFactory::get(ItemIds::COMPASS)->setCustomName(TextFormat::GREEN . "Tap to switch"));
             }
         }
     }
@@ -450,15 +455,15 @@ class Game
      * @param Player $player
      */
     public function quit(Player $player) : void{
-         if(isset($this->players[$player->getRawUniqueId()])){
+         if(isset($this->players[$player->getName()])){
              $team = $this->plugin->getPlayerTeam($player);
              if($team instanceof Team){
                  $team->remove($player);
              }
-             unset($this->players[$player->getRawUniqueId()]);
+             unset($this->players[$player->getName()]);
          }
-         if(isset($this->spectators[$player->getRawUniqueId()])){
-             unset($this->spectators[$player->getRawUniqueId()]);
+         if(isset($this->spectators[$player->getName()])){
+             unset($this->spectators[$player->getName()]);
          }
 
 
@@ -482,13 +487,13 @@ class Game
 
         if(!$playerTeam->hasBed()){
             $playerTeam->dead++;
-            $this->spectators[$player->getRawUniqueId()] = $player;
-            unset($this->players[$player->getRawUniqueId()]);
+            $this->spectators[$player->getName()] = $player;
+            unset($this->players[$player->getName()]);
             $player->setGamemode(Player::SPECTATOR);
             $player->addTitle(TextFormat::BOLD . TextFormat::RED . "Bed Destroyed!", TextFormat::GRAY . "You will no longer respawn");
         }else{
             $player->setGamemode(Player::SPECTATOR);
-            $this->deadQueue[$player->getRawUniqueId()] = 5;
+            $this->deadQueue[$player->getName()] = 5;
          }
 
         $cause = $player->getLastDamageCause();
@@ -534,19 +539,19 @@ class Game
         $player->teleport(Utils::stringToVector(":", $spawnPos));
 
         //inventory
-        $helmet = Item::get(Item::LEATHER_CAP);
-        $chestplate = Item::get(Item::LEATHER_CHESTPLATE);
-        $leggings = Item::get(Item::LEATHER_LEGGINGS);
-        $boots = Item::get(Item::LEATHER_BOOTS);
+        $helmet = ItemFactory::get(ItemIds::LEATHER_CAP);
+        $chestplate = ItemFactory::get(ItemIds::LEATHER_CHESTPLATE);
+        $leggings = ItemFactory::get(ItemIds::LEATHER_LEGGINGS);
+        $boots = ItemFactory::get(ItemIds::LEATHER_BOOTS);
 
         $hasArmorUpdated = true;
 
         switch($team->getArmor($player)){
             case "iron";
-            $leggings = Item::get(Item::IRON_LEGGINGS);
+            $leggings = ItemFactory::get(ItemIds::IRON_LEGGINGS);
             break;
             case "diamond";
-            $boots = Item::get(Item::IRON_BOOTS);
+            $boots = ItemFactory::get(ItemIds::IRON_BOOTS);
             break;
             default;
             $hasArmorUpdated = false;
@@ -570,7 +575,7 @@ class Game
         $player->getArmorInventory()->setLeggings($leggings);
         $player->getArmorInventory()->setBoots($boots);
 
-        $sword = Item::get(Item::WOODEN_SWORD);
+        $sword = ItemFactory::get(ItemIds::WOODEN_SWORD);
 
         $swordUpgrade = $team->getUpgrade('sharpenedSwords');
         if($swordUpgrade > 0){
@@ -578,7 +583,7 @@ class Game
         }
 
         $player->getInventory()->setItem(0, $sword);
-        $player->getInventory()->setItem(8, Item::get(Item::COMPASS)->setCustomName(TextFormat::GREEN . "Tap to switch"));
+        $player->getInventory()->setItem(8, ItemFactory::get(ItemIds::COMPASS)->setCustomName(TextFormat::GREEN . "Tap to switch"));
 
     }
 
@@ -645,20 +650,20 @@ class Game
              case self::STATE_RUNNING;
 
                  foreach ($this->players as $player) {
-                     if ($player->getInventory()->contains(Item::get(Item::COMPASS))) {
-                         $trackIndex = $this->trackingPositions[$player->getRawUniqueId()];
+                     if ($player->getInventory()->contains(ItemFactory::get(ItemIds::COMPASS))) {
+                         $trackIndex = $this->trackingPositions[$player->getName()];
                          $team = $this->teams[$trackIndex];
                          $player->sendTip(TextFormat::WHITE . "Tracking: " . TextFormat::BOLD . $team->getColor() . ucfirst($team->getName()) . " " . TextFormat::RESET . TextFormat::WHITE . "- Distance: " . TextFormat::BOLD . $team->getColor() . round(Utils::stringToVector(":", $this->teamInfo[$trackIndex]['spawnPos'])->distance($player)) . "m");
                      }
 
-                     if (isset($this->deadQueue[$player->getRawUniqueId()])) {
+                     if (isset($this->deadQueue[$player->getName()])) {
 
-                         $player->addTitle(TextFormat::RED . "You died!", TextFormat::YELLOW . "You will respawn in " . TextFormat::RED . $this->deadQueue[$player->getRawUniqueId()] . " " . TextFormat::YELLOW . "seconds!");
-                         $player->sendMessage(TextFormat::YELLOW . "You will respawn in " . TextFormat::RED . $this->deadQueue[$player->getRawUniqueId()] . " " . TextFormat::YELLOW . "seconds!");
+                         $player->addTitle(TextFormat::RED . "You died!", TextFormat::YELLOW . "You will respawn in " . TextFormat::RED . $this->deadQueue[$player->getName()] . " " . TextFormat::YELLOW . "seconds!");
+                         $player->sendMessage(TextFormat::YELLOW . "You will respawn in " . TextFormat::RED . $this->deadQueue[$player->getName()] . " " . TextFormat::YELLOW . "seconds!");
 
-                         $this->deadQueue[$player->getRawUniqueId()] -= 1;
-                         if ($this->deadQueue[$player->getRawUniqueId()] == 0) {
-                             unset($this->deadQueue[$player->getRawUniqueId()]);
+                         $this->deadQueue[$player->getName()] -= 1;
+                         if ($this->deadQueue[$player->getName()] == 0) {
+                             unset($this->deadQueue[$player->getName()]);
 
                              $this->respawnPlayer($player);
                              $player->addTitle(TextFormat::GREEN . "RESPAWNED!");
@@ -712,9 +717,9 @@ class Game
              if($this->tierUpdate == 0){
                  $this->tierUpdate = 60 * 10;
                  foreach($this->generators as $generator){
-                     if($generator->itemID == Item::DIAMOND && $this->tierUpdateGen == "diamond") {
+                     if($generator->itemID == ItemIds::DIAMOND && $this->tierUpdateGen == "diamond") {
                           $generator->updateTier();
-                     }elseif($generator->itemID == Item::EMERALD && $this->tierUpdateGen == "emerald"){
+                     }elseif($generator->itemID == ItemIds::EMERALD && $this->tierUpdateGen == "emerald"){
                           $generator->updateTier();
                      }
                  }

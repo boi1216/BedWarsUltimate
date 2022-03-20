@@ -11,8 +11,9 @@ use pocketmine\item\Armor;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\Item;
+use pocketmine\item\ItemIds;
 use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 class ItemShop
 {
@@ -70,37 +71,37 @@ class ItemShop
      * @var array $itemData
      */
     public static $itemData = [
-        0 => [0 => ["name" => "Chainmal Armor", "type" => self::PURCHASE_TYPE_IRON, "amount" => 0, "price" => 40, "item" => ["id" => Item::CHAIN_LEGGINGS, "damage" => 0]],
-            1 => ["name" => "Iron Armor", "type" => self::PURCHASE_TYPE_GOLD, "amount" => 0, "price" => 12, "item" => ["id" => Item::IRON_LEGGINGS, "damage" => 0]],
-            2 => ["name" => "Diamond Armor ", "type" => self::PURCHASE_TYPE_EMERALD, "amount" => 0, "price" => 6, "item" => ["id" => ITEM::DIAMOND_LEGGINGS, "damage" => 0]]
+        0 => [0 => ["name" => "Chainmal Armor", "type" => self::PURCHASE_TYPE_IRON, "amount" => 0, "price" => 40, "item" => ["id" => ItemIds::CHAIN_LEGGINGS, "damage" => 0]],
+            1 => ["name" => "Iron Armor", "type" => self::PURCHASE_TYPE_GOLD, "amount" => 0, "price" => 12, "item" => ["id" => ItemIds::IRON_LEGGINGS, "damage" => 0]],
+            2 => ["name" => "Diamond Armor ", "type" => self::PURCHASE_TYPE_EMERALD, "amount" => 0, "price" => 6, "item" => ["id" => ItemIds::DIAMOND_LEGGINGS, "damage" => 0]]
         ],
-        1 => [0 => ["name" => "Stone Sword", "type" => self::PURCHASE_TYPE_IRON, "amount" => 1, "price" => 10, "item" => ["id" => Item::STONE_SWORD, "damage" => 0]],
-            1 => ["name" => "Iron Sword", "type" => self::PURCHASE_TYPE_GOLD, "amount" => 1, "price" => 7, "item" => ["id" => Item::IRON_SWORD, "damage" => 0]],
-            2 => ["name" => "Diamond Sword", "type" => self::PURCHASE_TYPE_EMERALD, "amount" => 1, "price" => 7, "item" => ["id" => Item::DIAMOND_SWORD, "damage" => 0]],
-            3 => ["name" => "Knockback Stick", "type" => self::PURCHASE_TYPE_EMERALD, "amount" => 1, "price" => 2, "item" => ["id" => Item::STICK, "damage" => 0]]
+        1 => [0 => ["name" => "Stone Sword", "type" => self::PURCHASE_TYPE_IRON, "amount" => 1, "price" => 10, "item" => ["id" => ItemIds::STONE_SWORD, "damage" => 0]],
+            1 => ["name" => "Iron Sword", "type" => self::PURCHASE_TYPE_GOLD, "amount" => 1, "price" => 7, "item" => ["id" => ItemIds::IRON_SWORD, "damage" => 0]],
+            2 => ["name" => "Diamond Sword", "type" => self::PURCHASE_TYPE_EMERALD, "amount" => 1, "price" => 7, "item" => ["id" => ItemIds::DIAMOND_SWORD, "damage" => 0]],
+            3 => ["name" => "Knockback Stick", "type" => self::PURCHASE_TYPE_EMERALD, "amount" => 1, "price" => 2, "item" => ["id" => ItemIds::STICK, "damage" => 0]]
         ],
-        2 => [0 => ["name" => "Wool 16x", "type" => self::PURCHASE_TYPE_IRON, "amount" => 16, "price" => 4, "item" => ["id" => Item::WOOL, "damage" => "depend"]],
-            1 => ["name" => "Sandstone 16x", "type" => self::PURCHASE_TYPE_IRON, "amount" => 16, "price" => 12, "item" => ["id" => Item::SANDSTONE, "damage" => 0]],
-            2 => ["name" => "Endstone 12x", "type" => self::PURCHASE_TYPE_IRON, "amount" => 12, "price" => 24,"item" => ["id" => Item::END_STONE, "damage" => 0]],
-            3 => ["name" => "Ladder 16x", "type" => self::PURCHASE_TYPE_IRON, "amount" => 16, "price" => 4,"item" => ["id" => Item::LADDER, "damage" => 0]],
+        2 => [0 => ["name" => "Wool 16x", "type" => self::PURCHASE_TYPE_IRON, "amount" => 16, "price" => 4, "item" => ["id" => ItemIds::WOOL, "damage" => "depend"]],
+            1 => ["name" => "Sandstone 16x", "type" => self::PURCHASE_TYPE_IRON, "amount" => 16, "price" => 12, "item" => ["id" => ItemIds::SANDSTONE, "damage" => 0]],
+            2 => ["name" => "Endstone 12x", "type" => self::PURCHASE_TYPE_IRON, "amount" => 12, "price" => 24,"item" => ["id" => ItemIds::END_STONE, "damage" => 0]],
+            3 => ["name" => "Ladder 16x", "type" => self::PURCHASE_TYPE_IRON, "amount" => 16, "price" => 4,"item" => ["id" => ItemIds::LADDER, "damage" => 0]],
             4 => ["name" => "Oak Wood 16x", "type" => self::PURCHASE_TYPE_GOLD, "amount" => 16, "price" => 4, "item" => ["id" => 5, "damage" => 0]],
-            5 => ["name" => "Obsidian 4x", "type" => self::PURCHASE_TYPE_EMERALD, "amount" => 4, "price" => 4, "item" => ["id" => Item::OBSIDIAN, "damage" =>0]]
+            5 => ["name" => "Obsidian 4x", "type" => self::PURCHASE_TYPE_EMERALD, "amount" => 4, "price" => 4, "item" => ["id" => ItemIds::OBSIDIAN, "damage" =>0]]
         ],
-        3 => [0 => ["name" => "Bow 1", "type" => self::PURCHASE_TYPE_GOLD, "amount" => 1, "price" => 12, "item" => ["id" => Item::BOW, "damage" => 0]],
-            1 => ["name" => "Bow 2", "type" => self::PURCHASE_TYPE_GOLD, "amount" => 1, "price" => 24, "item" => ["id" => Item::BOW, "damage" => 0]],
-            2 => ["name" => "Bow 3", "type" => self::PURCHASE_TYPE_EMERALD, "amount" => 1, "price" => 6, "item" => ["id" => Item::BOW, "damage" => 0]]
+        3 => [0 => ["name" => "Bow 1", "type" => self::PURCHASE_TYPE_GOLD, "amount" => 1, "price" => 12, "item" => ["id" => ItemIds::BOW, "damage" => 0]],
+            1 => ["name" => "Bow 2", "type" => self::PURCHASE_TYPE_GOLD, "amount" => 1, "price" => 24, "item" => ["id" => ItemIds::BOW, "damage" => 0]],
+            2 => ["name" => "Bow 3", "type" => self::PURCHASE_TYPE_EMERALD, "amount" => 1, "price" => 6, "item" => ["id" => ItemIds::BOW, "damage" => 0]]
         ],
-        4 => [0 => ["name" => "Potion of Speed", "type" => self::PURCHASE_TYPE_EMERALD, "amount" => 1, "price" => 1, "item" => ["id" => Item::POTION, "damage" => 8194]],
-            1 => ["name" => "Jump Potion", "type" => self::PURCHASE_TYPE_EMERALD, "amount" => 1, "price" => 1, "item" => ["id" => Item::POTION, "damage" => 8203]],
-            2 => ["name" => "Invisibility Potion", "type" => self::PURCHASE_TYPE_EMERALD, "amount" => 1, "price" => 1, "item" => ["id" => Item::POTION, "damage" => 8206]]
+        4 => [0 => ["name" => "Potion of Speed", "type" => self::PURCHASE_TYPE_EMERALD, "amount" => 1, "price" => 1, "item" => ["id" => ItemIds::POTION, "damage" => 8194]],
+            1 => ["name" => "Jump Potion", "type" => self::PURCHASE_TYPE_EMERALD, "amount" => 1, "price" => 1, "item" => ["id" => ItemIds::POTION, "damage" => 8203]],
+            2 => ["name" => "Invisibility Potion", "type" => self::PURCHASE_TYPE_EMERALD, "amount" => 1, "price" => 1, "item" => ["id" => ItemIds::POTION, "damage" => 8206]]
         ],
-        5 => [0 => ["name" => "Golden Apple", "type" => self::PURCHASE_TYPE_GOLD, "amount" => 1, "price" => 3, "item" => ["id" => Item::GOLDEN_APPLE, "damage" => 0]],
-            1 => ["name" => "Bedbug", "type" => self::PURCHASE_TYPE_IRON, "amount" => 1, "price" => 50, "item" => ["id" => Item::SNOWBALL, "damage" => 0]],
-            2 => ["name" => "Fireball", "type" => self::PURCHASE_TYPE_IRON, "amount" => 1, "price" => 50, "item" => ["id" => Item::FIRE_CHARGE, "damage" => 0]],
-            3 => ["name" => "TNT", "type" => self::PURCHASE_TYPE_GOLD, "amount" => 1, "price" => 8, "item" => ["id" => Item::TNT, "damage" => 0]],
-            4 => ["name" => "Enderpearl", "type" => self::PURCHASE_TYPE_EMERALD, "amount" => 1, "price" => 4, "item" => ["id" => Item::ENDER_PEARL, "damage" => 0]],
+        5 => [0 => ["name" => "Golden Apple", "type" => self::PURCHASE_TYPE_GOLD, "amount" => 1, "price" => 3, "item" => ["id" => ItemIds::GOLDEN_APPLE, "damage" => 0]],
+            1 => ["name" => "Bedbug", "type" => self::PURCHASE_TYPE_IRON, "amount" => 1, "price" => 50, "item" => ["id" => ItemIds::SNOWBALL, "damage" => 0]],
+            2 => ["name" => "Fireball", "type" => self::PURCHASE_TYPE_IRON, "amount" => 1, "price" => 50, "item" => ["id" => ItemIds::FIRE_CHARGE, "damage" => 0]],
+            3 => ["name" => "TNT", "type" => self::PURCHASE_TYPE_GOLD, "amount" => 1, "price" => 8, "item" => ["id" => ItemIds::TNT, "damage" => 0]],
+            4 => ["name" => "Enderpearl", "type" => self::PURCHASE_TYPE_EMERALD, "amount" => 1, "price" => 4, "item" => ["id" => ItemIds::ENDER_PEARL, "damage" => 0]],
             5 => ["name" => "Water Bucket", "type" => self::PURCHASE_TYPE_EMERALD, "amount" => 1, "price" => 1, "item" => ["id" => 326, "damage" => 0]],
-            6 => ["name" => "Egg", "type" => self::PURCHASE_TYPE_EMERALD, "amount" => 1, "price" => 4, "item" => ["id" => Item::EGG, "damage" => 0]]
+            6 => ["name" => "Egg", "type" => self::PURCHASE_TYPE_EMERALD, "amount" => 1, "price" => 4, "item" => ["id" => ItemIds::EGG, "damage" => 0]]
         ]
     ];
 
@@ -135,17 +136,17 @@ class ItemShop
         switch($type){
             case self::PURCHASE_TYPE_IRON;
                 $typeString = "iron";
-                $removeItem = Item::get(Item::IRON_INGOT, 0, $price);
+                $removeItem = Item::get(ItemIds::IRON_INGOT, 0, $price);
                 $check = $p->getInventory()->contains(Item::get(Item::IRON_INGOT, $damage, $price));
                 break;
             case self::PURCHASE_TYPE_GOLD;
                 $typeString = "gold";
-                $removeItem = Item::get(Item::GOLD_INGOT, 0 , $price);
+                $removeItem = Item::get(ItemIds::GOLD_INGOT, 0 , $price);
                 $check = $p->getInventory()->contains(Item::get(Item::GOLD_INGOT, $damage, $price));
                 break;
             case self::PURCHASE_TYPE_EMERALD;
                 $typeString = "emerald";
-                $removeItem = Item::get(Item::EMERALD, 0, $price);
+                $removeItem = Item::get(ItemIds::EMERALD, 0, $price);
                 $check = $p->getInventory()->contains(Item::get(Item::EMERALD, $damage, $price));
                 break;
         }
@@ -159,7 +160,7 @@ class ItemShop
         if($playerTeam == null)return;
 
 
-        if($id == Item::WOOL){
+        if($id == ItemIds::WOOL){
             $damage = Utils::colorIntoWool($playerTeam->getColor());
         }elseif(Item::get($id) instanceof Armor){
             self::handleArmorTransaction($data, $p);
@@ -204,16 +205,16 @@ class ItemShop
         $leggings = "";
         switch ($data){
             case 0;
-                $boots = Item::get(Item::CHAIN_BOOTS, 0, 1);
-                $leggings = Item::get(Item::CHAIN_LEGGINGS, 0, 1);
+                $boots = Item::get(ItemIds::CHAIN_BOOTS, 0, 1);
+                $leggings = Item::get(ItemIds::CHAIN_LEGGINGS, 0, 1);
                 break;
             case 1;
-                $boots = Item::get(Item::IRON_BOOTS);
+                $boots = Item::get(ItemIds::IRON_BOOTS);
                 $leggings = Item::get(Item::IRON_LEGGINGS);
                 break;
             case 2;
-                $boots = Item::get(Item::DIAMOND_BOOTS);
-                $leggings = Item::get(Item::DIAMOND_LEGGINGS);
+                $boots = Item::get(ItemIds::DIAMOND_BOOTS);
+                $leggings = Item::get(ItemIds::DIAMOND_LEGGINGS);
         }
         $p->getArmorInventory()->setBoots($boots);
         $p->getArmorInventory()->setLeggings($leggings);
@@ -255,7 +256,7 @@ class ItemShop
      * @return bool
      */
     public static function isArmor(int $itemId){
-        $armors = [Item::CHAIN_BOOTS, Item::CHAIN_BOOTS, Item::IRON_BOOTS, Item::IRON_LEGGINGS, Item::DIAMOND_BOOTS, Item::DIAMOND_LEGGINGS];
+        $armors = [ItemIds::CHAIN_BOOTS, ItemIds::CHAIN_BOOTS, ItemIds::IRON_BOOTS, ItemIds::IRON_LEGGINGS, ItemIds::DIAMOND_BOOTS, ItemIds::DIAMOND_LEGGINGS];
         if(in_array($itemId, $armors)){
             return true;
         }

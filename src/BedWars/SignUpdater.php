@@ -4,10 +4,11 @@
 namespace BedWars;
 
 use pocketmine\scheduler\Task;
-use pocketmine\level\Level;
+use pocketmine\world\World;
 use pocketmine\math\Vector3;
-use pocketmine\tile\Sign;
+use pocketmine\block\tile\Sign;
 use pocketmine\utils\TextFormat;
+use pocketmine\block\utils\SignText;
 
 class SignUpdater extends Task
 {
@@ -23,16 +24,14 @@ class SignUpdater extends Task
     /**
      * @param int $currentTick
      */
-    public function onRun(int $currentTick) : void
+    public function onRun() : void
     {
         foreach ($this->plugin->signs as $arena => $positions) {
             foreach ($positions as $position) {
                 $pos = explode(":", $position);
-                $vector = new Vector3(intval($pos[0]), intval($pos[1]), intval($pos[2]));
+                $world = $this->plugin->getServer()->getWorldManager()->getWorldByName($pos[3]);
 
-                $level = $this->plugin->getServer()->getLevelByName($pos[3]);
-
-                if (!$level instanceof Level) {
+                if (!$world instanceof World) {
                     continue;
                 }
 
@@ -41,15 +40,19 @@ class SignUpdater extends Task
                 }
 
                 $game = $this->plugin->games[$arena];
-                $tile = $level->getTile($vector);
+                $tile = $world->getTileAt(intval($pos[0]), intval($pos[1]), intval($pos[2]));
                 if (!$tile instanceof Sign) {
+                    echo 'NOT SIGN';
                     continue;
                 }
+                echo 'UPDATED';
 
-                $tile->setText(TextFormat::BOLD . TextFormat::DARK_RED . "BedWars",
+                $tile->setText(new SignText(array(TextFormat::BOLD . TextFormat::DARK_RED . "BedWars",
                     TextFormat::AQUA . "[" . count($game->players) . "/" . $game->getMaxPlayers() . "]",
                     TextFormat::BOLD . TextFormat::GOLD . $game->getMapName(),
-                    $this->getStatus($game->getState()));
+                    $this->getStatus($game->getState()))));
+                $world->setBlockAt(intval($pos[0]), intval($pos[1]), intval($pos[2]), $world->getBlockAt(intval($pos[0]), intval($pos[1]), intval($pos[2])));
+
 
 
             }

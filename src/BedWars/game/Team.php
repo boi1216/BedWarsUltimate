@@ -4,7 +4,7 @@
 namespace BedWars\game;
 
 
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 class Team
 {
@@ -49,11 +49,11 @@ class Team
      * @param Player $player
      */
     public function add(Player $player) : void{
-        $this->players[$player->getRawUniqueId()] = $player;
+        $this->players[$player->getName()] = $player;
     }
 
     public function remove(Player $player) : void{
-        unset($this->players[$player->getRawUniqueId()]);
+        unset($this->players[$player->getName()]);
     }
 
     /**
@@ -96,7 +96,7 @@ class Team
      * @param string $armor
      */
     public function setArmor(Player $player, string $armor){
-        $this->armorUpdates[$player->getRawUniqueId()] = $armor;
+        $this->armorUpdates[$player->getName()] = $armor;
     }
 
     /**
@@ -104,7 +104,7 @@ class Team
      * @return string|null
      */
     public function getArmor(Player $player) : ?string{
-        return $this->armorUpdates[$player->getRawUniqueId()];
+        return $this->armorUpdates[$player->getName()];
     }
 
     /**

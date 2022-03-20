@@ -5,8 +5,10 @@ namespace BedWars\utils;
 
 use pocketmine\entity\Skin;
 use pocketmine\math\Vector3;
+use pocketmine\world\Position;
 use pocketmine\utils\Color;
 use pocketmine\utils\TextFormat;
+use pocketmine\Server;
 
 
 class Utils
@@ -81,6 +83,15 @@ class Utils
             $pitch = floatval($split[4]);
         }
         return new Vector3(intval($split[0]), intval($split[1]), intval($split[2]));
+    }
+
+    public static function stringToPosition(string $delimeter, string $string, &$yaw = 0.0, &$pitch = 0.0) : Vector3{
+        $split = explode($delimeter, $string);
+        if(isset($split[3]) && isset($split[4])){
+            $yaw = floatval($split[3]);
+            $pitch = floatval($split[4]);
+        }
+        return new Position(intval($split[0]), intval($split[1]), intval($split[2]), Server::getInstance()->getWorldManager()->getWorldByName($split[3]));
     }
 
     /**

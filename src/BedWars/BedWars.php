@@ -6,8 +6,9 @@ namespace BedWars;
 
 use pocketmine\block\utils\SignText;
 use pocketmine\item\Item;
+use pocketmine\item\ItemIds;
 use pocketmine\level\Level;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\scheduler\Task;
 use pocketmine\tile\Sign;
 use pocketmine\utils\TextFormat;
@@ -43,6 +44,8 @@ class BedWars extends PluginBase
     /** @var int $staticRestartTime */
     public $staticRestartTime;
 
+    private static $ins;
+
     const TEAMS = [
         'blue' => "§1",
         'red' => "§c",
@@ -54,10 +57,10 @@ class BedWars extends PluginBase
     ];
 
     const GENERATOR_PRIORITIES = [
-        'gold' => ['item' => Item::GOLD_INGOT, 'spawnText' => false, 'spawnBlock' => false, 'refreshRate' => 10],
-        'iron' => ['item' => Item::IRON_INGOT, 'spawnText' => false, 'spawnBlock' => false, 'refreshRate' => 3],
-        'diamond' => ['item' => Item::DIAMOND, 'spawnText' => true, 'spawnBlock' => true, 'refreshRate' => 30],
-        'emerald' => ['item' => Item::EMERALD, 'spawnText' => true, 'spawnBlock' => true, 'refreshRate' => 60]
+        'gold' => ['item' => ItemIds::GOLD_INGOT, 'spawnText' => false, 'spawnBlock' => false, 'refreshRate' => 10],
+        'iron' => ['item' => ItemIds::IRON_INGOT, 'spawnText' => false, 'spawnBlock' => false, 'refreshRate' => 3],
+        'diamond' => ['item' => ItemIds::DIAMOND, 'spawnText' => true, 'spawnBlock' => true, 'refreshRate' => 30],
+        'emerald' => ['item' => ItemIds::EMERALD, 'spawnText' => true, 'spawnBlock' => true, 'refreshRate' => 60]
     ];
 
     public function onEnable() : void
@@ -86,17 +89,24 @@ class BedWars extends PluginBase
             $jsonData = json_decode($fileContents, true);
 
             if(!$this->validateGame($jsonData)){
+                $this->getLogger()->info("Finish setup");
                 continue;
             }
 
             if(count($jsonData['signs']) > 0){
-                $this->signs[$jsonData['name']] = $jsonData['signs'];
+                $this->signs[$jsonData['id']] = $jsonData['signs'];
             }
-
-            $this->games[$jsonData['name']] = $game = new Game($this, $jsonData);
+            $this->getLogger()->info("Game loaded " . $jsonData['id']);
+            $this->games[$jsonData['id']] = $game = new Game($this, $jsonData);
         }
-
+       
         $this->getServer()->getCommandMap()->register("bedwars", new DefaultCommand($this));
+        self::$ins = $this;
+
+    }
+
+    public static function getInstance() : BedWars{
+        return self::$ins;
     }
 
     /**
@@ -118,15 +128,16 @@ class BedWars extends PluginBase
      * @param int $playersPerTeam
      * @param int $startTime
      */
-    public function createGame(string $id, int $minPlayers, int $playersPerTeam, int $startTime) : void{
+    public function createGame(string $id, $minPlayers, $playersPerTeam, $startTime, $mapName) : void{
         $dataStructure = [
             'id' => $id,
-            'minPlayers' => $minPlayers,
-            'playersPerTeam' => $playersPerTeam,
-            'startTime' => $startTime,
+            'minPlayers' => intval($minPlayers),
+            'playersPerTeam' => intval($playersPerTeam),
+            'startTime' => intval($startTime),
             'signs' => [],
             'teamInfo' => [],
-            'generatorInfo' => []
+            'generatorInfo' => [],
+            'mapName' => $mapName
         ];
         file_put_contents($this->gamePath($id), json_encode($dataStructure));
     }
@@ -147,9 +158,9 @@ class BedWars extends PluginBase
      */
     public function setLobby(string $id, int $x, int $y, int $z, string $levelName) : void{
         $file = file_get_contents($path = $this->gamePath($id));
-        $json = json_decode($file);
-
-        $json['lobby'] = implode(":", [$x,$y,$z,$levelName]);
+        $json = json_decode($file, true);
+        var_dump([$x,$y,$z,$levelName]);
+        $json['lobby'] = implode(":", array($x,$y,$z,$levelName));
         file_put_contents($path, json_encode($json));
     }
 
@@ -167,9 +178,9 @@ class BedWars extends PluginBase
      */
     public function setTeamPosition(string $id, string $team, string $keyPos, int $x, int $y, int $z) : void{
         $file = file_get_contents($path = $this->gamePath($id));
-        $json = json_decode($file);
+        $json = json_decode($file, true);
 
-        $json['teamInfo'][$team][$keyPos . "Pos"] = implode(":", [$x, $y,$z]);
+        $json['teamInfo'][$team][$keyPos . "Pos"] = implode(":", array($x, $y,$z));
         file_put_contents($path, json_encode($json));
     }
 
@@ -179,7 +190,7 @@ class BedWars extends PluginBase
      */
     public function getTeams(string $id) : array{
         $file = file_get_contents($this->gamePath($id));
-        $json = json_decode($file);
+        $json = json_decode($file, true);
 
         $teams = array();
         foreach($json['teamInfo'] as $name => $data){
@@ -194,8 +205,8 @@ class BedWars extends PluginBase
      */
     public function addTeam(string $id, string $team){
         $file = file_get_contents($path = $this->gamePath($id));
-        $json = json_decode($file);
-        $json['teamInfo'][$team] = ['spawnPos' => '', 'bedPos' => '', 'shopPos'];
+        $json = json_decode($file, true);
+        $json['teamInfo'][$team] = ['spawnPos' => '', 'bedPos' => '', 'shopPos' => ''];
         file_put_contents($path, json_encode($json));
     }
 
@@ -209,7 +220,7 @@ class BedWars extends PluginBase
         if($file == null){
             return false;
         }
-        $json = json_decode($file);
+        $json = (array)json_decode($file);
         return isset($json['teamInfo'][strtolower($team)]);
     }
 
@@ -246,15 +257,15 @@ class BedWars extends PluginBase
      */
     public function validateGame(array $arenaData) : bool{
         $requiredParams = [
-            'name',
+            'id',
             'minPlayers',
             'playersPerTeam',
             'lobby',
-            'world',
+       //     'world',
             'teamInfo',
             'generatorInfo',
             'lobby',
-            'void_y',
+          //  'void_y',
             'mapName'
         ];
 
@@ -276,8 +287,8 @@ class BedWars extends PluginBase
     public function getPlayerGame(Player $player, bool $isSpectator = false) : ?Game{
         $isSpectator = false;
         foreach($this->games as $game){
-            if(isset($game->players[$player->getRawUniqueId()]))return $game;
-            if(isset($game->spectators[$player->getRawUniqueId()]))return $game;
+            if(isset($game->players[$player->getName()]))return $game;
+            if(isset($game->spectators[$player->getName()]))return $game;
         }
         return null;
     }
@@ -291,7 +302,7 @@ class BedWars extends PluginBase
         if($game == null)return null;
 
         foreach($game->teams as $team){
-            if(in_array($player->getRawUniqueId(), array_keys($team->getPlayers()))){
+            if(in_array($player->getName(), array_keys($team->getPlayers()))){
                 return $team;
             }
         }

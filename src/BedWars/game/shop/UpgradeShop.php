@@ -9,9 +9,11 @@ use pocketmine\item\Armor;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\Item;
+use pocketmine\item\ItemIds;
+use pocketmine\item\ItemFactory;
 use pocketmine\item\Sword;
 use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 
 class UpgradeShop
@@ -84,14 +86,14 @@ class UpgradeShop
             $cost = $cost * $upgradeValue;
         }
 
-        if (!$player->getInventory()->contains(Item::get(Item::DIAMOND, 0, $cost))) {
+        if (!$player->getInventory()->contains(ItemFactory::get(ItemIds::DIAMOND, 0, $cost))) {
             return;
         }
 
 
         $playerTeam->upgrade($upgradeData['identifier']);
 
-        $player->getInventory()->removeItem(Item::get(Item::DIAMOND, 0, $cost));
+        $player->getInventory()->removeItem(ItemFactory::get(ItemIds::DIAMOND, 0, $cost));
 
         $player->sendMessage(TextFormat::GREEN . "Upgraded!");
 
@@ -154,7 +156,7 @@ class UpgradeShop
 
         if($playerTeam->getUpgrade($upgradeData['identifier']) == self::MAX_LEVELS[$upgradeData['identifier']]){
             $formData['content'].="\n" . TextFormat::WHITE . "Level: " . TextFormat::YELLOW . "MAX";
-        }elseif($playerTeam->getUpgrade($upgradeData['identifier']) < self::MAX_LEVELS[$upgradeData['identifier']] && $player->getInventory()->contains(Item::get(Item::DIAMOND, 0, $cost))){
+        }elseif($playerTeam->getUpgrade($upgradeData['identifier']) < self::MAX_LEVELS[$upgradeData['identifier']] && $player->getInventory()->contains(ItemFactory::get(ItemIds::DIAMOND, 0, $cost))){
             $formData['content'].="\n" . TextFormat::RESET . TextFormat::GREEN . "Tap to buy\n" . TextFormat::WHITE . "Level: " . TextFormat::YELLOW . $playerTeam->getUpgrade($upgradeData['identifier']);
         }elseif($playerTeam->getUpgrade($upgradeData['identifier']) < self::MAX_LEVELS[$upgradeData['identifier']]){
             $formData['content'].="\n" . TextFormat::RESET . TextFormat::RED . "You need $cost diamonds\n" . TextFormat::WHITE . "Level: " . TextFormat::YELLOW . $playerTeam->getUpgrade($upgradeData['identifier']);

@@ -14,7 +14,7 @@ use pocketmine\event\block\BlockPlaceEvent;
 use pocketmine\event\block\SignChangeEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\event\entity\EntityLevelChangeEvent;
+use pocketmine\event\entity\EntityTeleportEvent;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\event\player\PlayerMoveEvent;
@@ -22,9 +22,10 @@ use pocketmine\event\player\PlayerQuitEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\entity\EntityExplodeEvent;
 use pocketmine\item\Item;
+use pocketmine\item\ItemIds;
 use pocketmine\entity\object\PrimedTNT;
 use pocketmine\network\mcpe\protocol\ModalFormResponsePacket;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 use pocketmine\math\Vector3;
 use pocketmine\event\player\PlayerCommandPreprocessEvent;
@@ -50,18 +51,19 @@ class GameListener implements Listener
      */
     public function onSignChange(SignChangeEvent $event) : void{
         $player = $event->getPlayer();
-        $sign = $event->getBlock();
-
-        if($event->getLine(0) == "[bedwars]" && $event->getLine(1) !== ""){
-            if(!in_array($event->getLine(1), array_keys($this->plugin->games))){
-                $player->sendMessage(BedWars::PREFIX . TextFormat::YELLOW . "Arena doesn't exist!");
+        $sign = $event->getSign();
+        $text = $event->getNewText();
+        if($text->getLine(0) == "[bedwars]" && $text->getLine(1) !== ""){
+            if(!in_array($text->getLine(1), array_keys($this->plugin->games))){
+                $player->sendMessage($text->getLine(1));
+              //  $player->sendMessage(BedWars::PREFIX . TextFormat::YELLOW . "Arena doesn't exist!");
                 return;
             }
 
-            $dataFormat = $sign->getX() . ":" . $sign->getY() . ":" . $sign->getZ() . ":" . $player->level->getFolderName();
-            $this->plugin->signs[$event->getLine(1)][] = $dataFormat;
+            $dataFormat = $sign->getPosition()->getX() . ":" . $sign->getPosition()->getY() . ":" . $sign->getPosition()->getZ() . ":" . $player->getWorld()->getFolderName();
+            $this->plugin->signs[$text->getLine(1)][] = $dataFormat;
 
-            $location = $this->plugin->getDataFolder() . "arenas/" . $event->getLine(1) . ".json";
+            $location = $this->plugin->getDataFolder() . "arenas/" . $text->getLine(1) . ".json";
             if(!is_file($location)){
                 //wtf ??
                 return;
@@ -70,7 +72,7 @@ class GameListener implements Listener
             $fileContent = file_get_contents($location);
             $jsonData = json_decode($fileContent, true);
             $positionData = [
-                "signs" => $this->plugin->signs[$event->getLine(1)]
+                "signs" => $this->plugin->signs[$text->getLine(1)]
             ];
 
             file_put_contents($location, json_encode(array_merge($jsonData, $positionData)));
@@ -111,7 +113,7 @@ class GameListener implements Listener
         foreach($this->plugin->signs as $arena => $positions){
             foreach($positions as $position) {
                 $pos = explode(":", $position);
-                if ($block->getX() == $pos[0] && $block->getY() == $pos[1] && $block->getZ() == $pos[2] && $player->level->getFolderName() == $pos[3]) {
+                if ($block->getPosition()->getX() == $pos[0] && $block->getPosition()->getY() == $pos[1] && $block->getPosition()->getZ() == $pos[2] && $player->getWorld()->getFolderName() == $pos[3]) {
                     $game = $this->plugin->games[$arena];
                     $game->join($player);
                     return;
@@ -121,16 +123,16 @@ class GameListener implements Listener
 
         $item = $event->getItem();
 
-        if($item->getId() == Item::WOOL){
-            $teamColor = Utils::woolIntoColor($item->getDamage());
+        if($item->getId() == ItemIds::WOOL){
+            $teamColor = Utils::woolIntoColor($item->getMeta());
 
             $playerGame = $this->plugin->getPlayerGame($player);
             if($playerGame == null || $playerGame->getState() !== Game::STATE_LOBBY)return;
 
-            if(!$player->hasPermission('lobby.ranked')){
+          /*  if(!$player->hasPermission('lobby.ranked')){
                 $player->sendMessage(BedWars::PREFIX . TextFormat::YELLOW . "You don't have permission to use this");
                 return;
-            }
+            }*/
 
             $playerTeam = $this->plugin->getPlayerTeam($player);
             if($playerTeam !== null){
@@ -149,7 +151,7 @@ class GameListener implements Listener
                     $player->sendMessage(BedWars::PREFIX . TextFormat::GRAY . "You've joined team " . $teamColor . $team->getName());
                 }
             }
-        }elseif($item->getId() == Item::COMPASS){
+        }elseif($item->getId() == ItemIds::COMPASS){
             $playerGame = $this->plugin->getPlayerGame($player);
             if($playerGame == null)return;
 
@@ -157,7 +159,7 @@ class GameListener implements Listener
                  $playerGame->trackCompass($player);
             }elseif($playerGame->getState() == Game::STATE_LOBBY){
                 $playerGame->quit($player);
-                $player->teleport($this->plugin->getServer()->getDefaultLevel()->getSafeSpawn());
+                $player->teleport($this->plugin->getServer()->getWorldManager()->getDefaultWorld()->getSafeSpawn());
                 $player->getInventory()->clearAll();
             }
         }
@@ -169,7 +171,7 @@ class GameListener implements Listener
     public function onQuit(PlayerQuitEvent $event) : void{
         $player = $event->getPlayer();
         foreach($this->plugin->games as $game){
-            if(in_array($player->getRawUniqueId(), array_keys(array_merge($game->players, $game->spectators)))){
+            if(in_array($player->getName(), array_keys(array_merge($game->players, $game->spectators)))){
                 $game->quit($player);
             }
         }
@@ -178,14 +180,14 @@ class GameListener implements Listener
     /**
      * @param EntityLevelChangeEvent $event
      */
-    public function onEntityLevelChange(EntityLevelChangeEvent $event) : void{
+    public function onEntityLevelChange(EntityTeleportEvent $event) : void{
         $player = $event->getEntity();
         if(!$player instanceof Player){
             return;
         }
 
         $playerGame = $this->plugin->getPlayerGame($player);
-        if($playerGame !== null && $event->getTarget()->getFolderName() !== $playerGame->worldName)$playerGame->quit($player);
+        if($playerGame !== null && $event->getTo()->getWorld()->getName() !== $playerGame->worldName)$playerGame->quit($player);
     }
 
     /**
@@ -195,7 +197,7 @@ class GameListener implements Listener
     {
         $player = $event->getPlayer();
         foreach ($this->plugin->games as $game) {
-            if (isset($game->players[$player->getRawUniqueId()])) {
+            if (isset($game->players[$player->getName()])) {
                 if ($game->getState() == Game::STATE_RUNNING) {
                     if($player->getY() < $game->getVoidLimit() && !$player->isSpectator()){
                         $game->killPlayer($player);
@@ -215,12 +217,12 @@ class GameListener implements Listener
         $player = $event->getPlayer();
         $block = $event->getBlock();
 
-        if(isset($this->plugin->bedSetup[$player->getRawUniqueId()])){
+        if(isset($this->plugin->bedSetup[$player->getName()])){
             if(!$event->getBlock() instanceof Bed){
                 $player->sendMessage(BedWars::PREFIX . TextFormat::YELLOW . "The block is not bed!");
                 return;
             }
-            $setup = $this->plugin->bedSetup[$player->getRawUniqueId()];
+            $setup = $this->plugin->bedSetup[$player->getName()];
 
             $step =  (int)$setup['step'];
 
@@ -234,11 +236,11 @@ class GameListener implements Listener
             $player->sendMessage(BedWars::PREFIX . TextFormat::GREEN . "Bed $step has been set!");
 
             if($step == 2){
-                unset($this->plugin->bedSetup[$player->getRawUniqueId()]);
+                unset($this->plugin->bedSetup[$player->getName()]);
                 return;
             }
 
-            $this->plugin->bedSetup[$player->getRawUniqueId()]['step']+=1;
+            $this->plugin->bedSetup[$player->getName()]['step']+=1;
 
             return;
         }
@@ -321,7 +323,7 @@ class GameListener implements Listener
     public function onDamage(EntityDamageEvent $event) : void{
         $entity = $event->getEntity();
         foreach ($this->plugin->games as $game) {
-            if ($entity instanceof Player && isset($game->players[$entity->getRawUniqueId()])) {
+            if ($entity instanceof Player && isset($game->players[$entity->getName()])) {
 
                 if($game->getState() == Game::STATE_LOBBY){
                      $event->setCancelled();
@@ -333,7 +335,7 @@ class GameListener implements Listener
 
                     if(!$damager instanceof Player)return;
 
-                    if(isset($game->players[$damager->getRawUniqueId()])){
+                    if(isset($game->players[$damager->getName()])){
                         $damagerTeam = $this->plugin->getPlayerTeam($damager);
                         $playerTeam = $this->plugin->getPlayerTeam($entity);
 
@@ -407,7 +409,7 @@ class GameListener implements Listener
      */
     public function handlePacket(DataPacketReceiveEvent $event) : void{
         $packet = $event->getPacket();
-        $player = $event->getPlayer();
+        $player = $event->getOrigin()->getPlayer();
 
 
 
@@ -420,7 +422,6 @@ class GameListener implements Listener
               }
                 if($packet->formId == 50) {
                     ItemShop::sendPage($player, intval($data));
-
                 }elseif($packet->formId < 100){
                     ItemShop::handleTransaction(($packet->formId), json_decode($packet->formData), $player, $this->plugin);
                 }elseif($packet->formId == 100){

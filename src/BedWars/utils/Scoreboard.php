@@ -6,7 +6,7 @@ use pocketmine\network\mcpe\protocol\RemoveObjectivePacket;
 use pocketmine\network\mcpe\protocol\SetDisplayObjectivePacket;
 use pocketmine\network\mcpe\protocol\SetScorePacket;
 use pocketmine\network\mcpe\protocol\types\ScorePacketEntry;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 class Scoreboard
 {
@@ -29,7 +29,7 @@ class Scoreboard
         $pk->displayName = $displayName;
         $pk->criteriaName = "dummy";
         $pk->sortOrder = 0;
-        $player->sendDataPacket($pk);
+        $player->getNetworkSession()->sendDataPacket($pk);
         self::$scoreboards[$player->getName()] = $objectiveName;
     }
 
@@ -40,7 +40,7 @@ class Scoreboard
         $objectiveName = self::getObjectiveName($player);
         $pk = new RemoveObjectivePacket();
         $pk->objectiveName = $objectiveName;
-        $player->sendDataPacket($pk);
+        $player->getNetworkSession()->sendDataPacket($pk);
         unset(self::$scoreboards[$player->getName()]);
     }
 
@@ -67,7 +67,7 @@ class Scoreboard
         $pk = new SetScorePacket();
         $pk->type = $pk::TYPE_CHANGE;
         $pk->entries[] = $entry;
-        $player->sendDataPacket($pk);
+        $player->getNetworkSession()->sendDataPacket($pk);
     }
 
     /**

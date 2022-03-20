@@ -7,6 +7,7 @@ use BedWars\game\entity\FakeItemEntity;
 use BedWars\utils\Utils;
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
+use pocketmine\item\ItemIds;
 use pocketmine\level\particle\FloatingTextParticle;
 use pocketmine\level\Position;
 use pocketmine\plugin\PluginBase;
@@ -52,8 +53,8 @@ class Generator
     ];
 
     const FAKE_BLOCK = [
-        Item::DIAMOND => Item::DIAMOND_BLOCK,
-        Item::EMERALD => Item::EMERALD_BLOCK
+        Item::DIAMOND => ItemsIds::DIAMOND_BLOCK,
+        Item::EMERALD => ItemsIds::EMERALD_BLOCK
     ];
 
 
