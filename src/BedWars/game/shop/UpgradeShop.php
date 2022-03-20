@@ -66,7 +66,7 @@ class UpgradeShop
         $packet = new ModalFormRequestPacket();
         $packet->formId = 100;
         $packet->formData = json_encode($data);
-        $p->dataPacket($packet);
+        $p->getNetworkSession()->sendDataPacket($packet);
 
     }
 
@@ -86,14 +86,14 @@ class UpgradeShop
             $cost = $cost * $upgradeValue;
         }
 
-        if (!$player->getInventory()->contains(ItemFactory::get(ItemIds::DIAMOND, 0, $cost))) {
+        if (!$player->getInventory()->contains(ItemFactory::getInstance()->get(ItemIds::DIAMOND, 0, $cost))) {
             return;
         }
 
 
         $playerTeam->upgrade($upgradeData['identifier']);
 
-        $player->getInventory()->removeItem(ItemFactory::get(ItemIds::DIAMOND, 0, $cost));
+        $player->getInventory()->removeItem(ItemFactory::getInstance()->get(ItemIds::DIAMOND, 0, $cost));
 
         $player->sendMessage(TextFormat::GREEN . "Upgraded!");
 
@@ -156,7 +156,7 @@ class UpgradeShop
 
         if($playerTeam->getUpgrade($upgradeData['identifier']) == self::MAX_LEVELS[$upgradeData['identifier']]){
             $formData['content'].="\n" . TextFormat::WHITE . "Level: " . TextFormat::YELLOW . "MAX";
-        }elseif($playerTeam->getUpgrade($upgradeData['identifier']) < self::MAX_LEVELS[$upgradeData['identifier']] && $player->getInventory()->contains(ItemFactory::get(ItemIds::DIAMOND, 0, $cost))){
+        }elseif($playerTeam->getUpgrade($upgradeData['identifier']) < self::MAX_LEVELS[$upgradeData['identifier']] && $player->getInventory()->contains(ItemFactory::getInstance()->get(ItemIds::DIAMOND, 0, $cost))){
             $formData['content'].="\n" . TextFormat::RESET . TextFormat::GREEN . "Tap to buy\n" . TextFormat::WHITE . "Level: " . TextFormat::YELLOW . $playerTeam->getUpgrade($upgradeData['identifier']);
         }elseif($playerTeam->getUpgrade($upgradeData['identifier']) < self::MAX_LEVELS[$upgradeData['identifier']]){
             $formData['content'].="\n" . TextFormat::RESET . TextFormat::RED . "You need $cost diamonds\n" . TextFormat::WHITE . "Level: " . TextFormat::YELLOW . $playerTeam->getUpgrade($upgradeData['identifier']);
@@ -168,6 +168,6 @@ class UpgradeShop
         $packet->formId = $formId;
         $packet->formData = json_encode($formData);
 
-        $player->dataPacket($packet);
+        $player->getNetworkSession()->sendDataPacket($packet);
     }
 }

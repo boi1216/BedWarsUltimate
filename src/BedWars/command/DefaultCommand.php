@@ -137,7 +137,7 @@ class DefaultCommand extends \pocketmine\command\Command
           }
           $team = $args[2];
 
-          $positionType = array(1 => 'ShopClassic', 2 => 'ShopUpgrades', 3 => 'Spawn')[intval($args[3])];
+          $positionType = array(1 => 'shop', 2 => 'upgrade', 3 => 'Spawn')[intval($args[3])];
           if($positionType == null){
               $sender->sendMessage("Invalid position");
               return;

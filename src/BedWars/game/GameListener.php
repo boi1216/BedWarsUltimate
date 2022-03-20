@@ -187,7 +187,7 @@ class GameListener implements Listener
         }
 
         $playerGame = $this->plugin->getPlayerGame($player);
-        if($playerGame !== null && $event->getTo()->getWorld()->getName() !== $playerGame->worldName)$playerGame->quit($player);
+        if($playerGame !== null && $event->getTo()->getWorld()->getFolderName() !== $playerGame->worldName)$playerGame->quit($player);
     }
 
     /**
@@ -199,7 +199,7 @@ class GameListener implements Listener
         foreach ($this->plugin->games as $game) {
             if (isset($game->players[$player->getName()])) {
                 if ($game->getState() == Game::STATE_RUNNING) {
-                    if($player->getY() < $game->getVoidLimit() && !$player->isSpectator()){
+                    if($player->getPosition()->getY() < $game->getVoidLimit() && !$player->isSpectator()){
                         $game->killPlayer($player);
                         $playerTeam = $this->plugin->getPlayerTeam($player);
                         $game->broadcastMessage($playerTeam->getColor() . $player->getName() . " " . TextFormat::GRAY . "was killed by void");
@@ -248,7 +248,7 @@ class GameListener implements Listener
         $playerGame = $this->plugin->getPlayerGame($player);
         if($playerGame !== null){
             if($playerGame->getState() == Game::STATE_LOBBY){
-                $event->setCancelled();
+                $event->cancel();
             }elseif($event->getBlock() instanceof Bed){
                 $blockPos = $event->getBlock()->asPosition();
 
@@ -273,7 +273,7 @@ class GameListener implements Listener
                         $teamObject = $game->teams[$name];
                         if($name == $this->plugin->getPlayerTeam($player)->getName()){
                             $player->sendMessage(TextFormat::RED . "You can't break your bed!");
-                            $event->setCancelled();
+                            $event->cancel();
                             return;
                         }
                         $event->setDrops([]);
@@ -284,7 +284,7 @@ class GameListener implements Listener
             }else{
                 if($playerGame->getState() == Game::STATE_RUNNING){
                     if(!in_array(Utils::vectorToString(":", $block->asVector3()), $playerGame->placedBlocks)){
-                        $event->setCancelled();
+                        $event->cancel();
                     }
                 }
             }
@@ -299,12 +299,12 @@ class GameListener implements Listener
         $playerGame = $this->plugin->getPlayerGame($player);
         if($playerGame !== null){
             if($playerGame->getState() == Game::STATE_LOBBY){
-                $event->setCancelled();
+                $event->cancel();
             }elseif($playerGame->getState() == Game::STATE_RUNNING){
                 foreach($playerGame->teamInfo as $team => $data){
-                    $spawn = Utils::stringToVector(":", $data['spawnPos']);
+                    $spawn = Utils::stringToVector(":", $data['SpawnPos']);
                     if($spawn->distance($event->getBlock()) < 6){
-                        $event->setCancelled();
+                        $event->cancel();
                     }else{
                         $playerGame->placedBlocks[] = Utils::vectorToString(":", $event->getBlock());
                     }
@@ -326,7 +326,7 @@ class GameListener implements Listener
             if ($entity instanceof Player && isset($game->players[$entity->getName()])) {
 
                 if($game->getState() == Game::STATE_LOBBY){
-                     $event->setCancelled();
+                     $event->cancel();
                      return;
                 }
 
@@ -340,20 +340,20 @@ class GameListener implements Listener
                         $playerTeam = $this->plugin->getPlayerTeam($entity);
 
                         if($damagerTeam->getName() == $playerTeam->getName()){
-                            $event->setCancelled();
+                            $event->cancel();
                         }
                     }
                 }
 
                 if($event->getFinalDamage() >= $entity->getHealth()){
                     $game->killPlayer($entity);
-                    $event->setCancelled();
+                    $event->cancel();
 
 
                 }
 
             }elseif(isset($game->npcs[$entity->getId()])){
-                $event->setCancelled();
+                $event->cancel();
 
                 if($event instanceof EntityDamageByEntityEvent){
                     $damager = $event->getDamager();
@@ -398,7 +398,7 @@ class GameListener implements Listener
 
           if($args[0] == '/fly' || isset($args[1]) && $args[1] == 'join'){
               $player->sendMessage(TextFormat::RED . "You cannot run this in-game!");
-              $event->setCancelled();
+              $event->cancel();
           }
     }
 

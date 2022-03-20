@@ -11,12 +11,14 @@ use pocketmine\item\Armor;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
 use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
 use pocketmine\player\Player;
 
 class ItemShop
 {
+
 
     const PURCHASE_TYPE_IRON = 0;
     const PURCHASE_TYPE_GOLD = 1;
@@ -136,18 +138,18 @@ class ItemShop
         switch($type){
             case self::PURCHASE_TYPE_IRON;
                 $typeString = "iron";
-                $removeItem = Item::get(ItemIds::IRON_INGOT, 0, $price);
-                $check = $p->getInventory()->contains(Item::get(Item::IRON_INGOT, $damage, $price));
+                $removeItem = ItemFactory::getInstance()->get(ItemIds::IRON_INGOT, 0, $price);
+                $check = $p->getInventory()->contains(ItemFactory::getInstance()->get(ItemIds::IRON_INGOT, $damage, $price));
                 break;
             case self::PURCHASE_TYPE_GOLD;
                 $typeString = "gold";
-                $removeItem = Item::get(ItemIds::GOLD_INGOT, 0 , $price);
-                $check = $p->getInventory()->contains(Item::get(Item::GOLD_INGOT, $damage, $price));
+                $removeItem = ItemFactory::getInstance()->get(ItemIds::GOLD_INGOT, 0 , $price);
+                $check = $p->getInventory()->contains(ItemFactory::getInstance()->get(ItemIds::GOLD_INGOT, $damage, $price));
                 break;
             case self::PURCHASE_TYPE_EMERALD;
                 $typeString = "emerald";
-                $removeItem = Item::get(ItemIds::EMERALD, 0, $price);
-                $check = $p->getInventory()->contains(Item::get(Item::EMERALD, $damage, $price));
+                $removeItem = ItemFactory::getInstance()->get(ItemIds::EMERALD, 0, $price);
+                $check = $p->getInventory()->contains(ItemFactory::getInstance()->get(ItemIds::EMERALD, $damage, $price));
                 break;
         }
 
@@ -162,11 +164,11 @@ class ItemShop
 
         if($id == ItemIds::WOOL){
             $damage = Utils::colorIntoWool($playerTeam->getColor());
-        }elseif(Item::get($id) instanceof Armor){
+        }elseif(ItemFactory::getInstance()->get($id) instanceof Armor){
             self::handleArmorTransaction($data, $p);
             return;
         }
-        $item = Item::get($id, $damage, $amount);
+        $item = ItemFactory::getInstance()->get($id, $damage, $amount);
         $wasPurchased = false;
 
         //handle custom sword transactions
@@ -187,7 +189,7 @@ class ItemShop
             return;
         }
 
-        if($id == Item::BOW){
+        if($id == ItemIds::BOW){
             self::handleBowTransaction($data, $item);
         }
 
@@ -205,16 +207,16 @@ class ItemShop
         $leggings = "";
         switch ($data){
             case 0;
-                $boots = Item::get(ItemIds::CHAIN_BOOTS, 0, 1);
-                $leggings = Item::get(ItemIds::CHAIN_LEGGINGS, 0, 1);
+                $boots = ItemFactory::getInstance()->get(ItemIds::CHAIN_BOOTS, 0, 1);
+                $leggings = ItemFactory::getInstance()->get(ItemIds::CHAIN_LEGGINGS, 0, 1);
                 break;
             case 1;
-                $boots = Item::get(ItemIds::IRON_BOOTS);
-                $leggings = Item::get(Item::IRON_LEGGINGS);
+                $boots = ItemFactory::getInstance()->get(ItemIds::IRON_BOOTS);
+                $leggings = ItemFactory::getInstance()->get(ItemIds::IRON_LEGGINGS);
                 break;
             case 2;
-                $boots = Item::get(ItemIds::DIAMOND_BOOTS);
-                $leggings = Item::get(ItemIds::DIAMOND_LEGGINGS);
+                $boots = ItemFactory::getInstance()->get(ItemIds::DIAMOND_BOOTS);
+                $leggings = ItemFactory::getInstance()->get(ItemIds::DIAMOND_LEGGINGS);
         }
         $p->getArmorInventory()->setBoots($boots);
         $p->getArmorInventory()->setLeggings($leggings);
@@ -244,7 +246,7 @@ class ItemShop
      * @return bool
      */
     public static function isSword(int $itemId){
-        $swords = [Item::IRON_SWORD, Item::STONE_SWORD, Item::WOODEN_SWORD, Item::DIAMOND_SWORD];
+        $swords = [ItemIds::IRON_SWORD, ItemIds::STONE_SWORD, ItemIds::WOODEN_SWORD, ItemIds::DIAMOND_SWORD];
         if(in_array($itemId, $swords)){
             return true;
         }
@@ -280,7 +282,7 @@ class ItemShop
         $packet = new ModalFormRequestPacket();
         $packet->formId = 50;
         $packet->formData = json_encode($data);
-        $p->dataPacket($packet);
+        $p->getNetworkSession()->sendDataPacket($packet);
 
     }
 
@@ -308,7 +310,7 @@ class ItemShop
         $packet = new ModalFormRequestPacket();
         $packet->formId = $formId;
         $packet->formData = json_encode($data);
-        $p->dataPacket($packet);
+        $p->getNetworkSession()->sendDataPacket($packet);
 
     }
 

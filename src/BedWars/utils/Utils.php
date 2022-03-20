@@ -6,7 +6,7 @@ namespace BedWars\utils;
 use pocketmine\entity\Skin;
 use pocketmine\math\Vector3;
 use pocketmine\world\Position;
-use pocketmine\utils\Color;
+use pocketmine\color\Color;
 use pocketmine\utils\TextFormat;
 use pocketmine\Server;
 
