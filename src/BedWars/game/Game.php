@@ -705,7 +705,7 @@ class Game
 			if ($generator->getFloatingText() !== null) {
 				$generator->getFloatingText()->setInvisible(true);
 				foreach ($this->plugin->getServer()->getOnlinePlayers() as $player) {
-					foreach ($generator->getFloatingText()->encode($generator->getBlockEntity()->getPosition()->add(0, 1)) as $packet) {
+					foreach ($generator->getFloatingText()->encode($generator->getBlockEntity()->getPosition()->add(0.5, 3, 0.5)) as $packet) {
 						$player->getNetworkSession()->sendDataPacket($packet);
 					}
 				}

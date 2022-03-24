@@ -10,6 +10,10 @@ use JsonException;
 use pocketmine\entity\EntityDataHelper;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
+use pocketmine\nbt\tag\ByteArrayTag;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\ListTag;
+use pocketmine\nbt\tag\StringTag;
 use pocketmine\utils\TextFormat;
 use pocketmine\world\particle\FloatingTextParticle;
 use pocketmine\world\Position;
@@ -21,10 +25,7 @@ class Generator
 		ItemIds::DIAMOND => TextFormat::BOLD . TextFormat::AQUA . "Diamond",
 		ItemIds::EMERALD => TextFormat::BOLD . TextFormat::GREEN . "Emerald"
 	];
-	const FAKE_BLOCK = [
-		ItemIds::DIAMOND => ItemIds::DIAMOND_BLOCK,
-		ItemIds::EMERALD => ItemIds::EMERALD_BLOCK
-	];
+
 	/** @var int $itemID */
 	public $itemID;
 	/** @var int $repeatRate */
@@ -75,7 +76,22 @@ class Generator
 			$path = BedWars::getInstance()->getDataFolder() . "skins/" . $itemID . ".png";
 			$skin = Utils::getSkinFromFile($path);
 			$nbt = Utils::makeNBT($position->add(0.5, 2.3, 0.5), null);
-			$fakeItem = new FakeItemEntity(EntityDataHelper::parseLocation($nbt, $position->getWorld()), $skin, $nbt);
+			/*new StringTag('Data', $skin->getSkinData()),
+new StringTag('Name', 'Standard_CustomSlim'),
+new StringTag('GeometryName', 'geometry.player_head'),
+new ByteArrayTag('GeometryData', FakeItemEntity::GEOMETRY)]));*/
+			/*$skinNbt = CompoundTag::create()
+				->setTag('Skin', new ListTag([]))
+				->setString('Data', $skin->getSkinData())
+				->setString('Name', 'Standard_CustomSlim')
+				->setString('GeometryName', 'geometry.player_head')
+				->setByteArray('GeometryData', FakeItemEntity::GEOMETRY);*/
+			$skinNbt = CompoundTag::create()->setTag('Skin', CompoundTag::create()
+					->setString('Data', $skin->getSkinData())
+					->setString('Name', 'Standard_CustomSlim')
+					->setString('GeometryName', 'geometry.player_head')
+					->setByteArray('GeometryData', FakeItemEntity::GEOMETRY));
+			$fakeItem = new FakeItemEntity(EntityDataHelper::parseLocation($nbt, $position->getWorld()), FakeItemEntity::parseSkinNBT($skinNbt), $nbt);
 			$fakeItem->setScale(1.4);
 			$fakeItem->spawnToAll();
 		}
@@ -97,7 +113,7 @@ class Generator
 				self::TITLE[$this->itemID] . "\n" .
 				TextFormat::YELLOW . "Spawn in " . TextFormat::RED . $this->dynamicSpawnTime;
 			$this->floatingText->setText($text);
-			foreach ($this->floatingText->encode() as $packet) {
+			foreach ($this->floatingText->encode($this->position->asVector3()->add(0.5, 3, 0.5)) as $packet) {
 				foreach ($this->position->getWorld()->getPlayers() as $player) {
 					$player->getNetworkSession()->sendDataPacket($packet);
 				}
