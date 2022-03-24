@@ -51,5 +51,4 @@ class PlayerCache
 			$this->player->getEffects()->add($effect);
 		}
 	}
-
 }

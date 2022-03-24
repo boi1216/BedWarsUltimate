@@ -22,10 +22,10 @@ class Team
 	/** @var array $armorUpdates */
 	private $armorUpdates = [];
 	/** @var array $upgrades */
-	private $upgrades = array(
+	private $upgrades = [
 		'sharpenedSwords' => 0,
 		'armorProtection' => 0
-	);
+	];
 
 
 	/**
