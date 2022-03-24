@@ -76,16 +76,6 @@ class Generator
 			$path = BedWars::getInstance()->getDataFolder() . "skins/" . $itemID . ".png";
 			$skin = Utils::getSkinFromFile($path);
 			$nbt = Utils::makeNBT($position->add(0.5, 2.3, 0.5), null);
-			/*new StringTag('Data', $skin->getSkinData()),
-new StringTag('Name', 'Standard_CustomSlim'),
-new StringTag('GeometryName', 'geometry.player_head'),
-new ByteArrayTag('GeometryData', FakeItemEntity::GEOMETRY)]));*/
-			/*$skinNbt = CompoundTag::create()
-				->setTag('Skin', new ListTag([]))
-				->setString('Data', $skin->getSkinData())
-				->setString('Name', 'Standard_CustomSlim')
-				->setString('GeometryName', 'geometry.player_head')
-				->setByteArray('GeometryData', FakeItemEntity::GEOMETRY);*/
 			$skinNbt = CompoundTag::create()->setTag('Skin', CompoundTag::create()
 					->setString('Data', $skin->getSkinData())
 					->setString('Name', 'Standard_CustomSlim')
