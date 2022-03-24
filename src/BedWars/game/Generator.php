@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace BedWars\game;
 
@@ -101,7 +102,7 @@ class Generator
 		if ($this->spawnText) {
 			$text = TextFormat::YELLOW . "Tier " . TextFormat::RED . Utils::rome($this->tier) . "\n" .
 				self::TITLE[$this->itemID] . "\n" .
-				TextFormat::YELLOW . "Spawn in " . TextFormat::RED . $this->dynamicSpawnTime . TextFormat::RESET . TextFormat::WHITE . "seconds";
+				TextFormat::YELLOW . "Spawn in " . TextFormat::RED . $this->dynamicSpawnTime . TextFormat::YELLOW . TextFormat::WHITE . "seconds";
 			$this->floatingText->setTitle($text);
 			$this->floatingText->setText("");
 			foreach ($this->floatingText->encode($this->position->asVector3()->add(0.5, 3, 0.5)) as $packet) {
