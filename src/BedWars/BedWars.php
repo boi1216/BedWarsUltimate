@@ -5,14 +5,20 @@ declare(strict_types=1);
 namespace BedWars;
 
 use BedWars\command\DefaultCommand;
+use BedWars\game\entity\FakeItemEntity;
 use BedWars\game\Game;
 use BedWars\game\GameListener;
 use BedWars\game\Team;
+use BedWars\utils\Utils;
+use pocketmine\entity\EntityDataHelper;
+use pocketmine\entity\EntityFactory;
 use pocketmine\item\ItemIds;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\TextFormat;
+use pocketmine\world\World;
 
 class BedWars extends PluginBase
 {
@@ -86,6 +92,10 @@ class BedWars extends PluginBase
 			$this->getLogger()->info("Game loaded " . $jsonData['id']);
 			$this->games[$jsonData['id']] = new Game($this, $jsonData);
 		}
+
+		EntityFactory::getInstance()->register(FakeItemEntity::class, function (World $world, CompoundTag $nbt): FakeItemEntity{
+			return new FakeItemEntity(EntityDataHelper::parseLocation($nbt, $world), /* it will change when it will spawn */Utils::getSkinFromFile($this->getDataFolder() . "264.png"), $nbt);
+		});
 
 		$this->getServer()->getCommandMap()->register("bedwars", new DefaultCommand());
 	}
