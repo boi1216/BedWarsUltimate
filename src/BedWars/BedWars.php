@@ -95,7 +95,7 @@ class BedWars extends PluginBase
 
 		EntityFactory::getInstance()->register(FakeItemEntity::class, function (World $world, CompoundTag $nbt): FakeItemEntity{
 			return new FakeItemEntity(EntityDataHelper::parseLocation($nbt, $world), /* it will change when it will spawn */Utils::getSkinFromFile($this->getDataFolder() . "264.png"), $nbt);
-		});
+		}, ["bedwars:fake_item_entity"]);
 
 		$this->getServer()->getCommandMap()->register("bedwars", new DefaultCommand());
 	}
