@@ -123,7 +123,7 @@ class DefaultCommand extends Command
 					return;
 				}
 				$pos = $sender->getPosition();
-				$this->getPlugin()->setTeamPosition($game_id, $team, $positionType, $pos->getX(), $pos->getY(), $pos->getZ());
+				$this->getPlugin()->setTeamPosition($game_id, $team, $positionType, (int)$pos->getX(), (int)$pos->getY(), (int)$pos->getZ());
 				$sender->sendMessage(TextFormat::GREEN . "Position set");
 				break;
 			case 'setbed';
