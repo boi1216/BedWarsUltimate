@@ -124,10 +124,10 @@ class Game
 
 	public function reload(): void
 	{ //// ???
-		$this->plugin->getServer()->getWorldManager()->loadWorld($this->worldName);
-		$world = $this->plugin->getServer()->getWorldManager()->getWorldByName($this->worldName);
+		$this->plugin->getServer()->getWorldManager()->loadWorld($this->mapName);
+		$world = $this->plugin->getServer()->getWorldManager()->getWorldByName($this->mapName);
 		if (!$world instanceof World) {
-			$this->plugin->getLogger()->info(BedWars::PREFIX . TextFormat::YELLOW . "Failed to load arena " . $this->gameName . " because it's world does not exist!");
+			$this->plugin->getServer()->getLogger()->info(BedWars::PREFIX . TextFormat::YELLOW . "Failed to load arena " . $this->gameName . " because it's world does not exist!");
 			return;
 		}
 		$world->setAutoSave(false);
@@ -558,7 +558,7 @@ class Game
 		$player->setHealth($player->getMaxHealth());
 		$player->getInventory()->clearAll();
 
-		$player->teleport($this->plugin->getServer()->getWorldManager()->getWorldByName($this->worldName)->getSafeSpawn());
+		$player->teleport($this->plugin->getServer()->getWorldManager()->getWorldByName($this->mapName)->getSafeSpawn());
 		$player->teleport(Utils::stringToVector(":", $spawnPos));
 
 		//inventory
@@ -616,7 +616,7 @@ class Game
 			$shopPos = Utils::stringToVector(":", $info['shopPos']);
 			$rotation = explode(":", $info['shopPos']);
 
-			$location = Location::fromObject($shopPos, $this->plugin->getServer()->getWorldManager()->getWorldByName($this->worldName));
+			$location = Location::fromObject($shopPos, $this->plugin->getServer()->getWorldManager()->getWorldByName($this->mapName));
 			$entity = new Villager($location);
 			$entity->setNameTag(TextFormat::AQUA . "ITEM SHOP\n" . TextFormat::BOLD . TextFormat::YELLOW . "TAP TO USE");
 			$entity->setNameTagAlwaysVisible(true);
@@ -626,7 +626,7 @@ class Game
 
 			$upgradePos = Utils::stringToVector(":", $info['upgradePos']);
 			$rotation = explode(":", $info['upgradePos']);
-			$location = Location::fromObject($upgradePos, $this->plugin->getServer()->getWorldManager()->getWorldByName($this->worldName));
+			$location = Location::fromObject($upgradePos, $this->plugin->getServer()->getWorldManager()->getWorldByName($this->mapName));
 			$entity = new Villager($location);
 			$entity->setNameTag(TextFormat::AQUA . "TEAM UPGRADES\n" . TextFormat::BOLD . TextFormat::YELLOW . "TAP TO USE");
 			$entity->setNameTagAlwaysVisible(true);
@@ -646,7 +646,7 @@ class Game
 			$delay = $generatorData['refreshRate'];
 
 			$vector = Utils::stringToVector(":", $generator['position']);
-			$position = new Position($vector->x, $vector->y, $vector->z, $this->plugin->getServer()->getWorldManager()->getWorldByName($this->worldName));
+			$position = new Position($vector->x, $vector->y, $vector->z, $this->plugin->getServer()->getWorldManager()->getWorldByName($this->mapName));
 
 			$this->generators[] = new Generator($item, $delay, $position, $spawnText, $spawnBlock);
 
@@ -674,7 +674,7 @@ class Game
 
 			foreach ($team->getPlayers() as $player) {
 				if (!$player->isOnline()) continue;
-				if ($player->isAlive() && $player->getWorld()->getFolderName() == $this->worldName) {
+				if ($player->isAlive() && $player->getWorld()->getFolderName() === $this->mapName) {
 					$players[] = $player;
 				}
 			}
@@ -721,7 +721,7 @@ class Game
 		$this->cachedPlayers = [];
 		$this->state = self::STATE_LOBBY;
 		$this->starting = false;
-		$this->plugin->getServer()->getWorldManager()->unloadWorld($this->plugin->getServer()->getWorldManager()->getWorldByName($this->worldName));
+		$this->plugin->getServer()->getWorldManager()->unloadWorld($this->plugin->getServer()->getWorldManager()->getWorldByName($this->mapName));
 		$this->reload();
 
 		$this->setLobby(new Vector3($this->lobby->x, $this->lobby->y, $this->lobby->z), $this->lobbyName);
@@ -730,11 +730,11 @@ class Game
 
 	/**
 	 * @param Vector3 $lobby
-	 * @param string $worldName
+	 * @param string $mapName
 	 */
-	public function setLobby(Vector3 $lobby, string $worldName): void
+	public function setLobby(Vector3 $lobby, string $mapName): void
 	{
-		$this->lobby = new Position($lobby->x, $lobby->y, $lobby->z, $this->plugin->getServer()->getWorldManager()->getWorldByName($worldName));
+		$this->lobby = new Position($lobby->x, $lobby->y, $lobby->z, $this->plugin->getServer()->getWorldManager()->getWorldByName($mapName));
 	}
 
 }

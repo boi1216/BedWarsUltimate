@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BedWars\command;
 
 use BedWars\BedWars;
+use BedWars\utils\Utils;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\player\Player;
@@ -16,7 +17,8 @@ class DefaultCommand extends Command
 	/**
 	 * DefaultCommand constructor.
 	 */
-	public function __construct(){
+	public function __construct()
+	{
 		parent::__construct("bedwars", "BedWars", null, ["bw"]);
 		parent::setDescription("BedWars command");
 	}
@@ -117,7 +119,7 @@ class DefaultCommand extends Command
 				}
 				$team = $args[2];
 
-				$positionType = array(1 => 'shop', 2 => 'upgrade', 3 => 'Spawn')[intval($args[3])];
+				$positionType = [1 => 'shop', 2 => 'upgrade', 3 => 'Spawn'][intval($args[3])];
 				if ($positionType == null) {
 					$sender->sendMessage("Invalid position");
 					return;
@@ -125,6 +127,36 @@ class DefaultCommand extends Command
 				$pos = $sender->getPosition();
 				$this->getPlugin()->setTeamPosition($game_id, $team, $positionType, (int)$pos->getX(), (int)$pos->getY(), (int)$pos->getZ());
 				$sender->sendMessage(TextFormat::GREEN . "Position set");
+				break;
+			case "setgenerator";
+				if (!$sender instanceof Player) {
+					$sender->sendMessage(TextFormat::RED . "This command can be executed only in game");
+					return;
+				}
+
+				if (count($args) < 3) {
+					$sender->sendMessage(":setgenerator <game_id> <iron, gold, diamond, emerald>");
+					return;
+				}
+
+				$game_id = $args[1];
+				if (!$this->getPlugin()->gameExists($game_id)) {
+					$sender->sendMessage("Invalid game id");
+					return;
+				}
+
+				$generatorType = $args[2];
+				if (!in_array($generatorType, ['iron', 'gold', 'emerald', 'diamond'])) {
+					$sender->sendMessage("Generators: iron, gold, diamond, emerald");
+					return;
+				}
+
+				$gameData = $this->getPlugin()->getGameData($game_id);
+				$gameData['generatorInfo'][$game_id][] = ['type' => $generatorType, 'position' => Utils::vectorToString("", $sender->getPosition()->asVector3()), 'game'];
+
+				file_put_contents($this->getPlugin()->gamePath($game_id), json_encode($gameData));
+
+				$sender->sendMessage(TextFormat::GREEN . "Added generator ");
 				break;
 			case 'setbed';
 				if (count($args) < 2) {

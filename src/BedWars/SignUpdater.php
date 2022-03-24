@@ -49,8 +49,6 @@ class SignUpdater extends Task
 					TextFormat::BOLD . TextFormat::GOLD . $game->getMapName(),
 					$this->getStatus($game->getState()))));
 				$world->setBlockAt(intval($pos[0]), intval($pos[1]), intval($pos[2]), $world->getBlockAt(intval($pos[0]), intval($pos[1]), intval($pos[2])));
-
-
 			}
 		}
 	}
