@@ -98,6 +98,7 @@ class BedWars extends PluginBase
 		}, ["bedwars:fake_item_entity"]);
 
 		$this->getServer()->getCommandMap()->register("bedwars", new DefaultCommand());
+		self::setInstance($this);
 	}
 
 	/**
