@@ -94,7 +94,7 @@ class DefaultCommand extends Command
 				$game_id = $args[1];
 				if ($this->getPlugin()->gameExists($game_id)) {
 					$pos = $sender->getPosition();
-					$this->getPlugin()->setLobby($game_id, $pos->getX(), $pos->getY(), $pos->getZ(), $pos->getWorld()->getFolderName());
+					$this->getPlugin()->setLobby($game_id, (int)$pos->getX(), (int)$pos->getY(), (int)$pos->getZ(), $pos->getWorld()->getFolderName());
 					$sender->sendMessage(TextFormat::GREEN . "Lobby set");
 				}
 				break;
