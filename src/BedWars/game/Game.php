@@ -616,7 +616,7 @@ class Game
 			$shopPos = Utils::stringToVector(":", $info['shopPos']);
 			$rotation = explode(":", $info['shopPos']);
 
-			$location = Location::fromObject($shopPos, $this->plugin->getServer()->getWorldManager()->getWorldByName($this->mapName));
+			$location = Location::fromObject($shopPos->add(0.5, 0, 0.5), $this->plugin->getServer()->getWorldManager()->getWorldByName($this->mapName));
 			$entity = new Villager($location);
 			$entity->setNameTag(TextFormat::AQUA . "ITEM SHOP\n" . TextFormat::BOLD . TextFormat::YELLOW . "TAP TO USE");
 			$entity->setNameTagAlwaysVisible(true);
@@ -626,7 +626,7 @@ class Game
 
 			$upgradePos = Utils::stringToVector(":", $info['upgradePos']);
 			$rotation = explode(":", $info['upgradePos']);
-			$location = Location::fromObject($upgradePos, $this->plugin->getServer()->getWorldManager()->getWorldByName($this->mapName));
+			$location = Location::fromObject($upgradePos->add(0.5, 0, 0.5), $this->plugin->getServer()->getWorldManager()->getWorldByName($this->mapName));
 			$entity = new Villager($location);
 			$entity->setNameTag(TextFormat::AQUA . "TEAM UPGRADES\n" . TextFormat::BOLD . TextFormat::YELLOW . "TAP TO USE");
 			$entity->setNameTagAlwaysVisible(true);
