@@ -130,7 +130,7 @@ class DefaultCommand extends Command
 				break;
 			case "setgenerator";
 				if (!$sender instanceof Player) {
-					$sender->sendMessage(TextFormat::RED . "This command can be executed only in game");
+					$sender->sendMessage("in-game command");
 					return;
 				}
 
@@ -141,7 +141,7 @@ class DefaultCommand extends Command
 
 				$game_id = $args[1];
 				if (!$this->getPlugin()->gameExists($game_id)) {
-					$sender->sendMessage("Invalid game id");
+					$sender->sendMessage($game_id . "- Invalid game id");
 					return;
 				}
 
@@ -156,7 +156,7 @@ class DefaultCommand extends Command
 
 				file_put_contents($this->getPlugin()->gamePath($game_id), json_encode($gameData));
 
-				$sender->sendMessage(TextFormat::GREEN . "Added generator ");
+				$sender->sendMessage(TextFormat::GREEN . "Added generator");
 				break;
 			case 'setbed';
 				if (count($args) < 2) {
