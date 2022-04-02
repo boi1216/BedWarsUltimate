@@ -7,9 +7,11 @@ use BedWars\game\entity\FakeItemEntity;
 use BedWars\utils\Utils;
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
-use pocketmine\level\particle\FloatingTextParticle;
-use pocketmine\level\Position;
+use pocketmine\entity\Location;
+use pocketmine\world\particle\FloatingTextParticle;
+use pocketmine\world\Position;
 use pocketmine\plugin\PluginBase;
 use pocketmine\Server;
 use pocketmine\utils\TextFormat;
@@ -47,14 +49,21 @@ class Generator
     /** @var int $tier */
     private $tier = 1;
 
+    private $multiply = 1;
+    /** @var int $multiplied */
+    private $multiplied = 0;
+
+    /** @var Team $team */
+    public $team;
+
     const TITLE = [
-        Item::DIAMOND => TextFormat::BOLD . TextFormat::AQUA . "Diamond",
-        Item::EMERALD => TextFormat::BOLD . TextFormat::GREEN . "Emerald"
+        ItemIds::DIAMOND => TextFormat::BOLD . TextFormat::AQUA . "Diamond",
+        ItemIds::EMERALD => TextFormat::BOLD . TextFormat::GREEN . "Emerald"
     ];
 
     const FAKE_BLOCK = [
-        Item::DIAMOND => ItemsIds::DIAMOND_BLOCK,
-        Item::EMERALD => ItemsIds::EMERALD_BLOCK
+        ItemIds::DIAMOND => ItemIds::DIAMOND_BLOCK,
+        ItemIds::EMERALD => ItemIds::EMERALD_BLOCK
     ];
 
 
@@ -67,13 +76,14 @@ class Generator
      * @param bool $spawnBlock
      * @param Team|null $team
      */
-    public function __construct(int $itemID, int $repeatRate, Position $position, bool $spawnText, bool $spawnBlock, Team $team = null)
+    public function __construct(int $itemID, int $repeatRate, Position $position, bool $spawnText, bool $spawnBlock, ?Team $team = null)
     {
         $this->itemID = $itemID;
         $this->repeatRate = $repeatRate;
         $this->position = $position;
         $this->spawnText = $spawnText;
         $this->spawnBlock = $spawnBlock;
+        $this->team = $team;
 
         $this->dynamicSpawnTime = $repeatRate;
 
@@ -81,22 +91,21 @@ class Generator
             $text = TextFormat::YELLOW . "Tier " . TextFormat::RED . Utils::rome($this->tier) . "\n".
                 self::TITLE[$itemID] . "\n\n".
                 TextFormat::YELLOW . "Spawns in " . TextFormat::RED . $this->dynamicSpawnTime . "seconds";
-            $this->floatingText = new FloatingTextParticle($position->add(0.5, 3, 0.5), $text, "");
+            $this->floatingText = new FloatingTextParticle($text, "");
         }
 
         if($this->spawnBlock){
            $path = Server::getInstance()->getDataPath() . "plugin_data/BedWars/skins/" . $itemID . ".png";
-           $skin = Utils::getSkinFromFile($path);
-           $nbt = Entity::createBaseNBT($position->add(0.5, 2.3, 0.5), null);
-           $nbt->setTag(new CompoundTag('Skin', [
-                new StringTag('Data', $skin->getSkinData()),
-                new StringTag('Name', 'Standard_CustomSlim'),
-                new StringTag('GeometryName', 'geometry.player_head'),
-                new ByteArrayTag('GeometryData', FakeItemEntity::GEOMETRY)]));
-           $fakeItem = new FakeItemEntity($position->level, $nbt);
+           $skin = Utils::getSkinFromFile($path, 'geometry.player_head', FakeItemEntity::GEOMETRY);
+           $position->add(0.5, 2.3, 0.5);
+           $fakeItem = new FakeItemEntity(new Location($position->getX() + 0.5, $position->getY() + 2.3, $position->getZ() + 0.5, $position->getWorld(), 0, 0), $skin);
            $fakeItem->setScale(1.4);
            $fakeItem->spawnToAll();
         }
+    }
+
+    public function getPosition() {
+        return $this->position;
     }
 
 
@@ -107,26 +116,58 @@ class Generator
         $this->repeatRate = $repeatRate;
     }
 
+    public function getRepeatRate() : int{
+        return $this->repeatRate;
+    }
+
+    public function setMultiply(int $multiply) : void{
+        $this->multiply = $multiply;
+    }
+
     public function tick() : void{
+        if($this->team instanceof Team){
+            if(count($this->team->getPlayers()) <= $this->team->dead){
+                /*var_dump($this->team->dead);
+                var_dump(count($this->team->getPlayers()))  */
+                return;
+            }
+        }
+
         if($this->spawnText){
             $text = TextFormat::YELLOW . "Tier " . TextFormat::RED . Utils::rome($this->tier) . "\n".
                 self::TITLE[$this->itemID] . "\n".
                 TextFormat::YELLOW . "Spawn in " . TextFormat::RED . $this->dynamicSpawnTime;
             $this->floatingText->setText($text);
-            foreach($this->floatingText->encode() as $packet){
-                foreach($this->position->getLevel()->getPlayers() as $player){
-                    $player->dataPacket($packet);
+            foreach($this->floatingText->encode($this->position->asVector3()->add(0.5, 3.3, 0.5)) as $packet){
+                foreach($this->position->getWorld()->getPlayers() as $player){
+                    $player->getNetworkSession()->sendDataPacket($packet);
                 }
             }
         }
-
         $this->dynamicSpawnTime--;
-
+     
         if($this->dynamicSpawnTime == 0){
             $this->dynamicSpawnTime = $this->repeatRate;
+            if($this->itemID == ItemIds::EMERALD && $this->multiply == 200 && $this->team instanceof Team){
+                $this->setRepeatRate($this->getRepeatRate() / 4);
+                return;
+            }
+            if($this->multiply == 50){
+                if($this->multiplied == 2){
+                    $this->multiplied = 0;
+                     $this->position->getWorld()->dropItem($this->position->asVector3(), ItemFactory::getInstance()->get($this->itemID, 0, 2));
+                }else{
+                    $this->position->getWorld()->dropItem($this->position->asVector3(), ItemFactory::getInstance()->get($this->itemID));
+                }
+                $this->multiplied++;
 
-            $this->position->getLevel()->dropItem($this->position->asVector3(), Item::get($this->itemID));
-
+            }else if($this->multiply == 100){
+                $this->position->getWorld()->dropItem($this->position->asVector3(), ItemFactory::getInstance()->get($this->itemID, 0, 2));
+            }else if($this->multiply == 200){
+                $this->position->getWorld()->dropItem($this->position->asVector3(), ItemFactory::getInstance()->get($this->itemID, 0, 4));
+            }else{
+                $this->position->getWorld()->dropItem($this->position->asVector3(), ItemFactory::getInstance()->get($this->itemID));
+            }
         }
     }
 

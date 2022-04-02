@@ -75,7 +75,7 @@ class Scoreboard
      * @return string|null
      */
     public static function getObjectiveName(Player $player): ?string{
-        return isset(self::$scoreboards[$player->getName()]) ? self::$scoreboards[$player->getName()] : null;
+        return isset(self::$scoreboards[$player->getName()]) ? self::$scoreboards[$player->getName()] : "";
     }
 
 

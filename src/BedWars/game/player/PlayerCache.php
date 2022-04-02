@@ -6,6 +6,7 @@ namespace BedWars\game\player;
 use pocketmine\player\Player;
 use pocketmine\level\Position;
 use pocketmine\entity\EffectInstance;
+use pocketmine\entity\Skin;
 
 
 class PlayerCache
@@ -26,9 +27,16 @@ class PlayerCache
     private $position;
     /** @var EffectInstance[] $effects */
     private $effects;
+    /** @var bool $allowFlight */
+    private $allowFlight;
+    /** @var string */
+    private $geometryName;
+    /** @var string */
+    private $geometryData;
 
     public function __construct(Player $player)
     {
+        $this->player = $player;
         $this->nametag = $player->getNameTag();
         $this->inventoryContents = $player->getInventory()->getContents();
         $this->health = $player->getHealth();
@@ -36,6 +44,9 @@ class PlayerCache
         $this->food = $player->getHungerManager()->getMaxFood();
         $this->position = $player->getPosition();
         $this->effects = $player->getEffects()->all();
+        $this->allowFlight = $player->getAllowFlight();
+        $this->geometryName = $player->getSkin()->getGeometryName();
+        $this->geometryData = $player->getSkin()->getGeometryData();
     }
 
     public function load(){
@@ -48,6 +59,9 @@ class PlayerCache
         foreach($this->effects as $effect){
             $this->player->getEffects()->add($effect);
         }
+        $this->player->setAllowFlight($this->allowFlight);
+        $skin = $this->player->getSkin();
+        $this->player->setSkin(new Skin($skin->getSkinId(), $skin->getSkinData(), $skin->getCapeData(), $this->geometryName, $this->geometryData));
     }
 
 }

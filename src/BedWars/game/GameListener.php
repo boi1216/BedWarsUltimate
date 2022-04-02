@@ -9,6 +9,7 @@ use BedWars\game\shop\UpgradeShop;
 use BedWars\utils\Utils;
 use pocketmine\block\Bed;
 use pocketmine\block\Block;
+use pocketmine\block\BlockLegacyIds;
 use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\event\block\BlockPlaceEvent;
 use pocketmine\event\block\SignChangeEvent;
@@ -28,6 +29,8 @@ use pocketmine\network\mcpe\protocol\ModalFormResponsePacket;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 use pocketmine\math\Vector3;
+use pocketmine\entity\effect\VanillaEffects;
+use pocketmine\entity\effect\EffectInstance;
 use pocketmine\event\player\PlayerCommandPreprocessEvent;
 
 
@@ -53,29 +56,12 @@ class GameListener implements Listener
         $player = $event->getPlayer();
         $sign = $event->getSign();
         $text = $event->getNewText();
-        if($text->getLine(0) == "[bedwars]" && $text->getLine(1) !== ""){
+        if($text->getLine(0) == "[bedwars]" or $text->getLine(0) == "[bw]" && $text->getLine(1) !== ""){
             if(!in_array($text->getLine(1), array_keys($this->plugin->games))){
-                $player->sendMessage($text->getLine(1));
-              //  $player->sendMessage(BedWars::PREFIX . TextFormat::YELLOW . "Arena doesn't exist!");
                 return;
             }
-
-            $dataFormat = $sign->getPosition()->getX() . ":" . $sign->getPosition()->getY() . ":" . $sign->getPosition()->getZ() . ":" . $player->getWorld()->getFolderName();
-            $this->plugin->signs[$text->getLine(1)][] = $dataFormat;
-
-            $location = $this->plugin->getDataFolder() . "arenas/" . $text->getLine(1) . ".json";
-            if(!is_file($location)){
-                //wtf ??
-                return;
-            }
-
-            $fileContent = file_get_contents($location);
-            $jsonData = json_decode($fileContent, true);
-            $positionData = [
-                "signs" => $this->plugin->signs[$text->getLine(1)]
-            ];
-
-            file_put_contents($location, json_encode(array_merge($jsonData, $positionData)));
+            $pos = $sign->getPosition();
+            $this->plugin->createSign($text->getLine(1), $pos->getX(), $pos->getY(), $pos->getZ(), $player->getWorld()->getFolderName());
             $player->sendMessage(BedWars::PREFIX . TextFormat::GREEN . "Sign created");
 
         }
@@ -84,10 +70,10 @@ class GameListener implements Listener
     public function onExplode(EntityExplodeEvent $ev) : void{
         $entity = $ev->getEntity();
         if(!$entity instanceof PrimedTNT)return;
-        $level = $entity->level;
+        $world = $entity->getWorld();
         $game = null;
-        foreach ($level->getPlayers() as $player) {
-            if($g = $this->plugin->getPlayerGame($player) !== null){
+        foreach ($world->getPlayers() as $player) {
+            if(($g = $this->plugin->getPlayerGame($player)) !== null){
                 $game = $g;
             }
         }
@@ -96,7 +82,7 @@ class GameListener implements Listener
         $newList = array();
 
         foreach($ev->getBlockList() as $block){
-            if(in_array(Utils::vectorToString(":", $block->asVector3()), $game->placedBlocks)){
+            if(in_array(Utils::vectorToString(":", $block->getPosition()->asVector3()), $game->placedBlocks)){
                 $newList[] = $block;
             }
         }
@@ -128,11 +114,6 @@ class GameListener implements Listener
 
             $playerGame = $this->plugin->getPlayerGame($player);
             if($playerGame == null || $playerGame->getState() !== Game::STATE_LOBBY)return;
-
-          /*  if(!$player->hasPermission('lobby.ranked')){
-                $player->sendMessage(BedWars::PREFIX . TextFormat::YELLOW . "You don't have permission to use this");
-                return;
-            }*/
 
             $playerTeam = $this->plugin->getPlayerTeam($player);
             if($playerTeam !== null){
@@ -199,11 +180,28 @@ class GameListener implements Listener
         foreach ($this->plugin->games as $game) {
             if (isset($game->players[$player->getName()])) {
                 if ($game->getState() == Game::STATE_RUNNING) {
+                    $playerTeam = $this->plugin->getPlayerTeam($player);
                     if($player->getPosition()->getY() < $game->getVoidLimit() && !$player->isSpectator()){
                         $game->killPlayer($player);
-                        $playerTeam = $this->plugin->getPlayerTeam($player);
+                        
                         $game->broadcastMessage($playerTeam->getColor() . $player->getName() . " " . TextFormat::GRAY . "was killed by void");
+                        $spawnPos = $game->teamInfo[$playerTeam->getName()]['SpawnPos'];
+                        $spawn = Utils::stringToVector(":", $spawnPos);
+                        $player->teleport(new Vector3($player->getPosition()->getX(), $spawn->getY() + 10, $player->getPosition()->getZ()));
+                        return;
                     }
+                    $spawnPos = $game->teamInfo[$playerTeam->getName()]['SpawnPos'];
+                    $spawn = Utils::stringToVector(":", $spawnPos);
+
+                    if($playerTeam->getUpgrade('healPool') > 0){
+                        if($spawn->distance($player->getPosition()->asVector3())){
+                            if(!$player->getEffects()->has(VanillaEffects::REGENERATION())){
+                                $player->getEffects()->add(new EffectInstance(VanillaEffects::REGENERATION(), 8 * 20, 1));
+                            }
+                        }
+                    }
+
+
                 }
             }
         }
@@ -216,6 +214,7 @@ class GameListener implements Listener
     {
         $player = $event->getPlayer();
         $block = $event->getBlock();
+        $pos = $block->getPosition();
 
         if(isset($this->plugin->bedSetup[$player->getName()])){
             if(!$event->getBlock() instanceof Bed){
@@ -225,15 +224,13 @@ class GameListener implements Listener
             $setup = $this->plugin->bedSetup[$player->getName()];
 
             $step =  (int)$setup['step'];
-
-            $location = $this->plugin->getDataFolder() . "arenas/" . $setup['game'] . ".json";
-            $fileContent = file_get_contents($location);
-            $jsonData = json_decode($fileContent, true);
-
-            $jsonData['teamInfo'][$setup['team']]['bedPos' . $step] = $block->getX() . ":" . $block->getY() . ":" . $block->getZ();
-            file_put_contents($location, json_encode($jsonData));
+            $this->plugin->setTeamPosition($setup['game'], $setup['team'], 'Bed' . $step, $pos->getX(), $pos->getY(), $pos->getZ());
 
             $player->sendMessage(BedWars::PREFIX . TextFormat::GREEN . "Bed $step has been set!");
+            if($step == 1){
+                $player->sendMessage(BedWars::PREFIX . TextFormat::GREEN . "Now touch the 2nd part");
+            }
+            $event->cancel();
 
             if($step == 2){
                 unset($this->plugin->bedSetup[$player->getName()]);
@@ -245,25 +242,43 @@ class GameListener implements Listener
             return;
         }
 
+        if(isset($this->plugin->saSetup[$player->getName()])){
+            $setup = $this->plugin->saSetup[$player->getName()];
+            $step = $setup['step'];
+            if($step == 1){
+                $player->sendMessage(TextFormat::GREEN . "Position 1 selected");
+                $this->plugin->saSetup[$player->getName()]['step'] += 1;
+                $this->plugin->saSetup[$player->getName()]['pos1'] = implode(":", [$pos->getX(), $pos->getY(), $pos->getZ()]);
+            }else if($step == 2){
+                $player->sendMessage(TextFormat::GREEN . "Positon 2 selected. You are done now");
+                $this->plugin->saSetup[$player->getName()]['pos2'] = implode(":", [$pos->getX(), $pos->getY(), $pos->getZ()]);
+                $setup = $this->plugin->saSetup[$player->getName()];
+                $this->plugin->updateGame($setup['game_id'], 'safe_areas', ['pos1' => $setup['pos1'], 'pos2' => $setup['pos2'], 'ignored' => $setup['ignoredIds']], true);
+            }
+        }
+
         $playerGame = $this->plugin->getPlayerGame($player);
         if($playerGame !== null){
             if($playerGame->getState() == Game::STATE_LOBBY){
                 $event->cancel();
             }elseif($event->getBlock() instanceof Bed){
-                $blockPos = $event->getBlock()->asPosition();
+                $blockPos = $event->getBlock()->getPosition();
 
                 $game = $this->plugin->getPlayerGame($player);
                 $team = $this->plugin->getPlayerTeam($player);
                 if($team == null || $game == null)return;
 
                 foreach($game->teamInfo as $name => $info){
-                    $bedPos = Utils::stringToVector(":", $info['bedPos1']);
+                    if(!isset($info['Bed1Pos']) || !isset($info['Bed2Pos'])){
+                        continue;
+                    }
+                    $bedPos = Utils::stringToVector(":", $info['Bed1Pos']);
                     $teamName = "";
 
                     if($bedPos->x == $blockPos->x && $bedPos->y == $blockPos->y && $bedPos->z == $blockPos->z){
                         $teamName = $name;
                     }else{
-                        $bedPos = Utils::stringToVector(":", $info['bedPos2']);
+                        $bedPos = Utils::stringToVector(":", $info['Bed2Pos']);
                         if($bedPos->x == $blockPos->x && $bedPos->y == $blockPos->y && $bedPos->z == $blockPos->z){
                             $teamName = $name;
                         }
@@ -283,8 +298,9 @@ class GameListener implements Listener
                 }
             }else{
                 if($playerGame->getState() == Game::STATE_RUNNING){
-                    if(!in_array(Utils::vectorToString(":", $block->asVector3()), $playerGame->placedBlocks)){
+                    if(!in_array(Utils::vectorToString(":", $block->getPosition()->asVector3()), $playerGame->placedBlocks)){
                         $event->cancel();
+                        return;
                     }
                 }
             }
@@ -303,15 +319,22 @@ class GameListener implements Listener
             }elseif($playerGame->getState() == Game::STATE_RUNNING){
                 foreach($playerGame->teamInfo as $team => $data){
                     $spawn = Utils::stringToVector(":", $data['SpawnPos']);
-                    if($spawn->distance($event->getBlock()) < 6){
+                    if($spawn->distance($event->getBlock()->getPosition()->asVector3()) < 6){
                         $event->cancel();
                     }else{
-                        $playerGame->placedBlocks[] = Utils::vectorToString(":", $event->getBlock());
+                        $playerGame->placedBlocks[] = Utils::vectorToString(":", $event->getBlock()->getPosition()->asVector3());
                     }
                 }
 
-                if($event->getBlock()->getId() == Block::TNT){
+                if($event->getBlock()->getId() == BlockLegacyIds::TNT){
                     $event->getBlock()->ignite();
+                    $event->cancel();
+                    $player->getInventory()->getItemInHand()->pop();
+                    return;
+                }
+
+                if($playerGame->isSafeArea($event->getBlock()->getPosition()->asVector3(), $event->getBlockAgainst()->getId())){
+                    $event->cancel();
                 }
             }
         }

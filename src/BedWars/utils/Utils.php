@@ -113,21 +113,29 @@ class Utils
     }
 
     /**
-     * @param $N
+     * @param $number
      * @return string
      */
-    public static function rome($N){
-        $c='IVXLCDM';
-        for($a=5,$b=$s='';$N;$b++,$a^=7)//todo add 2 sector
-            for($o=$N%$a,$N=$N/$a^0;$o--;$s=@$c[$o>2?$b+$N-($N&=-2)+$o=1:$b].$s);
-        return $s;
+    public static function rome($number){
+        $map = array('M' => 1000, 'CM' => 900, 'D' => 500, 'CD' => 400, 'C' => 100, 'XC' => 90, 'L' => 50, 'XL' => 40, 'X' => 10, 'IX' => 9, 'V' => 5, 'IV' => 4, 'I' => 1);
+         $returnValue = '';
+         while ($number > 0) {
+         foreach ($map as $roman => $int) {
+            if($number >= $int) {
+                $number -= $int;
+                $returnValue .= $roman;
+                break;
+            }
+        }
+    }
+    return $returnValue;
     }
 
     /**
      * @param string $path
      * @return Skin|null
      */
-    public static function getSkinFromFile(string $path) : ?Skin{
+    public static function getSkinFromFile(string $path, $geometryName = null, $geometryData = null) : ?Skin{
 
         $img = @imagecreatefrompng($path);
         $bytes = '';
@@ -143,7 +151,7 @@ class Utils
             }
         }
         @imagedestroy($img);
-        return new Skin("Standard_CustomSlim", $bytes);
+        return new Skin("Standard_CustomSlim", $bytes, "", $geometryName, $geometryData);
     }
 
 

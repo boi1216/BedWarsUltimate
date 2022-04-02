@@ -30,7 +30,10 @@ class Team
     /** @var array $upgrades */
     private $upgrades = array(
         'sharpenedSwords' => 0,
-        'armorProtection' => 0
+        'armorProtection' => 0,
+        'maniacMiner' => 0,
+        'ironForge' => 0,
+        'healPool' => 0
     );
 
 

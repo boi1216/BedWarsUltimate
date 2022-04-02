@@ -12,12 +12,13 @@ use pocketmine\block\TNT;
 use pocketmine\command\CommandSender;
 use pocketmine\command\PluginCommand;
 use pocketmine\item\Bed;
-use pocketmine\level\Level;
+use pocketmine\block\BlockFactory;
 use pocketmine\player\Player;
 use pocketmine\plugin\Plugin;
 use pocketmine\utils\Config;
 use pocketmine\utils\TextFormat;
 use pocketmine\math\Vector3;
+use pocketmine\world\World;
 
 //form api
 use jojoe77777\FormAPI\CustomForm;
@@ -56,8 +57,8 @@ class DefaultCommand extends \pocketmine\command\Command
    
        switch($args[0]){
           case 'create';
-          if(count($args) < 5){
-            $sender->sendMessage(TextFormat::RED . ":create <game_id> <min_players> <players_per_team> <start_time> <map_name>");
+          if(count($args) < 6){
+            $sender->sendMessage(TextFormat::RED . ":create <game_id> <min_players> <players_per_team> <start_time> <map_name> <world_name>");
             return;
             }
             $game_id = $args[1];
@@ -65,6 +66,12 @@ class DefaultCommand extends \pocketmine\command\Command
             $players_per_team = $args[3];
             $start_time = $args[4];
             $map_name = $args[5];
+            $world_name = $args[6];
+
+            if($this->getPlugin()->gameExists($game_id)){
+                $sender->sendMessage(TextFormat::RED . $game_id . " - game already exists!");
+                return;
+            }
 
             if(!is_int(intval($min_players))){
                 $sender->sendMessage(TextFormat::RED . "min_players - must be a number!");
@@ -84,8 +91,14 @@ class DefaultCommand extends \pocketmine\command\Command
             if(strlen($map_name) < 1){
                 $sender->sendMessage(TextFormat::RED . "map_name - too short!");
             }
+
+            $world = $this->getPlugin()->getServer()->getWorldManager()->getWorldByName($world_name);
+            if(!$world instanceof World){
+                $sender->sendMessage("World " . $world_name . " does not exist");
+                return;
+            }
             $sender->sendMessage(TextFormat::GREEN . "Game created");
-            $this->getPlugin()->createGame($game_id, $min_players, $players_per_team, $start_time, $map_name);
+            $this->getPlugin()->createGame($game_id, $min_players, $players_per_team, $start_time, $map_name, $world_name);
           break;
           case 'delete';
           if(count($args) < 1){
@@ -137,16 +150,26 @@ class DefaultCommand extends \pocketmine\command\Command
           }
           $team = $args[2];
 
+          if(!$this->getPlugin()->teamExists($game_id, $team)){
+            $sender->sendMessage("Invalid team - " . $team);
+            return;
+          }
+
           $positionType = array(1 => 'shop', 2 => 'upgrade', 3 => 'Spawn')[intval($args[3])];
           if($positionType == null){
               $sender->sendMessage("Invalid position");
               return;
           }
           $pos = $sender->getPosition();
-          $this->getPlugin()->setTeamPosition($game_id, $team, $positionType, $pos->getX(), $pos->getY(), $pos->getZ());
+          $this->getPlugin()->setTeamPosition($game_id, $team, $positionType, $pos->getX(), $pos->getY(), $pos->getZ(), $sender->getLocation()->getYaw());
           $sender->sendMessage(TextFormat::GREEN . "Position set");
           break;
           case 'setbed';
+          if(!$sender instanceof Player){
+            $sender->sendMessage("in-game command");
+            return;
+          }
+
           if(count($args) < 2){
             $sender->sendMessage(":setbed <game_id> <team>");
             return;
@@ -158,21 +181,13 @@ class DefaultCommand extends \pocketmine\command\Command
             return;
           }
 
-          $team = $args[2];
-          $game_teams = $this->getPlugin()->getTeams($game_id);
-          if(empty($game_teams)){
-            $sender->sendMessage("First add teams via :addteam subcommand");
-            $sender->sendMessage(":addteam <game_id> <team>");
-            $sender->sendMessage("Available teams: " . implode(" ", array_values(BedWars::TEAMS)));
+          $team = strtolower($args[2]);
+          if(!$this->getPlugin()->teamExists($game_id, $team)){
+            $sender->sendMessage("Invalid team - " . $team);
             return;
           }
-
-          if(!isset($game_teams[strtolower($team)])){
-            $sender->sendMessage("Team not found");
-            $sender->sendMessage("Available for " . $game_id . " - " . implode(" ", $game_teams));
-            return;
-          }
-          $this->getPlugin()->bedSetup[$player->getRawUniqueId()] = ['game' => $game_id, 'team' => $team , 'step' => 1];
+          $this->getPlugin()->bedSetup[$sender->getName()] = ['game' => $game_id, 'team' => $team , 'step' => 1];
+          $sender->sendMessage(TextFormat::GREEN . "Please touch the 1st part of the bed");
           break;
           case 'addteam';
           if(count($args) < 2){
@@ -192,8 +207,149 @@ class DefaultCommand extends \pocketmine\command\Command
           }
           $this->getPlugin()->addTeam($game_id, $team);
           break;
-          case 'join';
+          case 'addgenerator';
+          if(!$sender instanceof Player){
+            $sender->sendMessage("in-game command");
+            return;
+          }
+          if(count($args) < 3){
+            $sender->sendMessage(":addgenerator <game_id> <generator> (team)");
+            return;
+          }
 
+          $game_id = $args[1];
+          if(!$this->getPlugin()->gameExists($game_id)){
+            $sender->sendMessage($game_id . " - Invalid game id");
+            return;
+          }
+
+          $generatorType = array(1 => 'iron', 2 => 'gold', 3 => 'diamond', 4 => 'emerald')[intval($args[2])];
+          $pos = $sender->getPosition();
+          $team = isset($args[3]) ? $args[3] : "";
+          if(!$this->getPlugin()->teamExists($game_id, $team) && $team !== ""){
+            $sender->sendMessage("Invalid team - " . $team);
+            return;
+          }
+          $this->getPlugin()->addGenerator($game_id, $team, $generatorType, $pos->getX(), $pos->getY(), $pos->getZ(), $team);
+          $sender->sendMessage(TextFormat::GREEN . "Added");
+          //NON-SETUP
+          break;
+          case 'addsafearea';
+          if(!$sender instanceof Player){
+            $sender->sendMessage("in-game command");
+            return;
+          }
+
+          if(count($args) < 2){
+            $sender->sendMessage(":addsafearea <game_id> <ignored_block_ids>");
+            return;
+          }
+
+          $game_id = $args[1];
+          if(!$this->getPlugin()->gameExists($game_id)){
+            $sender->sendMessage($game_id . " - Invalid game id");
+            return;
+          }
+
+          $ignored = array();
+          str_replace(" ", "", $args[2]);
+          if(isset($args[2])){
+            if(!strpos($args[2], ',')){
+                if(is_numeric($args[2])){
+                   $ignored[] = intval($args[2]);
+                }else{
+                    if(!strpos($args[2], ':')){
+                        err:
+                        $sender->sendMessage("Invalid format of ignored blocks!");
+                        $sender->sendMessage("Example: addsafearea <game_id> 365:2,13,1:0");
+                        return;
+                    }
+                    $e = explode(":", $args[2]);
+                    $ignored[] = $e[0] . ":" . $e[1];
+                }
+            }else{
+                foreach(explode(",", $args[2]) as $id) {
+                    if(is_numeric($id)){
+                         $ignored[] = intval($id);
+                    }else{
+                        if(!strpos($args[2], ':')){
+                        goto err;
+                        return;
+                        }
+                        $e = explode(":", $id);
+                        if(!isset($e[0]) || !isset($e[1])){
+                            goto err;
+                        }
+                        $ignored[] = $e[0] . ":" . $e[1];
+                    }
+                }
+            }
+          }
+
+          foreach($ignored as $blockID){
+            if(strpos($blockID, ':')){
+                $idMeta = explode(":", $blockID);
+                try{
+                   $block = BlockFactory::getInstance()->get(intval($idMeta[0], intval($idMeta[1])));
+                }catch(\InvalidArgumentException $e){
+                   goto invalid;
+                }
+                
+                if(!$block instanceof Block){
+                    goto invalid;
+                }
+            }else{
+                try{
+                  $block = BlockFactory::getInstance()->get($blockID, 0);
+                }catch(\InvalidArgumentException $e){
+                  goto invalid;
+                }
+                
+                if(!$block instanceof Block){
+                    invalid:
+                    $sender->sendMessage($blockID . " is not a valid block id");
+                    return;
+                }
+            }
+          }
+          $this->getPlugin()->saSetup[$sender->getName()] = ['step' => 1, 'pos1' => null, 'pos2' => null, 'ignoredIds' => implode(",", $ignored), 'game_id' => $game_id];
+          break;
+          case 'load';
+          if(count($args) < 1){
+            $sender->sendMessage(":load <game_id>");
+            return;
+          }
+
+          $gameData = $this->getPlugin()->getGameData($args[1]);
+          if($gameData == null){
+            return;
+          }
+
+          if(!$this->getPlugin()->validateGame($gameData)){
+            $sender->sendMessage("Setup not finished for game - " . $args[1]);
+            return;
+          }
+
+          $this->getPlugin()->loadGame($args[1]);
+          $sender->sendMessage(TextFormat::GREEN . "Done");
+          break;
+          case 'list';
+          if(empty($this->getPlugin()->games)){
+            $sender->sendMessage(TextFormat::RED . "There are no games loaded");
+            return;
+          }
+
+          $status = array(0 => TextFormat::GREEN . 'LOBBY', 1 => TextFormat::RED . 'IN-GAME', 2 => TextFormat::DARK_RED . 'RESTARTING');
+
+          foreach($this->getPlugin()->games as $game){
+              $sender->sendMessage(TextFormat::GREEN . "Game id - " . $game->getId());
+              $sender->sendMessage(TextFormat::YELLOW . "Status: " . $status[$game->getState()]);
+              $sender->sendMessage(TextFormat::YELLOW . "Players: " . count($game->getPlayers()) . " / " . $game->getMaxPlayers());
+              $sender->sendMessage(TextFormat::GREEN . "---");
+          }
+          break;
+          case 'test';
+          $this->getPlugin()->games['solo1']->join($sender);
           break;
        }
 
@@ -212,6 +368,8 @@ class DefaultCommand extends \pocketmine\command\Command
        $sender->sendMessage(":setposition - Set other locations");
        $sender->sendMessage(":setbed - Set team's bed position");
        $sender->sendMessage(":setgenerator - Set generator position");
+       $sender->sendMessage(":addsafearea - Create area restricted for placing blocks (for example team's spawn)");
+       $sender->sendMessage(":load - Load game after finishing setup");
        $sender->sendMessage("Other - ");
        $sender->sendMessage(":list - Info about existing arenas");
        $sender->sendMessage(":join - Join arena via command");

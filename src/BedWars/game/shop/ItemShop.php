@@ -7,6 +7,7 @@ namespace BedWars\game\shop;
 use BedWars\BedWars;
 use BedWars\game\Game;
 use BedWars\utils\Utils;
+use pocketmine\utils\TextFormat;
 use pocketmine\item\Armor;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\EnchantmentInstance;
@@ -28,44 +29,44 @@ class ItemShop
      * @var array $shopWindows
      */
     public static $shopWindows = [
-        1 => ["name" =>"§l§aArmor", "image" => "https://www.spigotmc.org/attachments/ftiroac-png.241966/"],
-        2 => ["name" =>"§l§aWeapons", "image" => "http://icons.iconarchive.com/icons/chrisl21/minecraft/512/Stone-Sword-icon.png"],
-        3 => ["name" =>"§l§aBlocks", "image" => "https://d1u5p3l4wpay3k.cloudfront.net/minecraft_gamepedia/0/07/White_Wool.png"],
-        4 => ["name" => "§l§aBows", "image" => "https://lh3.googleusercontent.com/MS2w4Tlmw4azfmxVcT9o29cq74YgMau26xni5DiqbzpxHFMIEpHtPxdGWWZlV-WD0oXNLUXsiKs2W2yAzMT0=s400"],
-        5 => ["name" => "§l§aPotions" ,"image" => "http://www.blocksandgold.com//media/catalog/product/cache/3/image/200x/6cffa5908a86143a54dc6ad9b8a7c38e/s/p/splash_red.png"],
-        6 => ["name" => "§l§aSpecials", "image" => "https://d1u5p3l4wpay3k.cloudfront.net/minecraft_gamepedia/1/1e/TNT.png"]
+        1 => ["name" =>"Armor", "image" => ""],
+        2 => ["name" =>"Weapons", "image" => ""],
+        3 => ["name" =>"Blocks", "image" => ""],
+        4 => ["name" => "Bows", "image" => ""],
+        5 => ["name" => "Potions" ,"image" => ""],
+        6 => ["name" => "Specials", "image" => ""]
     ];
 
     /**
      * @var array $shopPages
      */
     public static $shopPages = [
-        0 => ["§6Chainmal Armor\n§l§e40 IRON" => ["image" => "https://www.spigotmc.org/attachments/ftiroac-png.241966/"],
-            "§6Iron Armor §c[PERMANENT]\n§l§e12 GOLD" => ["image" => "http://www.minecraftopia.com/images/blocks/iron_boots.png"],
-            "§6Diamond Armor §c[PERMANENT]\n§l§e6 EMERALD" => ["http://static.wixstatic.com/media/34c645_d8e567b9ae8645fa98e0775d45493df3.png"]],
-        1 => ["§6Stone Sword\n§l§e10 IRON" => ["image" => "http://iconbug.com/data/0c/256/b86a957742c00c3804bd0fa293c98cde.png"],
-            "§6Iron Sword\n§l§e7 GOLD" => ["image" => "https://vignette.wikia.nocookie.net/animaljam/images/2/27/Iron-Sword-icon.png/revision/latest/scale-to-width-down/480?cb=20141108192633"],
-            "§6Diamond Sword\n§l§e7 EMERALD" => ["image" => "http://www.freepngimg.com/download/minecraft/16-2-diamond-sword-minecraft-png.png"],
-            "§6Knockback Stick\n§l§e2 EMERALD" => ["image" => "https://vignette.wikia.nocookie.net/thetekkit/images/c/c4/Obsidian_Stick.png/revision/latest?cb=20121011074642"]],
-        2 => ["§6Wool 16x\n§l§e4 IRON" => ["image" => "http://d1u5p3l4wpay3k.cloudfront.net/minecraft_gamepedia/0/07/White_Wool.png"],
-            "§6Sandstone 16x\n§l§e12 IRON" => ["image" => "http://d1u5p3l4wpay3k.cloudfront.net/minecraft_gamepedia/d/d6/Sandstone.png"],
-            "§6Endstone 12x\n§l§e24 IRON" => ["image" => "http://www.minecraftguides.org/blocks/endstone.png"],
-            "§6Ladder 16x\n§l§e4 IRON" => ["image" => "https://hydra-media.cursecdn.com/minecraft.gamepedia.com/archive/6/63/20101021024334!Ladder.png"],
-            "§6Oak Wood 16x\n§l§e4 GOLD" => ["image" => "https://d1u5p3l4wpay3k.cloudfront.net/minecraft_gamepedia/0/0f/Oak_Wood_Planks.png"],
-            "§6Obsidian 4x\n§l§e4 EMERALD" => ["image" => "https://d1u5p3l4wpay3k.cloudfront.net/minecraft_gamepedia/2/23/Obsidian.png"]],
-        3 => ["§6Normal Bow\n§l§e12 GOLD" => ["image" => "https://d1u5p3l4wpay3k.cloudfront.net/minecraft_gamepedia/6/65/Bow.png"],
-            "§6Bow §b(Power 1)\n§l§e24 GOLD" => ["image" => "https://i.imgur.com/MWw3yIJ.png"],
-            "§6Bow §b(Power 1, Punch 1)\n§l§e6 EMERALD" => ["image" => "https://i.imgur.com/MWw3yIJ.png"]],
-        4 => ["§6Speed II Potion (45 sec.)\n§l§e1 EMERALD" => ["image" => "http://www.blocksandgold.com//media/catalog/product/cache/3/image/200x/6cffa5908a86143a54dc6ad9b8a7c38e/p/o/potion_light_blue.png"],
-            "§6Jump V Potion (45 sec.)\n§l§e1 EMERALD" => ["http://www.minecraftopia.com/images/blocks/potion_of_leaping.png"],
-            "§6Invisibility Potion (30 sec.)\n§l§e1 EMERALD" => ["https://vignette.wikia.nocookie.net/minecraft-computer/images/7/78/Potion_blue.png/revision/latest?cb=20130701150754"]],
-        5 => ["§6Golden Apple\n§l§e3 GOLD" => ["image" => "https://d1u5p3l4wpay3k.cloudfront.net/minecraft_gamepedia/0/0e/Golden_Apple.png"],
-            "§6Bedbug\n§l§e50 IRON" => ["image" => "https://d1u5p3l4wpay3k.cloudfront.net/minecraft_gamepedia/0/04/Snowball.png"],
-            "§6Fireball\n§l§e50 IRON" => ["image" => "https://d1u5p3l4wpay3k.cloudfront.net/minecraft_gamepedia/9/98/Fire_Charge.png"],
-            "§6TNT\n§l§e8 GOLD" => ["image" => "https://d1u5p3l4wpay3k.cloudfront.net/minecraft_gamepedia/1/1e/TNT.png"],
-            "§6Enderpearl\n§l§e4 EMERALD" => ["image" => "https://d1u5p3l4wpay3k.cloudfront.net/minecraft_gamepedia/5/5a/Ender_Pearl.png"],
-            "§6Water Bucker\n§l§e1 EMERALD" => ["image" => "https://vignette.wikia.nocookie.net/minecraftpocketedition/images/d/d3/Water_Bucket.png/revision/latest/fixed-aspect-ratio-down/width/320/height/320?cb=20141004050736&fill=transparent"],
-            "§6Egg\n§l§e4 EMERALD" => ["image" => "https://d1u5p3l4wpay3k.cloudfront.net/minecraft_gamepedia/2/26/Egg.png"]
+        0 => ["§6Chainmal Armor\n§l§e40 IRON" => ["image" => ""],
+            "§6Iron Armor §c[PERMANENT]\n§l§e12 GOLD" => ["image" => ""],
+            "§6Diamond Armor §c[PERMANENT]\n§l§e6 EMERALD" => ["image" => ""]],
+        1 => ["§6Stone Sword\n§l§e10 IRON" => ["image" => ""],
+            "§6Iron Sword\n§l§e7 GOLD" => ["image" => ""],
+            "§6Diamond Sword\n§l§e7 EMERALD" => ["image" => ""],
+            "§6Knockback Stick\n§l§e2 EMERALD" => ["image" => ""]],
+        2 => ["§6Wool 16x\n§l§e4 IRON" => ["image" => ""],
+            "§6Sandstone 16x\n§l§e12 IRON" => ["image" => ""],
+            "§6Endstone 12x\n§l§e24 IRON" => ["image" => ""],
+            "§6Ladder 16x\n§l§e4 IRON" => ["image" => ""],
+            "§6Oak Wood 16x\n§l§e4 GOLD" => ["image" => ""],
+            "§6Obsidian 4x\n§l§e4 EMERALD" => ["image" => ""]],
+        3 => ["§6Normal Bow\n§l§e12 GOLD" => ["image" => ""],
+            "§6Bow §b(Power 1)\n§l§e24 GOLD" => ["image" => ""],
+            "§6Bow §b(Power 1, Punch 1)\n§l§e6 EMERALD" => ["image" => ""]],
+        4 => ["§6Speed II Potion (45 sec.)\n§l§e1 EMERALD" => ["image" => ""],
+            "§6Jump V Potion (45 sec.)\n§l§e1 EMERALD" => [""],
+            "§6Invisibility Potion (30 sec.)\n§l§e1 EMERALD" => [""]],
+        5 => ["§6Golden Apple\n§l§e3 GOLD" => ["image" => ""],
+            "§6Bedbug\n§l§e50 IRON" => ["image" => ""],
+            "§6Fireball\n§l§e50 IRON" => ["image" => ""],
+            "§6TNT\n§l§e8 GOLD" => ["image" => ""],
+            "§6Enderpearl\n§l§e4 EMERALD" => ["image" => ""],
+            "§6Water Bucker\n§l§e1 EMERALD" => ["image" => ""],
+            "§6Egg\n§l§e4 EMERALD" => ["image" => ""]
         ],
     ];
 
@@ -273,7 +274,7 @@ class ItemShop
         $data['type'] = "form";
         $data['content'] = "";
         foreach(self::$shopWindows as $windows){
-            $button =  ['text' => $windows['name']];
+            $button =  ['text' => TextFormat::BOLD . TextFormat::GREEN . $windows['name']];
             $button['image']['type'] = "url";
             $button['image']['data'] = $windows['image'];
             $data['buttons'][] = $button;

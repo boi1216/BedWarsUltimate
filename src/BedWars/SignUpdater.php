@@ -42,10 +42,8 @@ class SignUpdater extends Task
                 $game = $this->plugin->games[$arena];
                 $tile = $world->getTileAt(intval($pos[0]), intval($pos[1]), intval($pos[2]));
                 if (!$tile instanceof Sign) {
-                    echo 'NOT SIGN';
                     continue;
                 }
-                echo 'UPDATED';
 
                 $tile->setText(new SignText(array(TextFormat::BOLD . TextFormat::DARK_RED . "BedWars",
                     TextFormat::AQUA . "[" . count($game->players) . "/" . $game->getMaxPlayers() . "]",

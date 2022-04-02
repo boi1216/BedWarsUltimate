@@ -26,11 +26,15 @@ class FakeItemEntity extends Human
      */
     public function onUpdate(int $currentTick): bool
     {
-
-        $this->yaw+=5.5;
+        
+        if($this->getLocation()->yaw >= 360){
+            $this->getLocation()->yaw = 0;
+        }
+        $this->getLocation()->yaw+=5.5; 
+        $this->updateMovement();
+        $this->scheduleUpdate();
         //TODO: Add bouncing
         $this->move($this->motion->x, $this->motion->y, $this->motion->z);
-        $this->updateMovement();
 
         parent::onUpdate($currentTick);
         return true;
