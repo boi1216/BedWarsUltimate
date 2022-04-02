@@ -128,6 +128,7 @@ class UpgradeShop
             foreach ($playerTeam->getPlayers() as $player) {
                     foreach ($player->getInventory()->getContents() as $index => $item) {
                         if ($item instanceof Sword){
+                            $item->setUnbreakable(true);
                             $item->addEnchantment(new EnchantmentInstance(VanillaEnchantments::SHARPNESS()), $playerTeam->getUpgrade('sharpenedSwords'));
                             $player->getInventory()->setItem($index, $item);
                         }

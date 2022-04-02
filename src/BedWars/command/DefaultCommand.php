@@ -354,8 +354,27 @@ class DefaultCommand extends \pocketmine\command\Command
               $sender->sendMessage(TextFormat::GREEN . "---");
           }
           break;
-          case 'test';
-          $this->getPlugin()->games['solo1']->join($sender);
+          case 'join';
+          if(!$sender instanceof Player){
+            $sender->sendMessage("in-game command");
+          }
+          if(count($args) < 1){
+            $sender->sendMessage(":join <game_id>");
+            return;
+          }
+
+          if(!$this->getPlugin()->gameExists($args[1])){
+            $sender->sendMessage($args[1] . " - Invalid game id");
+            return;
+          }
+          $this->getPlugin()->games[$args[1]]->join($sender);
+          break;
+          case 'random';
+        /*  if(!$sender instanceof Player){
+            $sender->sendMessage("in-game command");
+          }
+          $random = array_rand($this->getPlugin()->games, 1);
+          $this->getPlugin()->games[$random]->join($sender);*/
           break;
        }
 

@@ -214,6 +214,10 @@ class Game
         return $this->maxPlayers;
     }
 
+    public function getPlayers() : ?array{
+        return $this->players;
+    }
+
     public function getPlayerCache(string $name) : ?PlayerCache{
         return $this->cachedPlayers[$name];
     }
@@ -635,6 +639,7 @@ class Game
         $player->getArmorInventory()->setBoots($boots);
 
         $sword = ItemFactory::getInstance()->get(ItemIds::WOODEN_SWORD);
+        $sword->setUnbreakable(true);
 
         $swordUpgrade = $team->getUpgrade('sharpenedSwords');
         if($swordUpgrade > 0){
