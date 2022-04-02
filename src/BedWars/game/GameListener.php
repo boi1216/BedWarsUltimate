@@ -95,6 +95,7 @@ class GameListener implements Listener
     public function onInteract(PlayerInteractEvent $event) : void{
         $player = $event->getPlayer();
         $block = $event->getBlock();
+        $playerGame = $this->plugin->getPlayerGame($player);
 
         foreach($this->plugin->signs as $arena => $positions){
             foreach($positions as $position) {
@@ -133,7 +134,6 @@ class GameListener implements Listener
                 }
             }
         }elseif($item->getId() == ItemIds::COMPASS){
-            $playerGame = $this->plugin->getPlayerGame($player);
             if($playerGame == null)return;
 
             if($playerGame->getState() == Game::STATE_RUNNING){
@@ -143,6 +143,10 @@ class GameListener implements Listener
                 $player->teleport($this->plugin->getServer()->getWorldManager()->getDefaultWorld()->getSafeSpawn());
                 $player->getInventory()->clearAll();
             }
+        }
+
+        if($block->getId() == BlockLegacyIds::BED_BLOCK && $playerGame !== null){
+            $event->cancel();
         }
     }
 
@@ -327,9 +331,11 @@ class GameListener implements Listener
                 }
 
                 if($event->getBlock()->getId() == BlockLegacyIds::TNT){
-                    $event->getBlock()->ignite();
+                    $event->getBlock()->ignite(50);
                     $event->cancel();
-                    $player->getInventory()->getItemInHand()->pop();
+                    $ih = $player->getInventory()->getItemInHand();
+                    $ih->setCount($ih->getCount() - 1);
+                    $player->getInventory()->setItemInHand($ih);
                     return;
                 }
 
@@ -353,9 +359,13 @@ class GameListener implements Listener
                      return;
                 }
 
+                if($event->getFinalDamage() >= $entity->getHealth()){
+                    $game->killPlayer($entity);
+                    $event->cancel();
+                }
+
                 if($event instanceof EntityDamageByEntityEvent){
                     $damager = $event->getDamager();
-
                     if(!$damager instanceof Player)return;
 
                     if(isset($game->players[$damager->getName()])){
@@ -367,14 +377,6 @@ class GameListener implements Listener
                         }
                     }
                 }
-
-                if($event->getFinalDamage() >= $entity->getHealth()){
-                    $game->killPlayer($entity);
-                    $event->cancel();
-
-
-                }
-
             }elseif(isset($game->npcs[$entity->getId()])){
                 $event->cancel();
 
