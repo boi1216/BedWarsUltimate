@@ -17,6 +17,8 @@ class PlayerCache
     private $nametag;
     /** @var array $inventoryContents */
     private $inventoryContents = array();
+    /** @var array $armorContents */
+    private $armorContents = array();
     /** @var int $health */
     private $health;
     /** @var int $maxHealth */
@@ -39,6 +41,7 @@ class PlayerCache
         $this->player = $player;
         $this->nametag = $player->getNameTag();
         $this->inventoryContents = $player->getInventory()->getContents();
+        $this->armorContents = $player->getArmorInventory()->getContents();
         $this->health = $player->getHealth();
         $this->maxHealth = $player->getMaxHealth();
         $this->food = $player->getHungerManager()->getMaxFood();
@@ -50,8 +53,10 @@ class PlayerCache
     }
 
     public function load(){
+        $this->player->getArmorInventory()->clearAll();
         $this->player->setNameTag($this->nametag);
         $this->player->getInventory()->setContents($this->inventoryContents);
+        $this->player->getArmorInventory()->setContents($this->armorContents);
         $this->player->setHealth($this->health);
         $this->player->setMaxHealth($this->maxHealth);
         $this->player->getHungerManager()->setFood($this->food);

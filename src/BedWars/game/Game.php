@@ -214,6 +214,10 @@ class Game
         return $this->maxPlayers;
     }
 
+    public function getPlayerCache(string $name) : ?PlayerCache{
+        return $this->cachedPlayers[$name];
+    }
+
     public function reload() : void{
         $this->plugin->getServer()->getWorldManager()->loadWorld($this->worldName);
         $world = $this->plugin->getServer()->getWorldManager()->getWorldByName($this->worldName);
@@ -527,6 +531,8 @@ class Game
             unset($this->players[$player->getName()]);
             $player->setGamemode(GameMode::SPECTATOR());
             $player->sendTitle(TextFormat::BOLD . TextFormat::RED . "DEFEAT", TextFormat::GRAY . "You are now spectating");
+            $player->getInventory()->clearAll();
+            $player->getArmorInventory()->clearAll();
         }else{
             $player->setGamemode(GameMode::SPECTATOR());
             $this->deadQueue[$player->getName()] = 5;
@@ -739,7 +745,7 @@ class Game
                          $status = "";
                          if ($team->hasBed()) {
                              $status = TextFormat::GREEN . "[+]";
-                         } elseif(count($team->getPlayers()) >= $team->dead) {
+                         } elseif(count($team->getPlayers()) > $team->dead) {
                              $status = count($team->getPlayers()) === 0 ? TextFormat::DARK_RED . "[-]" : TextFormat::GRAY . "[" . count($team->getPlayers()) . "]";
                          }elseif(count($team->getPlayers()) <= $team->dead){
                              $status = TextFormat::DARK_RED . "[-]";
@@ -781,7 +787,7 @@ class Game
              break;
              case Game::STATE_REBOOT;
              $team = $this->winnerTeam;
-             foreach($team->getPlayers() as $player){
+             foreach(array_merge($this->players, $this->spectators) as $player){
                      if($this->rebootTime == 15){
                          $player->sendTitle(TextFormat::BOLD . TextFormat::GOLD . "VICTORY!", "", 5, 500);
                      }

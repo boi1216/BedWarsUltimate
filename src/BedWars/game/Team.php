@@ -128,7 +128,10 @@ class Team
     public function reset() : void{
         $this->upgrades = array(
             'sharpenedSwords' => 0,
-            'armorProtection' => 0
+            'armorProtection' => 0,
+            'maniacMiner' => 0,
+            'ironForge' => 0,
+            'healPool' => 0
         );
 
         $this->hasBed = true;

@@ -157,6 +157,7 @@ class GameListener implements Listener
         $player = $event->getPlayer();
         foreach($this->plugin->games as $game){
             if(in_array($player->getName(), array_keys(array_merge($game->players, $game->spectators)))){
+                $game->getPlayerCache($player->getName())->load();
                 $game->quit($player);
             }
         }
