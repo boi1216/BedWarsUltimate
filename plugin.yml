@@ -1,5 +1,5 @@
 name: BedWars
-version: 1.0
-api: 3.5.9
+version: "2.0pre-release"
+api: 4.2.3
 main: BedWars\BedWars
 author: boi
