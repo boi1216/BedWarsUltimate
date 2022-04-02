@@ -108,7 +108,7 @@ class DefaultCommand extends \pocketmine\command\Command
           $game_id = $args[1];
           if($this->getPlugin()->gameExists($game_id)){
             $this->getPlugin()->deleteGame($game_id);
-            $sender->sendMessage(TextFormat::GREEN("Game deleted"));
+            $sender->sendMessage(TextFormat::GREEN . "Game deleted");
             return;
           }
 
@@ -155,7 +155,7 @@ class DefaultCommand extends \pocketmine\command\Command
             return;
           }
 
-          $positionType = array(1 => 'shop', 2 => 'upgrade', 3 => 'Spawn')[intval($args[3])];
+          $positionType = array(1 => 'Shop', 2 => 'Upgrade', 3 => 'Spawn')[intval($args[3])];
           if($positionType == null){
               $sender->sendMessage("Invalid position");
               return;
@@ -223,7 +223,13 @@ class DefaultCommand extends \pocketmine\command\Command
             return;
           }
 
-          $generatorType = array(1 => 'iron', 2 => 'gold', 3 => 'diamond', 4 => 'emerald')[intval($args[2])];
+          $generatorTypes = array(1 => 'iron', 2 => 'gold', 3 => 'diamond', 4 => 'emerald');
+          if(!isset($generatorTypes[intval($args[2])])){
+            $sender->sendMessage($args[2] . " - Invalid generator type");
+            $sender->sendMessage("Available: 1 - iron, 2 - gold, 3 - diamond, 4 - emerald");
+            return;
+          }
+          $generatorType = $generatorTypes[intval($args[2])];
           $pos = $sender->getPosition();
           $team = isset($args[3]) ? $args[3] : "";
           if(!$this->getPlugin()->teamExists($game_id, $team) && $team !== ""){
