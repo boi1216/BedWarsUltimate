@@ -248,12 +248,15 @@ class Game
 
             foreach($team->getPlayers() as $player){
                 if(!$player->isOnline())continue;
-                if($player->isAlive() && $player->getWorld()->getFolderName() == $this->worldName){
+                if($player->isAlive() && $player->getWorld()->getFolderName() == $this->worldName && !isset($this->spectators[$player->getName()])){
                     $players[] = $player;
                 }
             }
 
             if(count($players) >= 1){
+                if(count($team->dead) == count($team->getPlayers())){
+                    continue;
+                }
                 $teams[] = $team;
             }
         }
@@ -746,7 +749,7 @@ class Game
                          if ($team->hasBed()) {
                              $status = TextFormat::GREEN . "[+]";
                          } elseif(count($team->getPlayers()) > $team->dead) {
-                             $status = count($team->getPlayers()) === 0 ? TextFormat::DARK_RED . "[-]" : TextFormat::GRAY . "[" . count($team->getPlayers()) . "]";
+                             $status = count($team->getPlayers()) === 0 ? TextFormat::DARK_RED . "[-]" : TextFormat::GRAY . "[" . count($team->getPlayers() - $team->dead) . "]";
                          }elseif(count($team->getPlayers()) <= $team->dead){
                              $status = TextFormat::DARK_RED . "[-]";
                          }
