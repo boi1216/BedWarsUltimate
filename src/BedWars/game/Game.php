@@ -258,7 +258,7 @@ class Game
             }
 
             if(count($players) >= 1){
-                if(count($team->dead) == count($team->getPlayers())){
+                if($team->dead == count($team->getPlayers())){
                     continue;
                 }
                 $teams[] = $team;
