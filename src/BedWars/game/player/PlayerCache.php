@@ -19,7 +19,7 @@ class PlayerCache
     private $inventoryContents = array();
     /** @var array $armorContents */
     private $armorContents = array();
-    /** @var int $health */
+    /** @var float $health */
     private $health;
     /** @var int $maxHealth */
     private $maxHealth;

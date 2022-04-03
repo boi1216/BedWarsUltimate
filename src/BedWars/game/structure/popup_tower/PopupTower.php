@@ -8,6 +8,7 @@ use pocketmine\block\BlockLegacyIds;
 use BedWars\game\Game;
 use pocketmine\math\Vector3;
 use BedWars\game\Team;
+use pocketmine\math\Facing;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 use BedWars\BedWars;
@@ -16,20 +17,15 @@ use BedWars\utils\Utils;
 class PopupTower{
     
 	public function __construct(Block $block, Game $game, Player $player, Team $team) {
-         $rotation = ($player->getLocation()->getYaw() - 90) % 360;
-         if($rotation < 0){
-         	$rotation += 360;
-         } 
+         $rotation = $player->getHorizontalFacing();
          $instructions = TowerInstructions::TOWER_SOUTH;
-         if(45 <= $rotation && $rotation < 135){
+         if($rotation == Facing::SOUTH){
            $instructions = TowerInstructions::TOWER_SOUTH;
-         }else if(225 <= $rotation && $rotation < 315){
+         }else if($rotation == Facing::NORTH){
              $instructions = TowerInstructions::TOWER_NORTH;
-         }else if(135 <= $rotation && $rotation < 225){
+         }else if($rotation == Facing::WEST){
            $instructions = TowerInstructions::TOWER_WEST;
-         }else if($rotation < 45){
-             $instructions = TowerInstructions::TOWER_EAST;
-         }else if(315 <= $rotation && $rotation < 360){
+         }else if($rotation == Facing::EAST){
              $instructions = TowerInstructions::TOWER_EAST;
          }
 

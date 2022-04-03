@@ -292,7 +292,7 @@ class Game
 
         $this->spectators = array();
         $this->players = array();
-        $this->winnerTeam = '';
+        $this->winnerTeam = null;
         $this->startTime = $this->startTimeStatic;
         $this->rebootTime = 10;
         $this->generators = array();
@@ -550,13 +550,17 @@ class Game
             case EntityDamageEvent::CAUSE_ENTITY_ATTACK;
             if($cause instanceof EntityDamageByEntityEvent){
             $damager = $cause->getDamager();
+            if($damager instanceof Player){
             $this->broadcastMessage($this->plugin->getPlayerTeam($player)->getColor() . $player->getName() . " " . TextFormat::GRAY . "was killed by " . $this->plugin->getPlayerTeam($damager)->getColor() . $damager->getName());
+               }
             }
             break;
             case EntityDamageEvent::CAUSE_PROJECTILE;
             if($cause instanceof EntityDamageByChildEntityEvent){
+                if($damager instanceof Player){
                 $damager = $cause->getDamager();
                 $this->broadcastMessage($this->plugin->getPlayerTeam($player)->getColor() . $player->getName() . " " . TextFormat::GRAY . "was shot by " . $this->plugin->getPlayerTeam($damager)->getColor() . $damager->getName());
+                }
             }
             break;
             case EntityDamageEvent::CAUSE_FIRE;

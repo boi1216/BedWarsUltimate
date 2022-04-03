@@ -26,7 +26,7 @@ class BridgeEgg extends Egg{
 
 	private $startY;
 	private $startVec;
-	private $inAirTicks;
+	private $skippedFirst = false;
 
 	private $isNotBE = false;
 
@@ -76,16 +76,18 @@ class BridgeEgg extends Egg{
 			$this->flagForDespawn();
             return;
 		}
-		$this->inAirTicks += 1;
+
 		parent::move($dx, $dy, $dz);
-		if($this->inAirTicks > 1){ //simple skip for players position
+		if($this->skippedFirst){ //simple skip for players position
 		$world->setBlock($placePos, BlockFactory::getInstance()->get(BlockLegacyIds::WOOL, Utils::colorIntoWool($team->getColor())));
 		$world->setBlock($placePos->subtract(0, 0, 1), BlockFactory::getInstance()->get(BlockLegacyIds::WOOL, Utils::colorIntoWool($team->getColor())));
 		$world->setBlock($placePos->subtract(1, 0, 0), BlockFactory::getInstance()->get(BlockLegacyIds::WOOL, Utils::colorIntoWool($team->getColor())));
         $world->setBlock($placePos->add(1, 0, 0), BlockFactory::getInstance()->get(BlockLegacyIds::WOOL, Utils::colorIntoWool($team->getColor())));
         $world->setBlock($placePos->add(0, 0, 1), BlockFactory::getInstance()->get(BlockLegacyIds::WOOL, Utils::colorIntoWool($team->getColor())));
-	  }
+	    }
+	    $this->skippedFirst = true;
 	}
+
 
 	protected function calculateInterceptWithBlock(Block $block, Vector3 $start, Vector3 $end) : ?RayTraceResult{
         if($block instanceof Wool && !$this->isNotBE){

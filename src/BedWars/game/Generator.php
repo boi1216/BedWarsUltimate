@@ -47,6 +47,8 @@ class Generator
     /** @var int $tier */
     private $tier = 1;
 
+    private $blockEntity;
+
     private $multiply = 1;
     /** @var int $multiplied */
     private $multiplied = 0;
@@ -99,11 +101,17 @@ class Generator
            $fakeItem = new FakeItemEntity(new Location($position->getX() + 0.5, $position->getY() + 2.3, $position->getZ() + 0.5, $position->getWorld(), 0, 0), $skin);
            $fakeItem->setScale(1.4);
            $fakeItem->spawnToAll();
+
+           $this->blockEntity = $fakeItem;
         }
     }
 
     public function getPosition() {
         return $this->position;
+    }
+
+    public function getBlockEntity() {
+        return $this->blockEntity;
     }
 
 

@@ -308,11 +308,12 @@ class DefaultCommand extends \pocketmine\command\Command
                 }
             }
           }
+          $block = null;
 
           foreach($ignored as $blockID){
             if(strpos($blockID, ':')){
                 $idMeta = explode(":", $blockID);
-                $block;
+                
                 try{
                    $block = BlockFactory::getInstance()->get(intval($idMeta[0]), intval($idMeta[1]));
                 }catch(\InvalidArgumentException $e){
