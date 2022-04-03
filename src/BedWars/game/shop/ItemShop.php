@@ -133,7 +133,6 @@ class ItemShop
         $price = $itemData['price'];
         $id = $itemData['item']['id'];
         $damage = (int)$itemData['item']['damage'];
-        $p->sendMessage($itemData["amount"] . " & " . $itemData["price"]);
         $check = "";
         $type = $itemData['type'];
         $hasCustomName = isset($itemData['item']['custom_name']);
@@ -188,7 +187,7 @@ class ItemShop
                 }
             }
         }
-        $p->sendMessage("§aYou have sucesfully purchased §e" . $itemData['name'] . " §afor §e" . $price . " " .  ucfirst($typeString));
+        $p->sendMessage(TextFormat::GREEN . "You purchased " . TextFormat::YELLOW .  $itemData['name']);
         if($wasPurchased){
             return;
         }

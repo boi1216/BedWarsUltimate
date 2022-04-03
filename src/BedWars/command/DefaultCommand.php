@@ -29,6 +29,19 @@ use jojoe77777\FormAPI\Form;
 class DefaultCommand extends \pocketmine\command\Command
 {
 
+    private $commandInfo = [
+          'create' => ['desc' => "Create new game", 'usage' => "<game_id> <min_players> <players_per_team> <start_time> <map_name> <world_name>"],
+          'delete' => ['desc' => "Delete game", 'usage' => "<game_id>"],
+          'setlobby' => ['desc' => "Set lobby of a game", 'usage' => "<game_id>"],
+          'addteam' => ['desc' => "Add team to a game", 'usage' => "<game_id> <blue|red|yellow|green|aqua|gold|white> "],
+          'setpos' => ['desc' => "Set spawn & shop positions", 'usage' => "<game_id> <team_name> <1|2|3> - 3 = Player Spawn, 2 = Upgrade Shop, 1 = Item Shop"],
+          'addgenerator' => ['desc' => "Add generator", 'usage' => "<game_id> <iron|gold|diamond|emerald> "],
+          'setbed' => ['desc' => "Set team's bed", 'usage' => "<game_id> <team>"],
+          'addsafearea' => ['desc' => "Add area restricted for placing blocks", 'usage' => "<game_id>"],
+          'load' => ['desc' => "Load arena after finishing setup", 'usage' => '<game_id>'],
+          'join' => ['desc' => "Join arena by id", 'usage' => '<game_id>']
+       ];
+
     /**
      * DefaultCommand constructor.
      * @param BedWars $owner
@@ -58,7 +71,7 @@ class DefaultCommand extends \pocketmine\command\Command
        switch($args[0]){
           case 'create';
           if(count($args) < 7){
-            $sender->sendMessage(TextFormat::RED . ":create <game_id> <min_players> <players_per_team> <start_time> <map_name> <world_name>");
+            $sender->sendMessage($this->getSubUsage('create'));
             return;
             }
             $game_id = $args[1];
@@ -89,20 +102,20 @@ class DefaultCommand extends \pocketmine\command\Command
             }
 
             if(strlen($map_name) < 1){
-                $sender->sendMessage(TextFormat::RED . "map_name - too short!");
+                $sender->sendMessage(TextFormat::RED . "map_name - name too short!");
             }
 
             $world = $this->getPlugin()->getServer()->getWorldManager()->getWorldByName($world_name);
             if(!$world instanceof World){
-                $sender->sendMessage("World " . $world_name . " does not exist");
+                $sender->sendMessage(TextFormat::RED . "World " . $world_name . " does not exist");
                 return;
             }
             $sender->sendMessage(TextFormat::GREEN . "Game created");
             $this->getPlugin()->createGame($game_id, $min_players, $players_per_team, $start_time, $map_name, $world_name);
           break;
           case 'delete';
-          if(count($args) < 1){
-            $sender->sendMessage(":delete <game_id>");
+          if(count($args) < 2){
+            $sender->sendMessage($this->getSubUsage('delete'));
             return;
           }
           $game_id = $args[1];
@@ -112,15 +125,15 @@ class DefaultCommand extends \pocketmine\command\Command
             return;
           }
 
-          $sender->sendMessage($game_id . " - game not found");
+          $sender->sendMessage(TextFormat::RED . $game_id . " - game not found");
           break;
           case 'setlobby';
           if(!$sender instanceof Player){
-            $sender->sendMessage("in-game command");
+            $sender->sendMessage(TextFormat::GREEN . "This command can be used only in-game");
             return;
           }
           if(count($args) < 2){
-            $sender->sendMessage(":setlobby <game_id>");
+            $sender->sendMessage($this->getSubUsage('setlobby'));
             return;
           }
 
@@ -132,32 +145,32 @@ class DefaultCommand extends \pocketmine\command\Command
           }
           break;
           case 'setposition';
+          case 'setpos';
           if(!$sender instanceof Player){
-            $sender->sendMessage("in-game command");
+            $sender->sendMessage(TextFormat::GREEN . "This command can be used only in-game");
             return;
           }
 
           if(count($args) < 4){
-            $sender->sendMessage(":setposition <game_id> <team> <1|2|3>");
-            $sender->sendMessage("1 - Shop Classic, 2 - Shop Upgrade, 3 - Team Spawn");
+            $sender->sendMessage($this->getSubUsage('setpos'));
             return;
           }
 
           $game_id = $args[1];
           if(!$this->getPlugin()->gameExists($game_id)){
-             $sender->sendMessage($game_id . " - Invalid game id");
+             $sender->sendMessage(TextFormat::RED . $game_id . " - Invalid game id");
             return;
           }
           $team = $args[2];
 
           if(!$this->getPlugin()->teamExists($game_id, $team)){
-            $sender->sendMessage("Invalid team - " . $team);
+            $sender->sendMessage(TextFormat::RED . "Invalid team - " . $team);
             return;
           }
 
           $positionType = array(1 => 'Shop', 2 => 'Upgrade', 3 => 'Spawn')[intval($args[3])];
           if($positionType == null){
-              $sender->sendMessage("Invalid position");
+              $sender->sendMessage(TextFormat::RED . "Invalid position");
               return;
           }
           $pos = $sender->getPosition();
@@ -166,24 +179,24 @@ class DefaultCommand extends \pocketmine\command\Command
           break;
           case 'setbed';
           if(!$sender instanceof Player){
-            $sender->sendMessage("in-game command");
+            $sender->sendMessage(TextFormat::GREEN . "This command can be used only in-game");
             return;
           }
 
           if(count($args) < 2){
-            $sender->sendMessage(":setbed <game_id> <team>");
+            $sender->sendMessage($this->getSubUsage('setbed'));
             return;
           }
 
           $game_id = $args[1];
           if(!$this->getPlugin()->gameExists($game_id)){
-            $sender->sendMessage($game_id . " - Invalid game id");
+            $sender->sendMessage(TextFormat::RED . $game_id . " - Invalid game id");
             return;
           }
 
           $team = strtolower($args[2]);
           if(!$this->getPlugin()->teamExists($game_id, $team)){
-            $sender->sendMessage("Invalid team - " . $team);
+            $sender->sendMessage(TextFormat::RED . "Invalid team - " . $team);
             return;
           }
           $this->getPlugin()->bedSetup[$sender->getName()] = ['game' => $game_id, 'team' => $team , 'step' => 1];
@@ -191,49 +204,48 @@ class DefaultCommand extends \pocketmine\command\Command
           break;
           case 'addteam';
           if(count($args) < 2){
-            $sender->sendMessage(TextFormat::RED . ":addteam <game_id> <team>");
+            $sender->sendMessage($this->getSubUsage('addteam'));
             return;
           }
           $game_id = $args[1];
           if(!$this->getPlugin()->gameExists($game_id)){
-            $sender->sendMessage($game_id . " - Invalid game id");
+            $sender->sendMessage(TextFormat::RED . $game_id . " - Invalid game id");
             return;
           }
           $team = strtolower($args[2]);
           if(!isset(BedWars::TEAMS[$team])){
-            $sender->sendMessage($team . " - Invalid team");
-            $sender->sendMessage("Available: " . implode(" ", array_keys(BedWars::TEAMS)));
+            $sender->sendMessage(TextFormat::RED . $team . " - Invalid team");
+            $sender->sendMessage(TextFormat::RED . "Available: " . implode(" ", array_keys(BedWars::TEAMS)));
             return;
           }
           $this->getPlugin()->addTeam($game_id, $team);
           break;
           case 'addgenerator';
           if(!$sender instanceof Player){
-            $sender->sendMessage("in-game command");
+            $sender->sendMessage(TextFormat::GREEN . "This command can be used only in-game");
             return;
           }
           if(count($args) < 3){
-            $sender->sendMessage(":addgenerator <game_id> <generator> (team)");
+            $sender->sendMessage($this->getSubUsage('addgenerator'));
             return;
           }
 
           $game_id = $args[1];
           if(!$this->getPlugin()->gameExists($game_id)){
-            $sender->sendMessage($game_id . " - Invalid game id");
+            $sender->sendMessage(TextFormat::RED . $game_id . " - Invalid game id");
             return;
           }
 
-          $generatorTypes = array(1 => 'iron', 2 => 'gold', 3 => 'diamond', 4 => 'emerald');
-          if(!isset($generatorTypes[intval($args[2])])){
-            $sender->sendMessage($args[2] . " - Invalid generator type");
-            $sender->sendMessage("Available: 1 - iron, 2 - gold, 3 - diamond, 4 - emerald");
+          $generatorTypes = array('iron', 'gold', 'diamond', 'emerald');
+          if(!in_array($args[2], $generatorTypes)){
+            $sender->sendMessage(TextFormat::RED . $args[2] . " - Invalid generator type");
             return;
           }
-          $generatorType = $generatorTypes[intval($args[2])];
+          $generatorType = $args[2];
           $pos = $sender->getPosition();
           $team = isset($args[3]) ? $args[3] : "";
           if(!$this->getPlugin()->teamExists($game_id, $team) && $team !== ""){
-            $sender->sendMessage("Invalid team - " . $team);
+            $sender->sendMessage(TextFormat::RED . "Invalid team - " . $team);
             return;
           }
           $this->getPlugin()->addGenerator($game_id, $team, $generatorType, $pos->getX(), $pos->getY(), $pos->getZ(), $team);
@@ -242,18 +254,18 @@ class DefaultCommand extends \pocketmine\command\Command
           break;
           case 'addsafearea';
           if(!$sender instanceof Player){
-            $sender->sendMessage("in-game command");
+            $sender->sendMessage(TextFormat::GREEN . "This command can be used only in-game");
             return;
           }
 
           if(count($args) < 2){
-            $sender->sendMessage(":addsafearea <game_id> <ignored_block_ids>");
+            $sender->sendMessage($this->getSubUsage('addsafearea'));
             return;
           }
 
           $game_id = $args[1];
           if(!$this->getPlugin()->gameExists($game_id)){
-            $sender->sendMessage($game_id . " - Invalid game id");
+            $sender->sendMessage(TextFormat::RED . $game_id . " - Invalid game id");
             return;
           }
 
@@ -266,8 +278,8 @@ class DefaultCommand extends \pocketmine\command\Command
                 }else{
                     if(!strpos($args[2], ':')){
                         err:
-                        $sender->sendMessage("Invalid format of ignored blocks!");
-                        $sender->sendMessage("Example: addsafearea <game_id> 365:2,13,1:0");
+                        $sender->sendMessage(TextFormat::RED . "Invalid format of ignored blocks!");
+                        $sender->sendMessage(TextFormat::YELLOW . "Example: <game_id> 365:2,13,1:0");
                         return;
                     }
                     $e = explode(":", $args[2]);
@@ -313,16 +325,17 @@ class DefaultCommand extends \pocketmine\command\Command
                 
                 if(!$block instanceof Block){
                     invalid:
-                    $sender->sendMessage($blockID . " is not a valid block id");
+                    $sender->sendMessage(TextFormat::RED . $blockID . " is not a valid block id");
                     return;
                 }
             }
           }
           $this->getPlugin()->saSetup[$sender->getName()] = ['step' => 1, 'pos1' => null, 'pos2' => null, 'ignoredIds' => implode(",", $ignored), 'game_id' => $game_id];
+          $sender->sendMessage(TextFormat::GREEN . "Break a block to set the 1st position");
           break;
           case 'load';
-          if(count($args) < 1){
-            $sender->sendMessage(":load <game_id>");
+          if(count($args) < 2){
+            $sender->sendMessage($this->getSubUsage('load'));
             return;
           }
 
@@ -332,7 +345,7 @@ class DefaultCommand extends \pocketmine\command\Command
           }
 
           if(!$this->getPlugin()->validateGame($gameData)){
-            $sender->sendMessage("Setup not finished for game - " . $args[1]);
+            $sender->sendMessage(TextFormat::RED . "Setup not finished for game - " . $args[1]);
             return;
           }
 
@@ -356,15 +369,16 @@ class DefaultCommand extends \pocketmine\command\Command
           break;
           case 'join';
           if(!$sender instanceof Player){
-            $sender->sendMessage("in-game command");
+            $sender->sendMessage(TextFormat::GREEN . "This command can be used only in-game");
+            return;
           }
-          if(count($args) < 1){
-            $sender->sendMessage(":join <game_id>");
+          if(count($args) < 2){
+            $sender->sendMessage($this->getSubUsage('join'));
             return;
           }
 
           if(!$this->getPlugin()->gameExists($args[1])){
-            $sender->sendMessage($args[1] . " - Invalid game id");
+            $sender->sendMessage(TextFormat::RED . $args[1] . " - Invalid game id");
             return;
           }
           $this->getPlugin()->games[$args[1]]->join($sender);
@@ -377,27 +391,23 @@ class DefaultCommand extends \pocketmine\command\Command
           $this->getPlugin()->games[$random]->join($sender);*/
           break;
        }
+    }
 
-
+    private function getSubUsage($command){
+         return TextFormat::RED . "Usage: " . $this->commandInfo[$command]['usage'];
     }
 
     /**
      * @param CommandSender $sender
      */
     private function sendHelp(CommandSender $sender) {
-       $sender->sendMessage("BedWars commands");
-       $sender->sendMessage("Setup - ");
-       $sender->sendMessage(":create - Create new arena");
-       $sender->sendMessage(":delete - Delete existing arena");
-       $sender->sendMessage(":setlobby - Set lobby position");
-       $sender->sendMessage(":setposition - Set other locations");
-       $sender->sendMessage(":setbed - Set team's bed position");
-       $sender->sendMessage(":setgenerator - Set generator position");
-       $sender->sendMessage(":addsafearea - Create area restricted for placing blocks (for example team's spawn)");
-       $sender->sendMessage(":load - Load game after finishing setup");
-       $sender->sendMessage("Other - ");
-       $sender->sendMessage(":list - Info about existing arenas");
-       $sender->sendMessage(":join - Join arena via command");
-       $sender->sendMessage(":joinrandom - Join random arena prioritized by players count etc..");
+       $sender->sendMessage(TextFormat::BOLD . TextFormat::YELLOW . "BedWars Commands");
+       $sender->sendMessage(TextFormat::GRAY . "Type the sub-command for usage info");
+       $sender->sendMessage(TextFormat::BOLD . TextFormat::WHITE . "[] - required parameters");
+       $sender->sendMessage(TextFormat::BOLD . TextFormat::WHITE . "[] - optional parameters");
+       foreach($this->commandInfo as $command => $info){
+         $sender->sendMessage(TextFormat::RED . $command . TextFormat::GRAY . " - " . $info['desc']);
+       }
+       
     }
 }

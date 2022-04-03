@@ -5,6 +5,9 @@ namespace BedWars\game\entity;
 use pocketmine\entity\projectile\Egg;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\BlockLegacyIds;
+use pocketmine\event\entity\EntityDamageByChildEntityEvent;
+use pocketmine\event\entity\EntityDamageByEntityEvent;
+use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\block\Wool;
@@ -48,10 +51,6 @@ class BridgeEgg extends Egg{
         $this->startVec = $this->getPosition()->asVector3();
 		$this->startY = $this->getPosition()->getY();
 
-		$owner = $this->getOwningEntity();
-
-
-
 	}
 
 	protected function move(float $dx, float $dy, float $dz) : void{
@@ -92,6 +91,36 @@ class BridgeEgg extends Egg{
         	return null;
         }
 		return $block->calculateIntercept($start, $end);
+	}
+
+	/**
+	 * Called when the projectile collides with an Entity.
+	 */
+	protected function onHitEntity(Entity $entityHit, RayTraceResult $hitResult) : void{
+		if(!$this->isNotBE){
+			return;
+		}
+		$damage = $this->getResultDamage();
+
+		if($damage >= 0){
+			if($this->getOwningEntity() === null){
+				$ev = new EntityDamageByEntityEvent($this, $entityHit, EntityDamageEvent::CAUSE_PROJECTILE, $damage);
+			}else{
+				$ev = new EntityDamageByChildEntityEvent($this->getOwningEntity(), $this, $entityHit, EntityDamageEvent::CAUSE_PROJECTILE, $damage);
+			}
+
+			$entityHit->attack($ev);
+
+			if($this->isOnFire()){
+				$ev = new EntityCombustByEntityEvent($this, $entityHit, 5);
+				$ev->call();
+				if(!$ev->isCancelled()){
+					$entityHit->setOnFire($ev->getDuration());
+				}
+			}
+		}
+
+		$this->flagForDespawn();
 	}
 
 }

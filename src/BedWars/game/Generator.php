@@ -5,6 +5,7 @@ namespace BedWars\game;
 
 use BedWars\game\entity\FakeItemEntity;
 use BedWars\utils\Utils;
+use BedWars\BedWars;
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
@@ -95,7 +96,7 @@ class Generator
         }
 
         if($this->spawnBlock){
-           $path = Server::getInstance()->getDataPath() . "plugin_data/BedWars/skins/" . $itemID . ".png";
+           $path = BedWars::getInstance()->getDataFolder() . "/skins/" . $itemID . ".png";
            $skin = Utils::getSkinFromFile($path, 'geometry.player_head', FakeItemEntity::GEOMETRY);
            $position->add(0.5, 2.3, 0.5);
            $fakeItem = new FakeItemEntity(new Location($position->getX() + 0.5, $position->getY() + 2.3, $position->getZ() + 0.5, $position->getWorld(), 0, 0), $skin);
@@ -127,8 +128,6 @@ class Generator
     public function tick() : void{
         if($this->team instanceof Team){
             if(count($this->team->getPlayers()) <= $this->team->dead){
-                /*var_dump($this->team->dead);
-                var_dump(count($this->team->getPlayers()))  */
                 return;
             }
         }
@@ -148,10 +147,6 @@ class Generator
      
         if($this->dynamicSpawnTime == 0){
             $this->dynamicSpawnTime = $this->repeatRate;
-            if($this->itemID == ItemIds::EMERALD && $this->multiply == 200 && $this->team instanceof Team){
-                $this->setRepeatRate($this->getRepeatRate() / 4);
-                return;
-            }
             if($this->multiply == 50){
                 if($this->multiplied == 2){
                     $this->multiplied = 0;
