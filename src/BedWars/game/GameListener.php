@@ -34,6 +34,7 @@ use pocketmine\entity\projectile\Egg;
 use pocketmine\network\mcpe\protocol\ModalFormResponsePacket;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
+use pocketmine\block\TNT;
 use pocketmine\math\Vector3;
 use BedWars\game\structure\popup_tower\TowerSouth;
 use pocketmine\entity\effect\VanillaEffects;
@@ -201,7 +202,7 @@ class GameListener implements Listener
     }
 
     /**
-     * @param EntityLevelChangeEvent $event
+     * @param EntityTeleportEvent $event
      */
     public function onEntityLevelChange(EntityTeleportEvent $event) : void{
         $player = $event->getEntity();
@@ -370,7 +371,7 @@ class GameListener implements Listener
                     }
                 }
 
-                if($event->getBlock()->getId() == BlockLegacyIds::TNT){
+                if($event->getBlock() instanceof TNT){
                     $event->getBlock()->ignite();
                     $event->cancel();
                     $ih = $player->getInventory()->getItemInHand();

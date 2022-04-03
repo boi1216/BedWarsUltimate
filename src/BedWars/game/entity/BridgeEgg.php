@@ -7,6 +7,7 @@ use pocketmine\block\BlockFactory;
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\event\entity\EntityDamageByChildEntityEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
+use pocketmine\event\entity\EntityCombustByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
@@ -75,7 +76,7 @@ class BridgeEgg extends Egg{
 			$this->flagForDespawn();
             return;
 		}
-		$this->inAirTicks++;
+		$this->inAirTicks += 1;
 		parent::move($dx, $dy, $dz);
 		if($this->inAirTicks > 1){ //simple skip for players position
 		$world->setBlock($placePos, BlockFactory::getInstance()->get(BlockLegacyIds::WOOL, Utils::colorIntoWool($team->getColor())));

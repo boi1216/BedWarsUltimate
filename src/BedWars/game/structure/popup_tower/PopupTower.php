@@ -20,14 +20,14 @@ class PopupTower{
          if($rotation < 0){
          	$rotation += 360;
          } 
-         $instructions;
+         $instructions = TowerInstructions::TOWER_SOUTH;
          if(45 <= $rotation && $rotation < 135){
            $instructions = TowerInstructions::TOWER_SOUTH;
          }else if(225 <= $rotation && $rotation < 315){
              $instructions = TowerInstructions::TOWER_NORTH;
          }else if(135 <= $rotation && $rotation < 225){
            $instructions = TowerInstructions::TOWER_WEST;
-         }else if(0 <= $rotation && $rotation < 45){
+         }else if($rotation < 45){
              $instructions = TowerInstructions::TOWER_EAST;
          }else if(315 <= $rotation && $rotation < 360){
              $instructions = TowerInstructions::TOWER_EAST;

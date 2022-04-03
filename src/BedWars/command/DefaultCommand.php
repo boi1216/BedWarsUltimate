@@ -248,7 +248,7 @@ class DefaultCommand extends \pocketmine\command\Command
             $sender->sendMessage(TextFormat::RED . "Invalid team - " . $team);
             return;
           }
-          $this->getPlugin()->addGenerator($game_id, $team, $generatorType, $pos->getX(), $pos->getY(), $pos->getZ(), $team);
+          $this->getPlugin()->addGenerator($game_id, $team, $generatorType, $pos->getX(), $pos->getY(), $pos->getZ());
           $sender->sendMessage(TextFormat::GREEN . "Added");
           //NON-SETUP
           break;
@@ -307,8 +307,9 @@ class DefaultCommand extends \pocketmine\command\Command
           foreach($ignored as $blockID){
             if(strpos($blockID, ':')){
                 $idMeta = explode(":", $blockID);
+                $block;
                 try{
-                   $block = BlockFactory::getInstance()->get(intval($idMeta[0], intval($idMeta[1])));
+                   $block = BlockFactory::getInstance()->get(intval($idMeta[0]), intval($idMeta[1]));
                 }catch(\InvalidArgumentException $e){
                    goto invalid;
                 }

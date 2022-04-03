@@ -44,9 +44,6 @@ class Generator
     /** @var FloatingTextParticle $floatingText */
     private $floatingText;
 
-    /** @var $blockEntity */
-    private $blockEntity;
-
     /** @var int $tier */
     private $tier = 1;
 
@@ -174,13 +171,6 @@ class Generator
         $this->tier++;
         //-20%
         $this->repeatRate = $this->repeatRate - ($this->repeatRate * 100 / 20);
-    }
-
-    /**
-     * @return FakeItemEntity
-     */
-    public function getBlockEntity() : ?FakeItemEntity{
-        return $this->blockEntity;
     }
 
     /**

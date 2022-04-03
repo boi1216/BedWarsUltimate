@@ -11,6 +11,7 @@ use pocketmine\utils\TextFormat;
 use pocketmine\item\Armor;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\EnchantmentInstance;
+use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
@@ -118,12 +119,6 @@ class ItemShop
         return self::$shopWindows[$category];
     }
 
-    /**
-     * @param int $id
-     * @param $data
-     * @param Player $p
-     * @param BedWars $plugin
-     */
     public static function handleTransaction(int $id, $data, Player $p, BedWars $plugin){
         if(is_null($data)){
             return;
@@ -157,7 +152,7 @@ class ItemShop
         }
 
         if(!$check){
-            $p->sendMessage("§cYou don't have enough " . strtolower(ucfirst($typeString)) . " to purchase this item!");
+            $p->sendMessage(TextFormat::RED . "You don't have enough " . strtolower(ucfirst($typeString)) . " to purchase " . $itemData['name']);
             return;
         }
 
@@ -235,12 +230,12 @@ class ItemShop
     public static function handleBowTransaction(int $data, Item $item){
         switch ($data){
             case 1;
-                $enchantment = new EnchantmentInstance(Enchantment::getEnchantment(Enchantment::POWER), 1);
+                $enchantment = new EnchantmentInstance(VanillaEnchantments::POWER(), 1);
                 $item->addEnchantment($enchantment);
                 break;
             case 2;
-                $enchantment = new EnchantmentInstance(Enchantment::getEnchantment(Enchantment::POWER), 1);
-                $enchantment1 = new EnchantmentInstance(Enchantment::getEnchantment(Enchantment::PUNCH), 1);
+                $enchantment = new EnchantmentInstance(VanillaEnchantments::POWER(), 1);
+                $enchantment1 = new EnchantmentInstance(VanillaEnchantments::POWER(), 1);
                 foreach([$enchantment, $enchantment1] as $eIns){
                      $item->addEnchantment($eIns);
                 }

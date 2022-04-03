@@ -91,11 +91,6 @@ class UpgradeShop
 
     }
 
-    /**
-     * @param $formId
-     * @param Player $player
-     * @param BedWars $plugin
-     */
     public static function handleTransaction($formId, Player $player, BedWars $plugin): void
     {
         $playerTeam = $plugin->getPlayerTeam($player);
@@ -129,7 +124,7 @@ class UpgradeShop
                     foreach ($player->getInventory()->getContents() as $index => $item) {
                         if ($item instanceof Sword){
                             $item->setUnbreakable(true);
-                            $item->addEnchantment(new EnchantmentInstance(VanillaEnchantments::SHARPNESS()), $playerTeam->getUpgrade('sharpenedSwords'));
+                            $item->addEnchantment(new EnchantmentInstance(VanillaEnchantments::SHARPNESS(), $playerTeam->getUpgrade('sharpenedSwords')));
                             $player->getInventory()->setItem($index, $item);
                         }
                     }
@@ -143,7 +138,7 @@ class UpgradeShop
             $boots = $player->getArmorInventory()->getBoots();
 
             foreach([$helmet, $chestplate, $leggings, $boots] as $armor){
-                $armor->addEnchantment(new EnchantmentInstance(VanillaEnchantments::PROTECTION()), $playerTeam->getUpgrade('armorProtection'));
+                $armor->addEnchantment(new EnchantmentInstance(VanillaEnchantments::PROTECTION(), $playerTeam->getUpgrade('armorProtection')));
             }
 
             $player->getArmorInventory()->setHelmet($helmet);

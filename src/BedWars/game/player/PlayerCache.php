@@ -4,8 +4,8 @@
 namespace BedWars\game\player;
 
 use pocketmine\player\Player;
-use pocketmine\level\Position;
-use pocketmine\entity\EffectInstance;
+use pocketmine\world\Position;
+use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\Skin;
 
 
@@ -23,7 +23,7 @@ class PlayerCache
     private $health;
     /** @var int $maxHealth */
     private $maxHealth;
-    /** @var int $food */
+    /** @var float $food */
     private $food;
     /** @var Position $position */
     private $position;

@@ -6,8 +6,11 @@ namespace BedWars\game;
 use BedWars\game\player\PlayerCache;
 use BedWars\utils\Utils;
 use pocketmine\entity\Entity;
+use pocketmine\item\enchantment\VanillaEnchantments;
+use pocketmine\item\Armor;
 use pocketmine\event\entity\EntityDamageByChildEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\item\Compass;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\EnchantmentInstance;
@@ -23,6 +26,7 @@ use pocketmine\player\Player;
 use pocketmine\player\GameMode;
 use pocketmine\plugin\Plugin;
 use pocketmine\scheduler\Task;
+use pocketmine\item\Durable;
 use pocketmine\utils\TextFormat;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
@@ -84,9 +88,6 @@ class Game
     /** @var int $rebootTime */
     private $rebootTime;
 
-    /** @var int $voidY */
-    private $voidY ;
-
     /** @var array $teamInfo */
     public $teamInfo = array();
 
@@ -96,10 +97,10 @@ class Game
     /** @var array $deadQueue */
     public $deadQueue = [];
 
-    /** @var string $winnerTeam */
-    private $winnerTeam = '';
+    /** @var Team $winnerTeam */
+    private $winnerTeam;
 
-    /** @var Entity[] $npcs */
+    /** @var array $npcs */
     public $npcs = [];
 
     /** @var array $trackingPositions */
@@ -161,13 +162,6 @@ class Game
     }
 
     /**
-     * @param int $limit
-     */
-    public function setVoidLimit(int $limit) : void{
-        $this->voidY = $limit;
-    }
-
-    /**
      * @param Vector3 $lobby
      * @param string $worldName
      */
@@ -197,7 +191,7 @@ class Game
     }
 
     public function getId() : string {
-        return $this->id;
+        return $this->gameName;
     }
 
     /**
@@ -241,7 +235,7 @@ class Game
      */
     public function broadcastMessage(string $message) : void{
         foreach(array_merge($this->spectators, $this->players) as $player){
-            $player->sendMessage(BedWars::PREFIX . $message);
+            $player->sendMessage($message);
         }
     }
 
@@ -313,10 +307,10 @@ class Game
     }
 
     public function start() : void{
-         $this->broadcastMessage(TextFormat::GREEN . "Game has started! ");
+         $this->broadcastMessage(TextFormat::GREEN . "Game has started!");
          $this->state = self::STATE_RUNNING;
-       //  shuffle($this->players);
          foreach($this->players as $player){
+            $player->sendTitle("");
              $playerTeam = $this->plugin->getPlayerTeam($player);
 
              if($playerTeam == null){
@@ -377,7 +371,7 @@ class Game
 
             $location = Location::fromObject($shopPos, $this->plugin->getServer()->getWorldManager()->getWorldByName($this->worldName));
             $entity = new \pocketmine\entity\Villager($location);
-            if(isset($rotation[3]) && !is_null($rotation[3])){
+            if(isset($rotation[3])){
                 $entity->setRotation(intval($rotation[3]), 0); //todo: round yaw
             }
             $entity->setNameTag(TextFormat::AQUA . "ITEM SHOP\n" . TextFormat::BOLD . TextFormat::YELLOW . "TAP TO USE");
@@ -390,7 +384,7 @@ class Game
             $rotation = explode(":", $info['UpgradePos']);
             $location = Location::fromObject($upgradePos, $this->plugin->getServer()->getWorldManager()->getWorldByName($this->worldName));
             $entity = new \pocketmine\entity\Villager($location);
-            if(isset($rotation[3]) && !is_null($rotation[3])){
+            if(isset($rotation[3])){
                 $entity->setRotation(intval($rotation[3]), 0);
             }
             $entity->setNameTag(TextFormat::AQUA . "TEAM UPGRADES\n" . TextFormat::BOLD . TextFormat::YELLOW . "TAP TO USE");
@@ -423,7 +417,7 @@ class Game
          $player->setGamemode(GameMode::ADVENTURE());
          $this->checkLobby();
 
-        Scoreboard::new($player, 'bedwars', TextFormat::BOLD . TextFormat::YELLOW . "Bed Wars");
+        Scoreboard::new($player, 'bedwars', TextFormat::BOLD . TextFormat::YELLOW . "BedWars");
 
         Scoreboard::setLine($player, 1, " ");
         Scoreboard::setLine($player, 2, " " . TextFormat::WHITE ."Map: " . TextFormat::GREEN .  $this->mapName . str_repeat(" ", 3));
@@ -475,9 +469,9 @@ class Game
 
         $playerTeam = $this->plugin->getPlayerTeam($player);
 
-        $this->broadcastMessage($team->getColor() . $team->getName() . "'s '" . TextFormat::GRAY . "bed was destroyed by " . $playerTeam->getColor() . $player->getName());
+        $this->broadcastMessage(TextFormat::BOLD . TextFormat::WHITE . "BED DESTRUCTION > " . TextFormat::RESET .  $team->getColor() . $team->getName() . "'s " . TextFormat::GRAY . "bed was destroyed by " . $playerTeam->getColor() . $player->getName());
         foreach($team->getPlayers() as $player){
-            $player->sendTitle(TextFormat::RED . "Bed Destroyed!", TextFormat::GRAY . "You will no longer respawn", 10);
+            $player->sendTitle(TextFormat::RED . "BED DESTROYED!", TextFormat::GRAY . "You will no longer respawn", 10);
         }
     }
  
@@ -554,8 +548,10 @@ class Game
         if($cause == null)return; 
         switch($cause->getCause()){
             case EntityDamageEvent::CAUSE_ENTITY_ATTACK;
+            if($cause instanceof EntityDamageByEntityEvent){
             $damager = $cause->getDamager();
             $this->broadcastMessage($this->plugin->getPlayerTeam($player)->getColor() . $player->getName() . " " . TextFormat::GRAY . "was killed by " . $this->plugin->getPlayerTeam($damager)->getColor() . $damager->getName());
+            }
             break;
             case EntityDamageEvent::CAUSE_PROJECTILE;
             if($cause instanceof EntityDamageByChildEntityEvent){
@@ -628,13 +624,15 @@ class Game
 
 
         foreach(array_merge([$helmet, $chestplate], !$hasArmorUpdated ? [$leggings, $boots] : []) as $armor){
-            $armor->setCustomColor(Utils::colorIntoObject($team->getColor()));
+            if($armor instanceof Armor){
+                  $armor->setCustomColor(Utils::colorIntoObject($team->getColor()));
+            }
         }
 
         $armorUpgrade = $team->getUpgrade('armorProtection');
         if($armorUpgrade > 0){
             foreach([$helmet, $chestplate, $leggings, $boots] as $armor){
-                $armor->addEnchantment(new EnchantmentInstance(Enchantment::getEnchantment(Enchantment::PROTECTION)), $armorUpgrade);
+                $armor->addEnchantment(new EnchantmentInstance(VanillaEnchantments::PROTECTION()), $armorUpgrade);
             }
         }
 
@@ -644,11 +642,13 @@ class Game
         $player->getArmorInventory()->setBoots($boots);
 
         $sword = ItemFactory::getInstance()->get(ItemIds::WOODEN_SWORD);
-        $sword->setUnbreakable(true);
+        if($sword instanceof Durable){
+            $sword->setUnbreakable(true);
+        }
 
         $swordUpgrade = $team->getUpgrade('sharpenedSwords');
         if($swordUpgrade > 0){
-            $sword->addEnchantment(new EnchantmentInstance(Enchantment::getEnchantment(Enchantment::SHARPNESS)), $swordUpgrade);
+            $sword->addEnchantment(new EnchantmentInstance(VanillaEnchantments::SHARPNESS()), $swordUpgrade);
         }
 
         $player->getInventory()->setItem(0, $sword);
@@ -661,7 +661,7 @@ class Game
          switch($this->state) {
              case self::STATE_LOBBY;
                  if ($this->starting) {
-                     if($this->starting && count($this->players) < $this->minPlayers) {
+                     if(count($this->players) < $this->minPlayers) {
                          $this->starting = false;
                          $this->broadcastMessage(TextFormat::YELLOW . "Countdown stopped");
                          $this->startTime = $this->startTimeStatic;

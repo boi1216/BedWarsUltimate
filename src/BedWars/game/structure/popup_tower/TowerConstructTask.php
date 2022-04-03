@@ -4,6 +4,7 @@ namespace BedWars\game\structure\popup_tower;
 
 use pocketmine\scheduler\Task;
 use pocketmine\block\Block;
+use pocketmine\block\Ladder;
 use pocketmine\world\World;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\BlockLegacyIds;
@@ -51,7 +52,10 @@ class TowerConstructTask extends Task{
          if(!$isLadder){
             $this->world->setBlock($vector, BlockFactory::getInstance()->get(BlockLegacyIds::WOOL, Utils::colorIntoWool($this->team->getColor())));
          }else{
-         	$this->world->setBlock($vector, BlockFactory::getInstance()->get(BlockLegacyIds::LADDER, 0)->setFacing($instruction[3]));
+         	$block = BlockFactory::getInstance()->get(BlockLegacyIds::LADDER, 0);
+         	if($block instanceof Ladder){
+         		$this->world->setBlock($vector, $block->setFacing($instruction[3]));
+         	}
          }
          if($this->insDone >= $this->insToD){
              $this->getHandler()->cancel();    

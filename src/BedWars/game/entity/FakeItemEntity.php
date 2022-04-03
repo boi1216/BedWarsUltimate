@@ -16,7 +16,6 @@ class FakeItemEntity extends Human
 
     public const GEOMETRY = '{"geometry.player_head":{"texturewidth":64,"textureheight":64,"bones":[{"name":"head","pivot":[0,24,0],"cubes":[{"origin":[-4,0,-4],"size":[8,8,8],"uv":[0,0]}]}]}}';
 
-    /** @var int $gravity */
     protected $gravity = 0;
     public $width = 0.5, $height = 0.6;
 
@@ -52,7 +51,7 @@ class FakeItemEntity extends Human
      */
     public function attack(EntityDamageEvent $source): void
     {
-        $source->setCancelled();
+        $source->cancel();
     }
 
 }
