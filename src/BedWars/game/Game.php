@@ -292,7 +292,6 @@ class Game
 
         $this->spectators = array();
         $this->players = array();
-        $this->winnerTeam = null;
         $this->startTime = $this->startTimeStatic;
         $this->rebootTime = 10;
         $this->generators = array();
@@ -423,7 +422,7 @@ class Game
         Scoreboard::setLine($player, 2, " " . TextFormat::WHITE ."Map: " . TextFormat::GREEN .  $this->mapName . str_repeat(" ", 3));
         Scoreboard::setLine($player, 3, " " . TextFormat::WHITE . "Players: " . TextFormat::GREEN . count($this->players) . "/" . $this->maxPlayers . str_repeat(" ", 3));
         Scoreboard::setLine($player, 4, "  ");
-        Scoreboard::setLine($player, 5, " " . $this->starting ? TextFormat::WHITE . "Starting in " . TextFormat::GREEN .  $this->startTime . str_repeat(" ", 3) : TextFormat::GREEN . "Waiting for players..." . str_repeat(" ", 3));
+        Scoreboard::setLine($player, 5, " " . count($this->players) >= $this->minPlayers ? TextFormat::WHITE . "Starting in " . TextFormat::GREEN .  $this->startTime . str_repeat(" ", 3) : TextFormat::GREEN . "Waiting for players..." . str_repeat(" ", 3));
         Scoreboard::setLine($player, 6, "   ");
         Scoreboard::setLine($player, 7, " " . TextFormat::WHITE . "Mode: " . TextFormat::GREEN . substr(str_repeat($this->playersPerTeam . "v", count($this->teams)), 0, -1) . str_repeat(" ", 3));
         Scoreboard::setLine($player, 8, " " . TextFormat::WHITE . "Version: " . TextFormat::GRAY . "v1.0" . str_repeat(" ", 3));
@@ -557,8 +556,8 @@ class Game
             break;
             case EntityDamageEvent::CAUSE_PROJECTILE;
             if($cause instanceof EntityDamageByChildEntityEvent){
-                if($damager instanceof Player){
                 $damager = $cause->getDamager();
+                if($damager instanceof Player){
                 $this->broadcastMessage($this->plugin->getPlayerTeam($player)->getColor() . $player->getName() . " " . TextFormat::GRAY . "was shot by " . $this->plugin->getPlayerTeam($damager)->getColor() . $damager->getName());
                 }
             }
@@ -636,7 +635,7 @@ class Game
         $armorUpgrade = $team->getUpgrade('armorProtection');
         if($armorUpgrade > 0){
             foreach([$helmet, $chestplate, $leggings, $boots] as $armor){
-                $armor->addEnchantment(new EnchantmentInstance(VanillaEnchantments::PROTECTION()), $armorUpgrade);
+                $armor->addEnchantment(new EnchantmentInstance(VanillaEnchantments::PROTECTION(), $armorUpgrade));
             }
         }
 
@@ -652,7 +651,7 @@ class Game
 
         $swordUpgrade = $team->getUpgrade('sharpenedSwords');
         if($swordUpgrade > 0){
-            $sword->addEnchantment(new EnchantmentInstance(VanillaEnchantments::SHARPNESS()), $swordUpgrade);
+            $sword->addEnchantment(new EnchantmentInstance(VanillaEnchantments::SHARPNESS(), $swordUpgrade));
         }
 
         $player->getInventory()->setItem(0, $sword);

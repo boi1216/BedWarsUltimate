@@ -15,6 +15,8 @@ use BedWars\BedWars;
 use BedWars\utils\Utils;
 
 class PopupTower{
+
+	private $cancelBuild = false;
     
 	public function __construct(Block $block, Game $game, Player $player, Team $team) {
          $rotation = $player->getHorizontalFacing();
@@ -34,8 +36,6 @@ class PopupTower{
          $y = $pos->getY();
          $z = $pos->getZ();
 
-         $cancel = false;
-
          foreach($instructions as $instruction){
          	$inX = $instruction[0];
             $inY = $instruction[1];
@@ -45,13 +45,13 @@ class PopupTower{
          		$insVec = $insBlock->getPosition()->asVector3();
          		if(!in_array(Utils::vectorToString(":", $insVec), $game->placedBlocks)){
          			$player->sendMessage(TextFormat::RED . "Cannot place PopupTower due to collision with map block(s)");
-         			$cancel = true;
+         			$tnis->cancelBuild = true;
                     return;
          		}
          	}
          }
          
-         if($cancel)return;
+         if($this->cancelBuild)return;
          BedWars::getInstance()->getScheduler()->scheduleRepeatingTask(new TowerConstructTask($block, $instructions, $player->getWorld(), $team, $game), 1);
 
 	}
