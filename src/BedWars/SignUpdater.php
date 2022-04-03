@@ -21,9 +21,6 @@ class SignUpdater extends Task
         $this->plugin = $plugin;
     }
 
-    /**
-     * @param int $currentTick
-     */
     public function onRun() : void
     {
         foreach ($this->plugin->signs as $arena => $positions) {

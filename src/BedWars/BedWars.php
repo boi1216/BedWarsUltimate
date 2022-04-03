@@ -82,7 +82,6 @@ class BedWars extends PluginBase
         $formAPI = $this->getServer()->getPluginManager()->getPlugin('FormAPI');
         if($formAPI->getDescription()->getAuthors()[0] !== "jojoe77777"){
                 $this->getLogger()->error("Invalid dependency author | FormAPI");
-                $this->setEnabled(false);
         }
 
         $this->saveDefaultConfig();
@@ -136,7 +135,7 @@ class BedWars extends PluginBase
                 $this->signs[$jsonData['id']] = $jsonData['signs'];
             }
             $this->getLogger()->info("Game loaded " . $jsonData['id']);
-            $this->loadGame($jsonData['id'], $jsonData);
+            $this->loadGame($jsonData['id']);
         }
     }
 

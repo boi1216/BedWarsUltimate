@@ -187,11 +187,6 @@ class UpgradeShop
     }
 }
 
-    /**
-     * @param $selectedUpgrade
-     * @param Player $player
-     * @param BedWars $plugin
-     */
     public static function sendBuyPage($selectedUpgrade, Player $player, BedWars $plugin) : void{
         $playerTeam = $plugin->getPlayerTeam($player);
         $formId = self::$page_ids[intval($selectedUpgrade)];
