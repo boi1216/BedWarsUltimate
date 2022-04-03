@@ -29,6 +29,8 @@ use jojoe77777\FormAPI\Form;
 class DefaultCommand extends \pocketmine\command\Command
 {
 
+    private $owner;
+
     private $commandInfo = [
           'create' => ['desc' => "Create new game", 'usage' => "<game_id> <min_players> <players_per_team> <start_time> <map_name> <world_name>"],
           'delete' => ['desc' => "Delete game", 'usage' => "<game_id>"],
@@ -50,10 +52,13 @@ class DefaultCommand extends \pocketmine\command\Command
     {
         parent::__construct("bedwars", "BedWars", null, ["bw"]);
         parent::setDescription("BedWars command");
+
+        $this->owner = $owner;
+
     }
 
     private function getPlugin() : BedWars{
-        return BedWars::getInstance();
+        return $this->owner;
     }
 
     /**
