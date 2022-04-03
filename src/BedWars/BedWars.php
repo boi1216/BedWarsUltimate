@@ -13,9 +13,17 @@ use pocketmine\scheduler\Task;
 use pocketmine\tile\Sign;
 use pocketmine\utils\TextFormat;
 use pocketmine\math\Vector3;
+use pocketmine\world\World;
 use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginBase;
+use pocketmine\entity\EntityFactory;
 use BedWars\command\DefaultCommand;
+use BedWars\game\entity\FakeItemEntity;
+use BedWars\game\entity\BridgeEgg;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\entity\EntityDataHelper;
+use pocketmine\item\ItemFactory;
+use pocketmine\item\ItemIdentifier;
 use BedWars\game\Game;
 use BedWars\game\GameListener;
 use BedWars\game\Team;
@@ -90,7 +98,15 @@ class BedWars extends PluginBase
         );
         $this->getServer()->getPluginManager()->registerEvents(new GameListener($this), $this);
         $this->getServer()->getCommandMap()->register("bedwars", new DefaultCommand($this));
+        EntityFactory::getInstance()->register(FakeItemEntity::class, function(World $world, CompoundTag $nbt) : FakeItemEntity{
+            return new FakeItemEntity(EntityDataHelper::parseLocation($nbt, $world), $nbt);
+        }, ["FakeItemEntity"]);
+        EntityFactory::getInstance()->register(BridgeEgg::class, function(World $world, CompoundTag $nbt) : BridgeEgg{
+            return new BridgeEgg(EntityDataHelper::parseLocation($nbt, $world), $nbt);
+        }, ["Egg"]);
 
+        //register items
+        ItemFactory::getInstance()->register(new \BedWars\game\item\BridgeEgg(new ItemIdentifier(ItemIds::EGG, 0), "Bridge Egg"), true);
         $this->loadAllGames();
         self::$ins = $this;
 

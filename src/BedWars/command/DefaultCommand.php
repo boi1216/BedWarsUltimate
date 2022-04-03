@@ -57,7 +57,7 @@ class DefaultCommand extends \pocketmine\command\Command
    
        switch($args[0]){
           case 'create';
-          if(count($args) < 6){
+          if(count($args) < 7){
             $sender->sendMessage(TextFormat::RED . ":create <game_id> <min_players> <players_per_team> <start_time> <map_name> <world_name>");
             return;
             }

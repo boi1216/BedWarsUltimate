@@ -66,7 +66,8 @@ class ItemShop
             "§6TNT\n§l§e8 GOLD" => ["image" => ""],
             "§6Enderpearl\n§l§e4 EMERALD" => ["image" => ""],
             "§6Water Bucker\n§l§e1 EMERALD" => ["image" => ""],
-            "§6Egg\n§l§e4 EMERALD" => ["image" => ""]
+            "§6Bridge Egg\n§l§e4 EMERALD" => ["image" => ""],
+            "§6Compact Popup-Tower\n§l§e24 IRON" => ["image" => ""]
         ],
     ];
 
@@ -104,7 +105,8 @@ class ItemShop
             3 => ["name" => "TNT", "type" => self::PURCHASE_TYPE_GOLD, "amount" => 1, "price" => 8, "item" => ["id" => ItemIds::TNT, "damage" => 0]],
             4 => ["name" => "Enderpearl", "type" => self::PURCHASE_TYPE_EMERALD, "amount" => 1, "price" => 4, "item" => ["id" => ItemIds::ENDER_PEARL, "damage" => 0]],
             5 => ["name" => "Water Bucket", "type" => self::PURCHASE_TYPE_EMERALD, "amount" => 1, "price" => 1, "item" => ["id" => 326, "damage" => 0]],
-            6 => ["name" => "Egg", "type" => self::PURCHASE_TYPE_EMERALD, "amount" => 1, "price" => 4, "item" => ["id" => ItemIds::EGG, "damage" => 0]]
+            6 => ["name" => "Bridge Egg", "type" => self::PURCHASE_TYPE_EMERALD, "amount" => 1, "price" => 4, "item" => ["id" => ItemIds::EGG, "damage" => 0, 'custom_name' => "§6Bridge Egg"]],
+            7 => ["name" => "Compact Popup-Tower", "type" => self::PURCHASE_TYPE_IRON, "amount" => 1, "price" => 24, "item" => ["id" => ItemIds::CHEST, "damage" => 0, "custom_name" => "§bPopup Tower"]]
         ]
     ];
 
@@ -134,6 +136,7 @@ class ItemShop
         $p->sendMessage($itemData["amount"] . " & " . $itemData["price"]);
         $check = "";
         $type = $itemData['type'];
+        $hasCustomName = isset($itemData['item']['custom_name']);
         $typeString = "";
         $removeItem = null;
         switch($type){
@@ -195,6 +198,9 @@ class ItemShop
         }
 
         $p->getInventory()->removeItem($removeItem);
+        if($hasCustomName){
+            $item->setCustomName($itemData['item']['custom_name']);
+        }
         $p->getInventory()->addItem($item);
     }
 

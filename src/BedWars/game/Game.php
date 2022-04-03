@@ -218,6 +218,10 @@ class Game
         return $this->players;
     }
 
+    public function getSpectators() : ?array{
+        return $this->spectators;
+    }
+
     public function getPlayerCache(string $name) : ?PlayerCache{
         return $this->cachedPlayers[$name];
     }
@@ -415,8 +419,8 @@ class Game
          foreach($this->teams as $team){
              $player->getInventory()->addItem($i =new Item(new ItemIdentifier(ItemIds::WOOL, Utils::colorIntoWool($team->getColor()))));
          }
-
          $player->getInventory()->setItem(8, ItemFactory::getInstance()->get(ItemIds::COMPASS)->setCustomName(TextFormat::YELLOW . "Leave"));
+         $player->setGamemode(GameMode::ADVENTURE());
          $this->checkLobby();
 
         Scoreboard::new($player, 'bedwars', TextFormat::BOLD . TextFormat::YELLOW . "Bed Wars");
@@ -540,6 +544,7 @@ class Game
             $player->sendTitle(TextFormat::BOLD . TextFormat::RED . "DEFEAT", TextFormat::GRAY . "You are now spectating");
             $player->getInventory()->clearAll();
             $player->getArmorInventory()->clearAll();
+            $player->setFlying(true);
         }else{
             $player->setGamemode(GameMode::SPECTATOR());
             $this->deadQueue[$player->getName()] = 5;

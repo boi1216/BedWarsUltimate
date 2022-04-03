@@ -1,5 +1,7 @@
-name: BedWars
+name: BedWarsUltimate
 version: "2.0pre-release"
 api: 4.2.3
 main: BedWars\BedWars
-author: boi
+author: boi1216
+
+dependencies: ["FormAPI"]

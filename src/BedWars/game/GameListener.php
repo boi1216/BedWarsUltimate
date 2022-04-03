@@ -9,26 +9,33 @@ use BedWars\game\shop\UpgradeShop;
 use BedWars\utils\Utils;
 use pocketmine\block\Bed;
 use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\event\block\BlockPlaceEvent;
 use pocketmine\event\block\SignChangeEvent;
+use pocketmine\event\player\PlayerBedEnterEvent;
+use pocketmine\event\player\PlayerChatEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityTeleportEvent;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\event\player\PlayerMoveEvent;
+use pocketmine\event\entity\EntityMotionEvent;
 use pocketmine\event\player\PlayerQuitEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\entity\EntityExplodeEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemIds;
 use pocketmine\entity\object\PrimedTNT;
+use BedWars\game\structure\popup_tower\PopupTower;
+use pocketmine\entity\projectile\Egg;
 use pocketmine\network\mcpe\protocol\ModalFormResponsePacket;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 use pocketmine\math\Vector3;
+use BedWars\game\structure\popup_tower\TowerSouth;
 use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\event\player\PlayerCommandPreprocessEvent;
@@ -144,9 +151,39 @@ class GameListener implements Listener
                 $player->getInventory()->clearAll();
             }
         }
+    }
 
-        if($block->getId() == BlockLegacyIds::BED_BLOCK && $playerGame !== null){
-            $event->cancel();
+    public function onBedEnter(PlayerBedEnterEvent $event) : void{
+        $player = $event->getPlayer();
+        $playerGame = $this->plugin->getPlayerGame($player);
+        if(!is_null($playerGame))$event->cancel();
+    }
+
+    public function onChat(PlayerChatEvent $event) : void{
+        $player = $event->getPlayer();
+        $playerGame = $this->plugin->getPlayerGame($player);
+        $message = $event->getMessage();
+        if(is_null($playerGame))return;
+        if($playerGame->getState() !== Game::STATE_RUNNING)return;
+        $event->cancel();
+
+        $playerTeam = $this->plugin->getPlayerTeam($player);
+        if(is_null($playerTeam)){
+            if(isset($playerGame->spectators[$player->getName()])){
+                foreach($playerGame->spectators as $spectator){
+                    $spectator->sendMessage(TextFormat::GRAY . "[SPECTATOR] " . $player->getName() . ": " . $message);
+                }
+            }
+        }else{
+          if($message[0] !== "!"){
+            foreach($playerTeam->getPlayers() as $p){
+                $p->sendMessage(TextFormat::GRAY . "[TEAM] " . $playerTeam->getColor() . $player->getName() . TextFormat::GRAY . " > " . TextFormat::WHITE . $message);
+            }
+          }else{
+            foreach(array_merge($playerGame->getPlayers(), $playerGame->getSpectators()) as $p){
+                $p->sendMessage($playerTeam->getColor() . $player->getName() . TextFormat::GRAY . " > " . TextFormat::WHITE . substr($message, 1));
+            }
+          }
         }
     }
 
@@ -322,17 +359,19 @@ class GameListener implements Listener
             if($playerGame->getState() == Game::STATE_LOBBY){
                 $event->cancel();
             }elseif($playerGame->getState() == Game::STATE_RUNNING){
+                $isCancelled = false;
                 foreach($playerGame->teamInfo as $team => $data){
                     $spawn = Utils::stringToVector(":", $data['SpawnPos']);
                     if($spawn->distance($event->getBlock()->getPosition()->asVector3()) < 6){
                         $event->cancel();
+                        $isCancelled = true;
                     }else{
                         $playerGame->placedBlocks[] = Utils::vectorToString(":", $event->getBlock()->getPosition()->asVector3());
                     }
                 }
 
                 if($event->getBlock()->getId() == BlockLegacyIds::TNT){
-                    $event->getBlock()->ignite(50);
+                    $event->getBlock()->ignite();
                     $event->cancel();
                     $ih = $player->getInventory()->getItemInHand();
                     $ih->setCount($ih->getCount() - 1);
@@ -342,6 +381,12 @@ class GameListener implements Listener
 
                 if($playerGame->isSafeArea($event->getBlock()->getPosition()->asVector3(), $event->getBlockAgainst()->getId())){
                     $event->cancel();
+                    return;
+                }
+
+                if($event->getBlock()->getId() == BlockLegacyIds::CHEST && !$isCancelled && $player->getInventory()->getItemInHand()->getCustomName() == TextFormat::AQUA . "Popup Tower"){
+                       $event->cancel();
+                       new PopupTower($event->getBlock(), $playerGame, $player, $this->plugin->getPlayerTeam($player));
                 }
             }
         }
