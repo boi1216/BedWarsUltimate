@@ -45,7 +45,7 @@ class PopupTower{
          		$insVec = $insBlock->getPosition()->asVector3();
          		if(!in_array(Utils::vectorToString(":", $insVec), $game->placedBlocks)){
          			$player->sendMessage(TextFormat::RED . "Cannot place PopupTower due to collision with map block(s)");
-         			$tnis->cancelBuild = true;
+         			$this->cancelBuild = true;
                     return;
          		}
          	}
