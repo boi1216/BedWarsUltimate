@@ -1,15 +1,7 @@
-# BedWars - PocketMine Plugin
-https://discord.gg/FucEQJcKy3
-Join discord for further info about updates etc..
-
-# PROJECT CONTINUED AS OF 13.03 2022
-Ultimate BedWars plugin for PocketMine<br>
-**Warning:** DO NOT TRUST OTHER PEOPLE SELLING FIXED VERSION OF THIS PLUGIN AS THEIR OWN, I AM ORIGINAL AUTHOR.<br>
-
-This plugin was originally designed for Hyperlands, but as it got leaked I decided to make it public.
+# BedWarsUltimate - PocketMine Plugin
+BedWars plugin with features you won't see anywhere else!
 
 ![Image from game](https://i.imgur.com/X9zSs1u.png)</br>
-Please note that this plugin is not ready for being used on production servers as it's still in development. I'm not aware of any damage caused to your server by this plugin.
 
 ## Features
 - All basics of BedWars game
@@ -17,12 +9,23 @@ Please note that this plugin is not ready for being used on production servers a
 - In-Game scoreboard
 - Team upgrades 
 - Custom generators (like Hypixel's)
+- Hypixel famous Popup-Tower
+- More cool items
+- API 4.2.3 support
+- New updates every week
 
-## TODO
-- [ ] Customizable messages and scoreboard 
-- [ ] Custom team upgrades & shop prices
-- [ ] Use random as arena identifier
-- [ ] Rewrite arena setup
-.
-## Contact
-**Discord** boi#1485 or https://discord.gg/XKaXcE4
+## How to setup
+- It is recommended to have installed MultiWorld by CzechPMDevs to make the setup easier.
+
+1. Create new game using /bw setlobby
+2. Teleport to your map's lobby and set lobby using/bw setlobby
+3. Add teams to your game /bw addteam
+4. Set beds using /bw setbed
+5. Set spawn & shop positions using /bw setpos , the position you're standing at will be used.
+6. Add generators using /bw addgenerator, again it is based on the position you're standing at.
+7. After you finished the setup you can load the arena using /bw load
+
+To create join sign place a new sign and put [bedwars] or [bw] on the first line, the second line will be the ID of your game.
+
+For support & updates join my discord server - https://discord.gg/6reG9s7T7j
+
