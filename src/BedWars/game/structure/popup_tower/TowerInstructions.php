@@ -6,7 +6,7 @@ use pocketmine\math\Facing;
 
 class TowerInstructions{
 
-	const TOWER_SOUTH = [
+	const TOWER_NORTH = [
     	[2,0,0],
     	//[0,0,2],
     	[-2,0,0],
@@ -124,7 +124,7 @@ class TowerInstructions{
 
     ];
 
-	const TOWER_EAST = [
+	const TOWER_WEST = [
     //	[2,0,0],
     	[0,0,2],
     	[-2,0,0],
@@ -242,7 +242,7 @@ class TowerInstructions{
 
     ];
 
-    const TOWER_NORTH = [
+    const TOWER_SOUTH = [
     	[2,0,0],
     	[0,0,2],
     	[-2,0,0],
@@ -360,7 +360,7 @@ class TowerInstructions{
 
     ];
 
-    const TOWER_WEST = [
+    const TOWER_EAST = [
     	[2,0,0],
     	[0,0,2],
     	//[-2,0,0],
