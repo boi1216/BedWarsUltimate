@@ -483,8 +483,6 @@ class GameListener implements Listener
         $packet = $event->getPacket();
         $player = $event->getOrigin()->getPlayer();
 
-
-
         if($packet instanceof ModalFormResponsePacket){
             $playerGame = $this->plugin->getPlayerGame($player);
             if($playerGame == null)return;
@@ -495,7 +493,7 @@ class GameListener implements Listener
                 if($packet->formId == 50) {
                     ItemShop::sendPage($player, intval($data));
                 }elseif($packet->formId < 100){
-                    ItemShop::handleTransaction(($packet->formId), json_decode($packet->formData), $player, $this->plugin);
+                    ItemShop::handleTransaction(($packet->formId), json_decode($packet->formData), $player, $this->plugin, $packet->formId);
                 }elseif($packet->formId == 100){
                     UpgradeShop::sendBuyPage(json_decode($packet->formData), $player, $this->plugin);
                 }elseif($packet->formId > 100){

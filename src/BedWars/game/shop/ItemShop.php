@@ -21,7 +21,6 @@ use pocketmine\player\Player;
 class ItemShop
 {
 
-
     const PURCHASE_TYPE_IRON = 0;
     const PURCHASE_TYPE_GOLD = 1;
     const PURCHASE_TYPE_EMERALD = 2;
@@ -119,7 +118,7 @@ class ItemShop
         return self::$shopWindows[$category];
     }
 
-    public static function handleTransaction(int $id, $data, Player $p, BedWars $plugin){
+    public static function handleTransaction(int $id, $data, Player $p, BedWars $plugin, int $formId){
         if(is_null($data)){
             return;
         }
@@ -196,6 +195,7 @@ class ItemShop
             $item->setCustomName($itemData['item']['custom_name']);
         }
         $p->getInventory()->addItem($item);
+        self::sendPage($p, $formId);
     }
 
     /**
@@ -312,7 +312,6 @@ class ItemShop
         $packet->formId = $formId;
         $packet->formData = json_encode($data);
         $p->getNetworkSession()->sendDataPacket($packet);
-
     }
 
 

@@ -98,10 +98,10 @@ class BedWars extends PluginBase
         $this->getServer()->getPluginManager()->registerEvents(new GameListener($this), $this);
         $this->getServer()->getCommandMap()->register("bedwars", new DefaultCommand($this));
         EntityFactory::getInstance()->register(FakeItemEntity::class, function(World $world, CompoundTag $nbt) : FakeItemEntity{
-            return new FakeItemEntity(EntityDataHelper::parseLocation($nbt, $world), $nbt);
+            return new FakeItemEntity(EntityDataHelper::parseLocation($nbt, $world), null, $nbt);
         }, ["FakeItemEntity"]);
         EntityFactory::getInstance()->register(BridgeEgg::class, function(World $world, CompoundTag $nbt) : BridgeEgg{
-            return new BridgeEgg(EntityDataHelper::parseLocation($nbt, $world), $nbt);
+            return new BridgeEgg(EntityDataHelper::parseLocation($nbt, $world), null, $nbt);
         }, ["Egg"]);
 
         //register items
