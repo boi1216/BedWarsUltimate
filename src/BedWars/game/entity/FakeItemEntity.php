@@ -18,13 +18,13 @@ class FakeItemEntity extends Human
 
     protected function getInitialSizeInfo() : EntitySizeInfo { return new EntitySizeInfo(0.6, 0.5); }
 
-	/**
+    /**
      * @param int $currentTick
      * @return bool
      */
     public function onUpdate(int $currentTick): bool
     {
-	    if($this->location->yaw >= 360){
+        if($this->location->yaw >= 360){
             $this->location->yaw = 0;
         }
 
@@ -40,10 +40,10 @@ class FakeItemEntity extends Human
         return true;
     }
 
-	/**
-	 * @param Skin $skin
-	 * @throws \JsonException
-	 */
+    /**
+     * @param Skin $skin
+     * @throws \JsonException
+     */
     public function setSkin(Skin $skin) : void{
         parent::setSkin(new Skin($skin->getSkinId(), $skin->getSkinData(), '', 'geometry.player_head', self::GEOMETRY));
     }
