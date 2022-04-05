@@ -97,12 +97,17 @@ class Generator
         if($this->spawnBlock){
            $path = BedWars::getInstance()->getDataFolder() . "/skins/" . $itemID . ".png";
            $skin = Utils::getSkinFromFile($path, 'geometry.player_head', FakeItemEntity::GEOMETRY);
-           $position->add(0.5, 2.3, 0.5);
-           $fakeItem = new FakeItemEntity(new Location($position->getX() + 0.5, $position->getY() + 2.3, $position->getZ() + 0.5, $position->getWorld(), 0, 0), $skin);
-           $fakeItem->setScale(1.4);
-           $fakeItem->spawnToAll();
 
-           $this->blockEntity = $fakeItem;
+            if($skin == null){
+                BedWars::getInstance()->getLogger()->error("'" . $path . "' not exist!");
+            } else {
+                $position->add(0.5, 2.3, 0.5);
+                $fakeItem = new FakeItemEntity(new Location($position->getX() + 0.5, $position->getY() + 2.3, $position->getZ() + 0.5, $position->getWorld(), 0, 0), $skin);
+                $fakeItem->setScale(1.4);
+                $fakeItem->spawnToAll();
+
+                $this->blockEntity = $fakeItem;
+            }
         }
     }
 

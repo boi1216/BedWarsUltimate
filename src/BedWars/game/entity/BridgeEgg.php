@@ -19,6 +19,7 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\Location;
 
 use BedWars\BedWars;
+use BedWars\game\Game;
 use BedWars\game\Team;
 use BedWars\utils\Utils;
 
@@ -59,11 +60,13 @@ class BridgeEgg extends Egg{
 			parent::move($dx, $dy, $dz);
 			return;
 		}
+		$game = BedWars::getInstance()->getPlayerGame($this->getOwningEntity());
 		$team = BedWars::getInstance()->getPlayerTeam($this->getOwningEntity());
-		if(!$team instanceof Team){
+		if(!$team instanceof Team || !$game instanceof Game){
 			parent::move($dx, $dy, $dz);
 			return;
 		}
+
 		$world = $this->getWorld();
 		$pos = $this->getPosition();
 		$placePos = $pos->asVector3()->subtract(0, 1, 0);
@@ -79,11 +82,18 @@ class BridgeEgg extends Egg{
 
 		parent::move($dx, $dy, $dz);
 		if($this->skippedFirst){ //simple skip for players position
-		$world->setBlock($placePos, BlockFactory::getInstance()->get(BlockLegacyIds::WOOL, Utils::colorIntoWool($team->getColor())));
-		$world->setBlock($placePos->subtract(0, 0, 1), BlockFactory::getInstance()->get(BlockLegacyIds::WOOL, Utils::colorIntoWool($team->getColor())));
-		$world->setBlock($placePos->subtract(1, 0, 0), BlockFactory::getInstance()->get(BlockLegacyIds::WOOL, Utils::colorIntoWool($team->getColor())));
-        $world->setBlock($placePos->add(1, 0, 0), BlockFactory::getInstance()->get(BlockLegacyIds::WOOL, Utils::colorIntoWool($team->getColor())));
-        $world->setBlock($placePos->add(0, 0, 1), BlockFactory::getInstance()->get(BlockLegacyIds::WOOL, Utils::colorIntoWool($team->getColor())));
+			foreach ([
+				$placePos,
+				$placePos->subtract(0, 0, 1),
+				$placePos->subtract(1, 0, 0),
+				$placePos->add(1, 0, 0),
+				$placePos->add(0, 0, 1)
+				] as $pos){
+					if($world->getBlock($pos)->getId() !== BlockLegacyIds::BED_BLOCK){
+						$world->setBlock($pos, BlockFactory::getInstance()->get(BlockLegacyIds::WOOL, Utils::colorIntoWool($team->getColor())));
+						$game->placedBlocks[] = Utils::vectorToString(":", $world->getBlock($pos)->getPosition()->asVector3());
+					}
+				}
 	    }
 	    $this->skippedFirst = true;
 	}

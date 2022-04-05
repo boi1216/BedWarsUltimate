@@ -40,7 +40,9 @@ use BedWars\game\structure\popup_tower\TowerSouth;
 use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\event\player\PlayerCommandPreprocessEvent;
-
+use pocketmine\event\player\PlayerDropItemEvent;
+use pocketmine\item\enchantment\ItemFlags;
+use pocketmine\item\ItemFactory;
 
 class GameListener implements Listener
 {
@@ -69,6 +71,14 @@ class GameListener implements Listener
                 return;
             }
             $pos = $sign->getPosition();
+            $pos_ = $pos->getX() . ":" . $pos->getY() . ":" . $pos->getZ() . ":" . $player->getWorld()->getFolderName();
+
+            foreach ($this->signs[$text->getLine(1)] as $key => $val){
+                if($val == $pos_){
+                    return;
+                }
+            }
+            
             $this->plugin->createSign($text->getLine(1), $pos->getX(), $pos->getY(), $pos->getZ(), $player->getWorld()->getFolderName());
             $player->sendMessage(BedWars::PREFIX . TextFormat::GREEN . "Sign created");
 
@@ -329,7 +339,7 @@ class GameListener implements Listener
 
                     if($teamName !== ""){
                         $teamObject = $game->teams[$name];
-                        if($name == $this->plugin->getPlayerTeam($player)->getName()){
+                        if($teamName == $this->plugin->getPlayerTeam($player)->getName()){
                             $player->sendMessage(TextFormat::RED . "You can't break your bed!");
                             $event->cancel();
                             return;
@@ -342,6 +352,15 @@ class GameListener implements Listener
             }else{
                 if($playerGame->getState() == Game::STATE_RUNNING){
                     if(!in_array(Utils::vectorToString(":", $block->getPosition()->asVector3()), $playerGame->placedBlocks)){
+                        $event->cancel();
+                        return;
+                    }
+                }
+            }
+        } else {
+            foreach ($this->plugin->games as $arena){
+                if($arena->worldName == $player->getWorld()->getFolderName()){
+                    if(!isset($arena->getPlayers()[$player->getName()])){
                         $event->cancel();
                         return;
                     }
@@ -386,8 +405,18 @@ class GameListener implements Listener
                 }
 
                 if($event->getBlock()->getId() == BlockLegacyIds::CHEST && !$isCancelled && $player->getInventory()->getItemInHand()->getCustomName() == TextFormat::AQUA . "Popup Tower"){
+                       $player->getInventory()->removeItem(ItemFactory::getInstance()->get(BlockLegacyIds::CHEST, 0, 1));
                        $event->cancel();
-                       new PopupTower($event->getBlock(), $playerGame, $player, $this->plugin->getPlayerTeam($player));
+                       (new PopupTower($event->getBlock(), $playerGame, $player, $this->plugin->getPlayerTeam($player)));
+                }
+            }
+        } else {
+            foreach ($this->plugin->games as $arena){
+                if($arena->worldName == $player->getWorld()->getFolderName()){
+                    if(!isset($arena->getPlayers()[$player->getName()])){
+                        $event->cancel();
+                        return;
+                    }
                 }
             }
         }
@@ -472,6 +501,16 @@ class GameListener implements Listener
               $player->sendMessage(TextFormat::RED . "You cannot run this in-game!");
               $event->cancel();
           }
+    }
+
+    public function onDrop(PlayerDropItemEvent $event){
+        $player = $event->getPlayer();
+        if(!$player instanceof Player) return;
+        if(($arena = $this->plugin->getPlayerGame($player)) !== null){
+            if($arena->getState() == Game::STATE_LOBBY || $arena->getState() == Game::STATE_REBOOT){
+                $event->cancel();
+            }
+        }
     }
 
 

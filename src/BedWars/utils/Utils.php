@@ -15,13 +15,13 @@ class Utils
 {
 
     const WOOL_COLOR = [
-        '§a' => 5,
-        '§c' => 14,
-        '§e' => 4,
-        '§6' => 1,
-        '§f' => 0,
-        '§b' => 3,
-        '§1' => 11
+        TextFormat::GREEN => 5,
+        TextFormat::RED => 14,
+        TextFormat::YELLOW => 4,
+        TextFormat::GOLD => 1,
+        TextFormat::WHITE => 0,
+        TextFormat::AQUA => 3,
+        TextFormat::DARK_BLUE => 11
     ];
 
     public static function colorIntoWool(string $color) : int{
@@ -128,7 +128,8 @@ class Utils
      * @return Skin|null
      */
     public static function getSkinFromFile(string $path, $geometryName = null, $geometryData = null) : ?Skin{
-
+		if(!file_exists($path))
+			return null;
         $img = @imagecreatefrompng($path);
         $bytes = '';
         $l = (int) @getimagesize($path)[1];
