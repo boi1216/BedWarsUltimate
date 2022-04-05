@@ -4,12 +4,10 @@
 namespace BedWars\game\entity;
 
 
+use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Human;
-use pocketmine\entity\object\ItemEntity;
 use pocketmine\entity\Skin;
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\level\Level;
-use pocketmine\nbt\tag\CompoundTag;
 
 class FakeItemEntity extends Human
 {
@@ -17,20 +15,20 @@ class FakeItemEntity extends Human
     public const GEOMETRY = '{"geometry.player_head":{"texturewidth":64,"textureheight":64,"bones":[{"name":"head","pivot":[0,24,0],"cubes":[{"origin":[-4,0,-4],"size":[8,8,8],"uv":[0,0]}]}]}}';
 
     protected $gravity = 0;
-    public $width = 0.5, $height = 0.6;
 
-    /**
+    protected function getInitialSizeInfo() : EntitySizeInfo { return new EntitySizeInfo(0.6, 0.5); }
+
+	/**
      * @param int $currentTick
      * @return bool
      */
     public function onUpdate(int $currentTick): bool
     {
-        
-        if($this->getLocation()->yaw >= 360){
-            $this->getLocation()->yaw = 0;
+	    if($this->location->yaw >= 360){
+            $this->location->yaw = 0;
         }
 
-        $this->getLocation()->yaw+=5.5;
+        $this->location->yaw += 5.5;
 
         $this->updateMovement();
         $this->scheduleUpdate();
@@ -42,9 +40,10 @@ class FakeItemEntity extends Human
         return true;
     }
 
-    /**
-     * @param Skin $skin
-     */
+	/**
+	 * @param Skin $skin
+	 * @throws \JsonException
+	 */
     public function setSkin(Skin $skin) : void{
         parent::setSkin(new Skin($skin->getSkinId(), $skin->getSkinData(), '', 'geometry.player_head', self::GEOMETRY));
     }
@@ -56,5 +55,4 @@ class FakeItemEntity extends Human
     {
         $source->cancel();
     }
-
 }
