@@ -73,7 +73,7 @@ class GameListener implements Listener
             $pos = $sign->getPosition();
             $pos_ = $pos->getX() . ":" . $pos->getY() . ":" . $pos->getZ() . ":" . $player->getWorld()->getFolderName();
 
-            foreach ($this->signs[$text->getLine(1)] as $key => $val){
+            foreach ($this->plugin->signs[$text->getLine(1)] as $key => $val){
                 if($val == $pos_){
                     return;
                 }
