@@ -6,19 +6,12 @@ namespace BedWars\game;
 use BedWars\game\entity\FakeItemEntity;
 use BedWars\utils\Utils;
 use BedWars\BedWars;
-use pocketmine\entity\Entity;
-use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
 use pocketmine\entity\Location;
 use pocketmine\world\particle\FloatingTextParticle;
 use pocketmine\world\Position;
-use pocketmine\plugin\PluginBase;
-use pocketmine\Server;
 use pocketmine\utils\TextFormat;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\StringTag;
-use pocketmine\nbt\tag\ByteArrayTag;
 
 class Generator
 {
@@ -61,11 +54,6 @@ class Generator
         ItemIds::EMERALD => TextFormat::BOLD . TextFormat::GREEN . "Emerald"
     ];
 
-    const FAKE_BLOCK = [
-        ItemIds::DIAMOND => ItemIds::DIAMOND_BLOCK,
-        ItemIds::EMERALD => ItemIds::EMERALD_BLOCK
-    ];
-
 
     /**
      * Generator constructor.
@@ -87,18 +75,18 @@ class Generator
 
         $this->dynamicSpawnTime = $repeatRate;
 
-        if($this->spawnText){
-            $text = TextFormat::YELLOW . "Tier " . TextFormat::RED . Utils::rome($this->tier) . "\n".
-                self::TITLE[$itemID] . "\n\n".
+        if ($this->spawnText) {
+            $text = TextFormat::YELLOW . "Tier " . TextFormat::RED . Utils::rome($this->tier) . "\n" .
+                self::TITLE[$itemID] . "\n\n" .
                 TextFormat::YELLOW . "Spawns in " . TextFormat::RED . $this->dynamicSpawnTime . "seconds";
             $this->floatingText = new FloatingTextParticle($text, "");
         }
 
-        if($this->spawnBlock){
-           $path = BedWars::getInstance()->getDataFolder() . "/skins/" . $itemID . ".png";
-           $skin = Utils::getSkinFromFile($path, 'geometry.player_head', FakeItemEntity::GEOMETRY);
+        if ($this->spawnBlock) {
+            $path = BedWars::getInstance()->getDataFolder() . "/skins/" . $itemID . ".png";
+            $skin = Utils::getSkinFromFile($path, 'geometry.player_head', FakeItemEntity::GEOMETRY);
 
-            if($skin == null){
+            if ($skin == null) {
                 BedWars::getInstance()->getLogger()->error("'" . $path . "' not exist!");
             } else {
                 $position->add(0.5, 2.3, 0.5);
@@ -111,11 +99,13 @@ class Generator
         }
     }
 
-    public function getPosition() {
+    public function getPosition()
+    {
         return $this->position;
     }
 
-    public function getBlockEntity() {
+    public function getBlockEntity()
+    {
         return $this->blockEntity;
     }
 
@@ -123,64 +113,70 @@ class Generator
     /**
      * @param int $repeatRate
      */
-    public function setRepeatRate(int $repeatRate) : void{
+    public function setRepeatRate(int $repeatRate): void
+    {
         $this->repeatRate = $repeatRate;
     }
 
-    public function getRepeatRate() : int{
+    public function getRepeatRate(): int
+    {
         return $this->repeatRate;
     }
 
-    public function setMultiply(int $multiply) : void{
+    public function setMultiply(int $multiply): void
+    {
         $this->multiply = $multiply;
     }
 
-    public function tick() : void{
-        if($this->team instanceof Team){
-            if(count($this->team->getPlayers()) <= $this->team->dead){
+    public function tick(): void
+    {
+        if ($this->team instanceof Team) {
+            if (count($this->team->getPlayers()) <= $this->team->dead) {
                 return;
             }
         }
 
-        if($this->spawnText){
-            $text = TextFormat::YELLOW . "Tier " . TextFormat::RED . Utils::rome($this->tier) . "\n".
-                self::TITLE[$this->itemID] . "\n".
+        if ($this->spawnText) {
+            $text = TextFormat::YELLOW . "Tier " . TextFormat::RED . Utils::rome($this->tier) . "\n" .
+                self::TITLE[$this->itemID] . "\n" .
                 TextFormat::YELLOW . "Spawn in " . TextFormat::RED . $this->dynamicSpawnTime;
             $this->floatingText->setText($text);
-            foreach($this->floatingText->encode($this->position->asVector3()->add(0.5, 3.3, 0.5)) as $packet){
-                foreach($this->position->getWorld()->getPlayers() as $player){
+            foreach ($this->floatingText->encode($this->position->asVector3()->add(0.5, 3.3, 0.5)) as $packet) {
+                foreach ($this->position->getWorld()->getPlayers() as $player) {
                     $player->getNetworkSession()->sendDataPacket($packet);
                 }
             }
         }
         $this->dynamicSpawnTime--;
-     
-        if($this->dynamicSpawnTime == 0){
+
+        if ($this->dynamicSpawnTime == 0) {
             $this->dynamicSpawnTime = $this->repeatRate;
-            if($this->multiply == 50){
-                if($this->multiplied == 2){
+            if ($this->multiply == 50) {
+                if ($this->multiplied == 2) {
                     $this->multiplied = 0;
-                     $this->position->getWorld()->dropItem($this->position->asVector3(), ItemFactory::getInstance()->get($this->itemID, 0, 2));
-                }else{
+                    $this->position->getWorld()->dropItem($this->position->asVector3(), ItemFactory::getInstance()->get($this->itemID, 0, 2));
+                } else {
                     $this->position->getWorld()->dropItem($this->position->asVector3(), ItemFactory::getInstance()->get($this->itemID));
                 }
                 $this->multiplied++;
 
-            }else if($this->multiply == 100){
+            } else if ($this->multiply == 100) {
                 $this->position->getWorld()->dropItem($this->position->asVector3(), ItemFactory::getInstance()->get($this->itemID, 0, 2));
-            }else if($this->multiply == 200){
+            } else if ($this->multiply == 200) {
                 $this->position->getWorld()->dropItem($this->position->asVector3(), ItemFactory::getInstance()->get($this->itemID, 0, 4));
-            }else{
+            } else {
                 $this->position->getWorld()->dropItem($this->position->asVector3(), ItemFactory::getInstance()->get($this->itemID));
             }
         }
     }
 
-    public function getTier() : int{
+    public function getTier(): int
+    {
         return $this->tier;
     }
 
-    public function updateTier() : void{
+    public function updateTier(): void
+    {
         $this->tier++;
         //-20%
         $this->repeatRate = $this->repeatRate - ($this->repeatRate * 100 / 20);
@@ -189,11 +185,8 @@ class Generator
     /**
      * @return FloatingTextParticle|null
      */
-    public function getFloatingText() : ?FloatingTextParticle{
+    public function getFloatingText(): ?FloatingTextParticle
+    {
         return $this->floatingText;
     }
-
-
-
-
 }
