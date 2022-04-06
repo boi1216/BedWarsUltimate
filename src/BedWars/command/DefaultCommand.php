@@ -36,7 +36,7 @@ class DefaultCommand extends \pocketmine\command\Command
 		'setpos' => ['desc' => "Set spawn & shop positions", 'usage' => "<game_id> <team_name> <1|2|3> - 3 = Player Spawn, 2 = Upgrade Shop, 1 = Item Shop"],
 		'addgenerator' => ['desc' => "Add generator", 'usage' => "<game_id> <iron|gold|diamond|emerald> "],
 		'setbed' => ['desc' => "Set team's bed", 'usage' => "<game_id> <team>"],
-		'addsafearea' => ['desc' => "Add area restricted for placing blocks", 'usage' => "<game_id>"],
+		'addsafearea' => ['desc' => "Add area restricted for placing blocks", 'usage' => "<game_id> 365:2,13,1:0"],
 		'load' => ['desc' => "Load arena after finishing setup", 'usage' => '<game_id>'],
 		'join' => ['desc' => "Join arena by id", 'usage' => '<game_id>'],
 		'random' => ['desc' => "Join random arena", 'usage' => ''],
@@ -281,7 +281,7 @@ class DefaultCommand extends \pocketmine\command\Command
 				return;
 			}
 			
-			if(count($args) < 2){
+			if(count($args) < 3){
 				$sender->sendMessage($this->getSubUsage('addsafearea'));
 				return;
 			}
