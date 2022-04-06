@@ -29,24 +29,24 @@ class ItemShop
      * @var array $shopWindows
      */
     public static $shopWindows = [
-        1 => ["name" =>"Armor", "image" => ""],
-        2 => ["name" =>"Weapons", "image" => ""],
-        3 => ["name" =>"Blocks", "image" => ""],
-        4 => ["name" => "Bows", "image" => ""],
-        5 => ["name" => "Potions" ,"image" => ""],
-        6 => ["name" => "Specials", "image" => ""]
+        1 => ["name" =>"Armor", "image" => "textures/items/iron_chestplate"],
+        2 => ["name" =>"Weapons", "image" => "textures/items/iron_sword"],
+        3 => ["name" =>"Blocks", "image" => "textures/blocks/wool_colored_white"],
+        4 => ["name" => "Bows", "image" => "textures/items/bow"],
+        5 => ["name" => "Potions" ,"image" => "textures/items/potion_bottle_empty"],
+        6 => ["name" => "Specials", "image" => "textures/items/ender_eye"]
     ];
 
     /**
      * @var array $shopPages
      */
     public static $shopPages = [
-        0 => ["§6Chainmal Armor\n§l§e40 IRON" => ["image" => ""],
-            "§6Iron Armor §c[PERMANENT]\n§l§e12 GOLD" => ["image" => ""],
-            "§6Diamond Armor §c[PERMANENT]\n§l§e6 EMERALD" => ["image" => ""]],
-        1 => ["§6Stone Sword\n§l§e10 IRON" => ["image" => ""],
-            "§6Iron Sword\n§l§e7 GOLD" => ["image" => ""],
-            "§6Diamond Sword\n§l§e7 EMERALD" => ["image" => ""],
+        0 => ["§6Chainmail Armor\n§l§e40 IRON" => ["image" => "textures/items/chainmail_chestplate"],
+            "§6Iron Armor §c[PERMANENT]\n§l§e12 GOLD" => ["image" => "textures/items/iron_chestplate"],
+            "§6Diamond Armor §c[PERMANENT]\n§l§e6 EMERALD" => ["image" => "textures/items/diamond_chestplate"]],
+        1 => ["§6Stone Sword\n§l§e10 IRON" => ["image" => "textures/items/stone_sword"],
+            "§6Iron Sword\n§l§e7 GOLD" => ["image" => "textures/items/iron_sword"],
+            "§6Diamond Sword\n§l§e7 EMERALD" => ["image" => "textures/items/diamond_sword"],
             "§6Knockback Stick\n§l§e2 EMERALD" => ["image" => ""]],
         2 => ["§6Wool 16x\n§l§e4 IRON" => ["image" => ""],
             "§6Sandstone 16x\n§l§e12 IRON" => ["image" => ""],
