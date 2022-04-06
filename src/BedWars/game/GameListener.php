@@ -72,12 +72,14 @@ class GameListener implements Listener
             }
             $pos = $sign->getPosition();
             $pos_ = $pos->getX() . ":" . $pos->getY() . ":" . $pos->getZ() . ":" . $player->getWorld()->getFolderName();
-
-            foreach ($this->plugin->signs[$text->getLine(1)] as $key => $val){
-                if($val == $pos_){
-                    return;
-                }
-            }
+			
+			if(isset($this->plugin->signs[$text->getLine(1)])){
+				foreach ($this->plugin->signs[$text->getLine(1)] as $key => $val){
+					if($val == $pos_){
+						return;
+					}
+				}
+			}
             
             $this->plugin->createSign($text->getLine(1), $pos->getX(), $pos->getY(), $pos->getZ(), $player->getWorld()->getFolderName());
             $player->sendMessage(BedWars::PREFIX . TextFormat::GREEN . "Sign created");
