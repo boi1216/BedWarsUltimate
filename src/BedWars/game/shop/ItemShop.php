@@ -6,6 +6,7 @@ namespace BedWars\game\shop;
 
 use BedWars\BedWars;
 use BedWars\game\Game;
+use BedWars\game\Team;
 use BedWars\utils\Utils;
 use pocketmine\utils\TextFormat;
 use pocketmine\item\Armor;
@@ -162,24 +163,28 @@ class ItemShop
         if($id == ItemIds::WOOL){
             $damage = Utils::colorIntoWool($playerTeam->getColor());
         }elseif(ItemFactory::getInstance()->get($id) instanceof Armor){
-            self::handleArmorTransaction($data, $p);
+            if(self::handleArmorTransaction($data, $p, $playerTeam)){
+                $p->getInventory()->removeItem($removeItem);
+            }
             return;
         }
         $item = ItemFactory::getInstance()->get($id, $damage, $amount);
         $wasPurchased = false;
 
         //handle custom sword transactions
+        if(self::isSword($id)){
         foreach($p->getInventory()->getContents() as $index => $content){
-            if(self::isSword($content->getId()) && self::isSword($id)) {
+            if(self::isSword($content->getId())) {
                 $wasPurchased = true;
                 if ($id !== $content->getId()) {
                     $p->getInventory()->removeItem($content);
                     $p->getInventory()->setItem($index, $item);
                 }else{
-                    $p->sendMessage("§cYou already have this sword!");
+                    $p->sendMessage(TextFormat::RED . "You already have this sword!");
                     return;
                 }
             }
+          }
         }
         $p->sendMessage(TextFormat::GREEN . "You purchased " . TextFormat::YELLOW .  $itemData['name']);
         if($wasPurchased){
@@ -202,25 +207,40 @@ class ItemShop
      * @param int $data
      * @param Player $p
      */
-    public static function handleArmorTransaction(int $data, Player $p){
+    public static function handleArmorTransaction(int $data, Player $p, Team $team) : bool{
         $data = intval($data);
         $boots = "";
         $leggings = "";
+        if($team->getArmor($p) == array(0 => 'chain', 1 => 'iron', 2 => 'diamond')[$data]){
+            $p->sendMessage(TextFormat::RED . "You cannot purchase this twice!");
+            return false;
+        }
+
         switch ($data){
             case 0;
                 $boots = ItemFactory::getInstance()->get(ItemIds::CHAIN_BOOTS, 0, 1);
                 $leggings = ItemFactory::getInstance()->get(ItemIds::CHAIN_LEGGINGS, 0, 1);
+                $team->setArmor($p, 'chain');
                 break;
             case 1;
                 $boots = ItemFactory::getInstance()->get(ItemIds::IRON_BOOTS);
                 $leggings = ItemFactory::getInstance()->get(ItemIds::IRON_LEGGINGS);
+                $team->setArmor($p, 'iron');
                 break;
             case 2;
                 $boots = ItemFactory::getInstance()->get(ItemIds::DIAMOND_BOOTS);
                 $leggings = ItemFactory::getInstance()->get(ItemIds::DIAMOND_LEGGINGS);
+                $team->setArmor($p, 'diamond');
+        }
+        if(($enchLevel = $team->getUpgrade('armorProtection')) > 0){
+           foreach([$boots, $leggings] as $item){
+              $item->addEnchantment(new EnchantmentInstance(VanillaEnchantments::SHARPNESS(), $enchLevel));
+           }
         }
         $p->getArmorInventory()->setBoots($boots);
         $p->getArmorInventory()->setLeggings($leggings);
+        return true;
+
     }
 
     /**

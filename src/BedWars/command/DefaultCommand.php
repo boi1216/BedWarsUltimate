@@ -20,27 +20,21 @@ use pocketmine\utils\TextFormat;
 use pocketmine\math\Vector3;
 use pocketmine\world\World;
 
-//form api
-use jojoe77777\FormAPI\CustomForm;
-use jojoe77777\FormAPI\SimpleForm;
-use jojoe77777\FormAPI\Form;
-
-
 class DefaultCommand extends \pocketmine\command\Command
 {
 	private $commandInfo = [
 		'create' => ['desc' => "Create new game", 'usage' => "<game_id> <min_players> <players_per_team> <start_time> <map_name> <world_name>"],
 		'delete' => ['desc' => "Delete game", 'usage' => "<game_id>"],
 		'setlobby' => ['desc' => "Set lobby of a game", 'usage' => "<game_id>"],
-		'addteam' => ['desc' => "Add team to a game", 'usage' => "<game_id> <blue|red|yellow|green|aqua|gold|white> "],
+		'addteam' => ['desc' => "Add team to a game", 'usage' => "<game_id> <blue|red|yellow|green|aqua|gold|white>"],
 		'setpos' => ['desc' => "Set spawn & shop positions", 'usage' => "<game_id> <team_name> <1|2|3> - 3 = Player Spawn, 2 = Upgrade Shop, 1 = Item Shop"],
-		'addgenerator' => ['desc' => "Add generator", 'usage' => "<game_id> <iron|gold|diamond|emerald> "],
+		'addgenerator' => ['desc' => "Add generator", 'usage' => "<game_id> <iron|gold|diamond|emerald> (team)"],
 		'setbed' => ['desc' => "Set team's bed", 'usage' => "<game_id> <team>"],
-		'addsafearea' => ['desc' => "Add area restricted for placing blocks", 'usage' => "<game_id> 365:2,13,1:0"],
+		'addsafearea' => ['desc' => "Add area restricted for placing blocks", 'usage' => "<game_id> <itemId:damage|null,itemId:damage|null...)"],
 		'load' => ['desc' => "Load arena after finishing setup", 'usage' => '<game_id>'],
 		'join' => ['desc' => "Join arena by id", 'usage' => '<game_id>'],
 		'random' => ['desc' => "Join random arena", 'usage' => ''],
-		'start' => ['desc' => "force start the game", 'usage' => '']
+		'start' => ['desc' => "Force start the game", 'usage' => '(game_id)']
 	];
 	
     /**
@@ -66,7 +60,18 @@ class DefaultCommand extends \pocketmine\command\Command
      */
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
 		if(empty($args)){
-			$this->sendHelp($sender);
+			if($sender->hasPermission('bedwars.command.help')){
+                $this->sendHelp($sender);
+                return;
+			}else{
+				goto missingPermission;
+			}
+		}
+
+
+		if(!$sender->hasPermission('bedwars.command.' . strtolower($args[0]))){
+			missingPermission:
+			$sender->sendMessage(TextFormat::RED . "You don't have permission to use this command!");
 			return;
 		}
 		
@@ -214,7 +219,6 @@ class DefaultCommand extends \pocketmine\command\Command
 				$this->getPlugin()->bedSetup[$sender->getName()] = ['game' => $game_id, 'team' => $team , 'step' => 1];
 				$sender->sendMessage(TextFormat::GREEN . "Please touch the 1st part of the bed");
 			break;
-			
 			case 'addteam';
 				if(count($args) < 2){
 					$sender->sendMessage($this->getSubUsage('addteam'));
@@ -379,7 +383,7 @@ class DefaultCommand extends \pocketmine\command\Command
 				}
 				
 				$this->getPlugin()->loadGame($args[1]);
-				$sender->sendMessage(TextFormat::GREEN . "Done");
+				$sender->sendMessage(TextFormat::GREEN . "Game " . $args[1] . " was loaded");
 			break;
 				
 			case 'list';
@@ -439,7 +443,7 @@ class DefaultCommand extends \pocketmine\command\Command
 					}
 					
 					if(count($avillableArenas) == 0){
-						$sender->sendMessage(TextFormat::RED . "No arenas found!");
+						$sender->sendMessage(TextFormat::RED . "No games found!");
 						return;
 					}
 					
@@ -447,10 +451,9 @@ class DefaultCommand extends \pocketmine\command\Command
 					$this->getPlugin()->games[$random]->join($sender);
 					$sender->sendMessage(TextFormat::YELLOW . "You send to " . $random . "!");
 				} else {
-					$sender->sendMessage("run command in-game only!");
+					$sender->sendMessage(TextFormat::GREEN . "This command can be used only in-game");
 				}
 			break;
-
 			case "start";
 				if($sender instanceof Player){
 					if($sender->hasPermission("bedwars.command.start")){
@@ -467,19 +470,32 @@ class DefaultCommand extends \pocketmine\command\Command
 									$arena->setStartTime(5);
 									$sender->sendMessage(TextFormat::YELLOW . "Starting in 5s");
 								} else {
-									$sender->sendMessage(TextFormat::RED . "cannot start the game right now!");
+									$sender->sendMessage(TextFormat::RED . "Cannot start the game right now!");
 								}
 							} else {
-								$sender->sendMessage(TextFormat::RED . "Game already started!");
+								$sender->sendMessage(TextFormat::RED . "You can only start games with lobby status!");
 							}
 						} else {
-							$sender->sendMessage(TextFormat::RED . "You're not in arena!");
+							if(!isset($args[1])){
+                                $sender->sendMessage($this->getSubUsage('start'));
+                                return;
+							}
+
+							if(!$this->getPlugin()->gameExists($args[1])){
+								$sender->sendMessage(TextFormat::RED . $args[1] . " - Invalid game id");
+								return;
+							}
+
+							$arena = $this->getPlugin()->games[$args[1]];
+							$arena->setForcedStart(true);
+							$arena->setStartTime(5);
+							$sender->sendMessage(TextFormat::GREEN . "Starting in 5 seconds");
 						}
 					} else {
 						$sender->sendMessage(TextFormat::RED . "You don't have permission to use this command!");
 					}
 				} else {
-					$sender->sendMessage("run command in-game only!");
+					$sender->sendMessage(TextFormat::GREEN . "This command can be used only in-game");
 				}
 			break;
 		}	

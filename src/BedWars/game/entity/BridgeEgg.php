@@ -32,7 +32,7 @@ class BridgeEgg extends Egg{
 	private $isNotBE = false;
 
 	public function __construct(Location $location, ?Entity $shootingEntity, ?CompoundTag $nbt = null){
-		parent::__construct($location, $nbt);
+		parent::__construct($location, $shootingEntity, $nbt);
 		if($shootingEntity !== null){
 			$this->setOwningEntity($shootingEntity);
 
@@ -46,7 +46,6 @@ class BridgeEgg extends Egg{
 			}
 		}
 	}
-
 
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);

@@ -634,6 +634,7 @@ class Game
         $player->teleport($this->plugin->getServer()->getWorldManager()->getWorldByName($this->worldName)->getSafeSpawn());
         $player->teleport(Utils::stringToVector(":", $spawnPos));
 
+
         //inventory
         $helmet = ItemFactory::getInstance()->get(ItemIds::LEATHER_CAP);
         $chestplate = ItemFactory::getInstance()->get(ItemIds::LEATHER_CHESTPLATE);
@@ -643,11 +644,17 @@ class Game
         $hasArmorUpdated = true;
 
         switch($team->getArmor($player)){
+            case "chain";
+            $boots = ItemFactory::getInstance()->get(ItemIds::CHAIN_BOOTS, 0, 1);
+            $leggings = ItemFactory::getInstance()->get(ItemIds::CHAIN_LEGGINGS, 0, 1);
+            break;
             case "iron";
             $leggings = ItemFactory::getInstance()->get(ItemIds::IRON_LEGGINGS);
+            $boots = ItemFactory::getInstance()->get(ItemIds::IRON_BOOTS);
             break;
             case "diamond";
-            $boots = ItemFactory::getInstance()->get(ItemIds::IRON_BOOTS);
+            $leggings = ItemFactory::getInstance()->get(ItemIds::DIAMOND_LEGGINGS);
+            $boots = ItemFactory::getInstance()->get(ItemIds::DIAMOND_BOOTS);
             break;
             default;
             $hasArmorUpdated = false;
@@ -800,6 +807,17 @@ class Game
                          \BedWars\utils\Scoreboard::setLine($player, " " . $currentLine, $stringFormat);
                          $currentLine++;
                      }
+
+                     $allTeams = BedWars::TEAMS;
+
+                     foreach($allTeams as $name => $color){
+                        if(!isset($this->teams[$name])){
+                            \BedWars\utils\Scoreboard::setLine($player, " " . $currentLine, TextFormat::BOLD . $color . ucfirst($name)[0] . " " . TextFormat::RESET . TextFormat::WHITE . ucfirst($name) . " " . TextFormat::DARK_RED . "[-]");
+                            $currentLine++;
+                        }
+                     }
+
+
                      \BedWars\utils\Scoreboard::setLine($player, " " . $currentLine, "   ");
                      $currentLine++;
                      \BedWars\utils\Scoreboard::setLine($player, " " . $currentLine, " " . TextFormat::YELLOW . $this->plugin->serverWebsite);
