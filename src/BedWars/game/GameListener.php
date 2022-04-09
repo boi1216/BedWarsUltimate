@@ -17,6 +17,7 @@ use pocketmine\event\block\SignChangeEvent;
 use pocketmine\event\player\PlayerBedEnterEvent;
 use pocketmine\event\player\PlayerChatEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
+use pocketmine\event\inventory\InventoryTransactionEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityTeleportEvent;
 use pocketmine\event\Listener;
@@ -43,6 +44,7 @@ use pocketmine\event\player\PlayerCommandPreprocessEvent;
 use pocketmine\event\player\PlayerDropItemEvent;
 use pocketmine\item\enchantment\ItemFlags;
 use pocketmine\item\ItemFactory;
+use pocketmine\inventory\ArmorInventory;
 
 class GameListener implements Listener
 {
@@ -85,6 +87,19 @@ class GameListener implements Listener
             $player->sendMessage(BedWars::PREFIX . TextFormat::GREEN . "Sign created");
 
         }
+    }
+
+    public function onInventoryTransaction(InventoryTransactionEvent $ev) : void{
+    	$transaction = $ev->getTransaction();
+    	$player = $transaction->getSource();
+
+    	if($this->plugin->getPlayerGame($player) !== null){
+    		foreach($transaction->getInventories() as $inventory){
+    			if($inventory instanceof ArmorInventory){
+    				$ev->cancel();
+    			}
+    		}
+    	}
     }
 
     public function onExplode(EntityExplodeEvent $ev) : void{
