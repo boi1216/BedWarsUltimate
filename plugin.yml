@@ -3,8 +3,29 @@ version: "2.0pre-release"
 api: 4.2.3
 main: BedWars\BedWars
 author: boi1216
-dependencies: ["FormAPI"]
 
 permissions:
   bedwars.command.start:
     default: op
+  bedwars.command.create:
+    default: op
+  bedwars.command.delete:
+    default: op
+  bedwars.command.setlobby:
+    default: op
+  bedwars.command.addteam:
+    default: op
+  bedwars.command.setpos:
+    default: op
+  bedwars.command.addgenerator:
+    default: op
+  bedwars.command.setbed:
+    default: op
+  bedwars.command.addsafearea:
+    default: op
+  bedwars.command.load:
+    default: op
+  bedwars.command.random:
+    default: true
+  bedwars.command.join:
+    default: true
