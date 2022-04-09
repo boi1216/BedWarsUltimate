@@ -850,10 +850,12 @@ class Game
              break;
              case Game::STATE_REBOOT;
              $team = $this->winnerTeam;
+             foreach($this->winnerTeam->getPlayers() as $player){
+                if($this->rebootTime == 15){
+                         $player->sendTitle(TextFormat::BOLD . TextFormat::GOLD . "VICTORY!", "", 5, 1000);
+                }
+             }
              foreach(array_merge($this->players, $this->spectators) as $player){
-                     if($this->rebootTime == 15){
-                         $player->sendTitle(TextFormat::BOLD . TextFormat::GOLD . "VICTORY!", "", 5, 500);
-                     }
                      Scoreboard::remove($player);
                      Scoreboard::new($player, 'bedwars', TextFormat::BOLD . TextFormat::YELLOW . "Bed Wars");
                      Scoreboard::setLine($player, 1, " ");
