@@ -79,10 +79,6 @@ class BedWars extends PluginBase
 
     public function onEnable() : void
     {
-        $formAPI = $this->getServer()->getPluginManager()->getPlugin('FormAPI');
-        if($formAPI->getDescription()->getAuthors()[0] !== "jojoe77777"){
-                $this->getLogger()->error("Invalid dependency author | FormAPI");
-        }
 
         $this->saveDefaultConfig();
         $this->serverWebsite = $this->getConfig()->get('website');
