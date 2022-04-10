@@ -5,6 +5,8 @@ main: BedWars\BedWars
 author: boi1216
 
 permissions:
+  bedwars.command.help:
+    default: op
   bedwars.command.start:
     default: op
   bedwars.command.create:
