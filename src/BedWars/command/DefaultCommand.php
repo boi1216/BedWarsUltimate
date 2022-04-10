@@ -69,7 +69,7 @@ class DefaultCommand extends \pocketmine\command\Command
 		}
 
 
-		if(!$sender->hasPermission('bedwars.command.' . strtolower($args[0]))){
+		if(!$sender->hasPermission('bedwars.command.' . strtolower($args[0])) && $args[0] !== "join"){
 			missingPermission:
 			$sender->sendMessage(TextFormat::RED . "You don't have permission to use this command!");
 			return;

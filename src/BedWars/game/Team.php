@@ -133,7 +133,8 @@ class Team
             'ironForge' => 0,
             'healPool' => 0
         );
-
+        
+        $this->dead = 0;
         $this->hasBed = true;
         $this->armorUpdates = array();
         $this->players = array();

@@ -27,6 +27,7 @@ use pocketmine\event\entity\EntityMotionEvent;
 use pocketmine\event\player\PlayerQuitEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\entity\EntityExplodeEvent;
+use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemIds;
 use pocketmine\entity\object\PrimedTNT;
@@ -99,6 +100,13 @@ class GameListener implements Listener
     				$ev->cancel();
     			}
     		}
+    	}
+    }
+
+    public function onExhaust(PlayerExhaustEvent $ev) : void{
+    	$player = $ev->getPlayer();
+    	if($this->plugin->getPlayerGame($player) !== null){
+    		$ev->cancel();
     	}
     }
 

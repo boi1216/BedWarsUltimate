@@ -314,7 +314,7 @@ class Game
         $this->spectators = array();
         $this->players = array();
         $this->startTime = $this->startTimeStatic;
-        $this->rebootTime = 10;
+        $this->rebootTime = 15;
         $this->generators = array();
         $this->cachedPlayers = array();
         $this->state = self::STATE_LOBBY;
