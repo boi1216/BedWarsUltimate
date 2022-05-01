@@ -1,5 +1,6 @@
 # BedWarsUltimate - PocketMine Plugin
 BedWars plugin with features you won't see anywhere else!
+Author: boi1216
 
 ![Image from game](https://i.imgur.com/X9zSs1u.png)</br>
 
