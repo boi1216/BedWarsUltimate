@@ -29,5 +29,12 @@ Author: boi1216
 
 To create join sign place a new sign and put [bedwars] or [bw] on the first line, the second line will be the ID of your game.
 
+## Bugs
+
+- Restarting
+- Generator Upgrades
+- Generator Placement
+- NPC placement
+
 For support & updates join my discord server - https://discord.gg/6reG9s7T7j
 
