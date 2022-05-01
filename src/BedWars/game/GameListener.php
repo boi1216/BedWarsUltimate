@@ -18,6 +18,7 @@ use pocketmine\event\player\PlayerBedEnterEvent;
 use pocketmine\event\player\PlayerChatEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\inventory\InventoryTransactionEvent;
+use pocketmine\event\inventory\CraftItemEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityTeleportEvent;
 use pocketmine\event\Listener;
@@ -107,6 +108,15 @@ class GameListener implements Listener
     	$player = $ev->getPlayer();
     	if($this->plugin->getPlayerGame($player) !== null){
     		$ev->cancel();
+    	}
+    }
+
+    public function onCraft(CraftItemEvent $event) {
+
+        $player = $event->getPlayer();
+
+    	if($this->plugin->getPlayerGame($player) !== null){
+    		$event->cancel();
     	}
     }
 
