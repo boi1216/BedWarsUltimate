@@ -1,7 +1,7 @@
 name: BedWarsUltimate
 version: "2.0pre-release"
 api: 4.0.0
-main: BedWars\BedWars
+main: BedWars\BedWars 
 author: boi1216
 
 permissions:
