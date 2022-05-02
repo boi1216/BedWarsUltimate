@@ -437,7 +437,7 @@ class Game
          foreach($this->teams as $team){
             //  $player->getInventory()->addItem($i = new Item(new ItemIdentifier(ItemIds::WOOL, Utils::colorIntoWool($team->getColor()))));
              $item = ItemFactory::getInstance()->get(ItemIds::WOOL, Utils::colorIntoWool($team->getColor()));
-             $item->setCustomName($team->getColor() . ucfirst($team->getName()) . TextFormat::WHITE . " Team");
+             $item->setCustomName(TextFormat::WHITE . "Team" . $team->getColor() . ucfirst($team->getName());
              $player->getInventory()->addItem($item);
          }
          $player->getInventory()->setItem(8, ItemFactory::getInstance()->get(ItemIds::COMPASS)->setCustomName(TextFormat::YELLOW . "Leave"));
