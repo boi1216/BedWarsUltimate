@@ -71,8 +71,8 @@ class ItemShop
             "§6Bridge Egg\n§l§e4 EMERALD" => ["image" => ""],
             "§6Compact Popup-Tower\n§l§e24 IRON" => ["image" => ""]],
         6 => ["§7Iron Axe\n§l§e8 GOLD" => ["image" => ""],
-            "§bDiamond Axe\n§l§e6 EMERALD" => ["image" => ""]
-            "§7Iron Pickaxe\n§l§e8 GOLD" => ["image" => ""]
+            "§bDiamond Axe\n§l§e6 EMERALD" => ["image" => ""],
+            "§7Iron Pickaxe\n§l§e8 GOLD" => ["image" => ""],
             "§bDiamond Pickaxe\n§l§e6 EMERALD" => ["image" => ""]
         ],
     ];
