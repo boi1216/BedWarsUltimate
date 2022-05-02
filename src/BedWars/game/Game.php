@@ -743,9 +743,9 @@ class Game
                      \BedWars\utils\Scoreboard::new($player, 'bedwars', TextFormat::BOLD . TextFormat::GOLD . "§l§5Bl§dos§5so§dm §6Bed§gWars");
                      
                      \BedWars\utils\Scoreboard::setLine($player, 1, "=================");
-                     \Bedwars\utils\Scoreboard::setLine($player, 2 "§5Blossom §l§d»§r BedWars"
-                     \Bedwars\utils\Scoreboard::setLine($player, 3 "§dMid Spring {scorehud.date}"
-                     \BedWars\utils\Scoreboard::setLine($player, 4 "         "
+                     \Bedwars\utils\Scoreboard::setLine($player, 2 "§5Blossom §l§d»§r BedWars";
+                     \Bedwars\utils\Scoreboard::setLine($player, 3 "§dMid Spring {scorehud.date}";
+                     \BedWars\utils\Scoreboard::setLine($player, 4 "         ";
                      \BedWars\utils\Scoreboard::setLine($player, 3, " " . TextFormat::YELLOW . "Map: " . TextFormat::WHITE . $this->mapName . str_repeat(" ", 3));
                      \BedWars\utils\Scoreboard::setLine($player, 4, " " . TextFormat::YELLOW . "Players: " . TextFormat::WHITE . count($this->players) . "/" . $this->maxPlayers . str_repeat(" ", 3));
                      \BedWars\utils\Scoreboard::setLine($player, 5, "  ");
