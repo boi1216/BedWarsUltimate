@@ -173,7 +173,7 @@ class GameListener implements Listener
                         return;
                     }
                     $team->add($player);
-                    $player->sendMessage(TextFormat::GRAY . "§l§9» §r§aSuccessfully joined" . $teamColor . $team->getName() . TextFormat::YELLOW . " Team§6!");
+                    $player->sendMessage(TextFormat::GRAY . "§l§9» §r§aSuccessfully joined " . $teamColor . $team->getName() . TextFormat::YELLOW . " Team§6!");
                 }
             }
         }elseif($item->getId() == ItemIds::COMPASS){
@@ -207,13 +207,13 @@ class GameListener implements Listener
         if(is_null($playerTeam)){
             if(isset($playerGame->spectators[$player->getName()])){
                 foreach($playerGame->spectators as $spectator){
-                    $spectator->sendMessage(TextFormat::GRAY . "[SPECTATOR] " . $player->getName() . ": " . $message);
+                    $spectator->sendMessage(TextFormat::GRAY . "[SPECTATOR] " . $player->getName() . " §l»§r " . $message);
                 }
             }
         }else{
           if($message[0] !== "!"){
             foreach($playerTeam->getPlayers() as $p){
-                $p->sendMessage(TextFormat::GRAY . "[TEAM] " . $playerTeam->getColor() . $player->getName() . TextFormat::GRAY . " > " . TextFormat::WHITE . $message);
+                $p->sendMessage(TextFormat::GRAY . "[TEAM] " . $playerTeam->getColor() . $player->getName() . TextFormat::GRAY . " §l»§r " . TextFormat::WHITE . $message);
             }
           }else{
             foreach(array_merge($playerGame->getPlayers(), $playerGame->getSpectators()) as $p){
