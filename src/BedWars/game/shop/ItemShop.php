@@ -162,7 +162,7 @@ class ItemShop
         }
 
         if(!$check){
-            $p->sendMessage(TextFormat::RED . "You don't have enough " . strtolower(ucfirst($typeString)) . " to purchase " . $itemData['name']);
+            $p->sendMessage(TextFormat::RED . "§l§5»§r§c You don't have enough " . strtolower(ucfirst($typeString)) . " to purchase " . $itemData['name']);
             return;
         }
 
@@ -190,13 +190,13 @@ class ItemShop
                     $p->getInventory()->removeItem($content);
                     $p->getInventory()->setItem($index, $item);
                 }else{
-                    $p->sendMessage(TextFormat::RED . "You already have this sword!");
+                    $p->sendMessage(TextFormat::RED . "§l§5»§r§c You already have this sword!");
                     return;
                 }
             }
           }
         }
-        $p->sendMessage(TextFormat::GREEN . "You purchased " . TextFormat::YELLOW .  $itemData['name']);
+        $p->sendMessage(TextFormat::GREEN . "§l§5»§r§aYou purchased " . TextFormat::YELLOW .  $itemData['name']);
         if($wasPurchased){
             return;
         }
@@ -222,7 +222,7 @@ class ItemShop
         $boots = "";
         $leggings = "";
         if($team->getArmor($p) == array(0 => 'chain', 1 => 'iron', 2 => 'diamond')[$data]){
-            $p->sendMessage(TextFormat::RED . "You cannot purchase this twice!");
+            $p->sendMessage(TextFormat::RED . "§l§5»§r§c You cannot purchase this twice!");
             return false;
         }
 
