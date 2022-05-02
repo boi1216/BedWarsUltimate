@@ -19,6 +19,7 @@ BedWars plugin with features you won't see anywhere else!
 - [ ] Fix cool items
 - [ ] Generator Upgrades
 - [ ] Armor Bugs
+- [ ] Generator and NPC position bugs
 
 ## What I Added
 
