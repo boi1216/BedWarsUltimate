@@ -742,7 +742,6 @@ class Game
                  }
 
                  foreach (array_merge($this->players, $this->spectators) as $player) {
-                     \BedWars\utils\Scoreboard::remove($player);
                      \BedWars\utils\Scoreboard::new($player, 'bedwars', TextFormat::BOLD . TextFormat::GOLD . "Bed§eWars");
                      \BedWars\utils\Scoreboard::setLine($player, 1, "=================");
                      \BedWars\utils\Scoreboard::setLine($player, 2, "=================");
