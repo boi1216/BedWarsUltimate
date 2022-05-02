@@ -429,7 +429,7 @@ class Game
          $player->teleport($this->lobby);
          $this->players[$player->getName()] = $player;
 
-         $this->broadcastMessage(TextFormat::GRAY . "§3»" . TextFormat::AQUA . $player->getName() . TextFormat::YELLOW . "has joined " . TextFormat::GOLD . "(" . TextFormat::AQUA .  count($this->players) . TextFormat::YELLOW . "/" . TextFormat::AQUA .  $this->maxPlayers . TextFormat::GOLD .  ")");
+         $this->broadcastMessage(TextFormat::GRAY . TextFormat::BOLD .  "§3» " . TextFormat::RESET . TextFormat::AQUA . $player->getName() . TextFormat::YELLOW . "has joined " . TextFormat::GOLD . "(" . TextFormat::AQUA .  count($this->players) . TextFormat::YELLOW . "/" . TextFormat::AQUA .  $this->maxPlayers . TextFormat::GOLD .  ")");
          $player->getInventory()->clearAll();
          $player->getArmorInventory()->clearAll();
          $player->getCraftingGrid()->clearAll();
@@ -740,10 +740,12 @@ class Game
                  }
 
                  foreach (array_merge($this->players, $this->spectators) as $player) {
-                     \BedWars\utils\Scoreboard::new($player, 'bedwars', TextFormat::BOLD . TextFormat::GOLD . "§3» §6Bed§gWars §3«");
+                     \BedWars\utils\Scoreboard::new($player, 'bedwars', TextFormat::BOLD . TextFormat::GOLD . "§l§5Bl§dos§5so§dm §6Bed§gWars");
                      
-                     \BedWars\utils\Scoreboard::setLine($player, 1, "     ");
-                     \BedWars\utils\Scoreboard::setLine($player, 2, "  ");
+                     \BedWars\utils\Scoreboard::setLine($player, 1, "=================");
+                     \Bedwars\utils\Scoreboard::setLine($player, 2 "§5Blossom §l§d»§r BedWars"
+                     \Bedwars\utils\Scoreboard::setLine($player, 3 "§dMid Spring {scorehud.date}"
+                     \BedWars\utils\Scoreboard::setLine($player, 4 "         "
                      \BedWars\utils\Scoreboard::setLine($player, 3, " " . TextFormat::YELLOW . "Map: " . TextFormat::WHITE . $this->mapName . str_repeat(" ", 3));
                      \BedWars\utils\Scoreboard::setLine($player, 4, " " . TextFormat::YELLOW . "Players: " . TextFormat::WHITE . count($this->players) . "/" . $this->maxPlayers . str_repeat(" ", 3));
                      \BedWars\utils\Scoreboard::setLine($player, 5, "  ");
@@ -751,7 +753,7 @@ class Game
                      \BedWars\utils\Scoreboard::setLine($player, 7, "   ");
                      \BedWars\utils\Scoreboard::setLine($player, 9, " " . TextFormat::YELLOW . "Mode: " . TextFormat::WHITE . substr(str_repeat($this->playersPerTeam . "v", count($this->teams)), 0, -1) . str_repeat(" ", 3));
                      \BedWars\utils\Scoreboard::setLine($player, 10, " " . TextFormat::YELLOW . "Version: " . TextFormat::WHITE . "v2.0" . str_repeat(" ", 3));
-                     \BedWars\utils\Scoreboard::setLine($player, 11, " ");
+                     \BedWars\utils\Scoreboard::setLine($player, 11, "=================");
                      \BedWars\utils\Scoreboard::setLine($player, 12, " " . TextFormat::LIGHT_PURPLE . $this->plugin->serverWebsite);
                  }
 
