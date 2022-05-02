@@ -444,19 +444,17 @@ class Game
          $player->setGamemode(GameMode::ADVENTURE());
          $this->checkLobby();
 
-        Scoreboard::new($player, 'bedwars', TextFormat::BOLD . TextFormat::GOLD . "Bed§eWars");
+        Scoreboard::new($player, 'bedwars', TextFormat::BOLD . TextFormat::YELLOW . "§6BED§gWARS");
 
-        Scoreboard::setLine($player, 1, "=================");
-        Scoreboard::setLine($player, 2, "§5Blossom §l§d»§r BedWars");
-        Scoreboard::setLine($player, 3, " ");
+        Scoreboard::setLine($player, 1, "  ");
         Scoreboard::setLine($player, 4, " " . TextFormat::YELLOW ."Map: " . TextFormat::WHITE .  $this->mapName . str_repeat(" ", 3));
         Scoreboard::setLine($player, 5, " " . TextFormat::YELLOW . "Players: " . TextFormat::WHITE . count($this->players) . "/" . $this->maxPlayers . str_repeat(" ", 3));
         Scoreboard::setLine($player, 6, "  ");
-        Scoreboard::setLine($player, 7, " " . count($this->players) >= $this->minPlayers ? TextFormat::AQUA . "Starting in:  " . TextFormat::GREEN .  $this-> startTime . str_repeat(" ", 3) : TextFormat::GREEN . "Waiting for players..." . str_repeat(" ", 3));
+        Scoreboard::setLine($player, 7, " " . count($this->players) >= $this->minPlayers ? TextFormat::AQUA . "Starting in: " . TextFormat::GREEN .  $this-> startTime . str_repeat(" ", 3) : TextFormat::GREEN . "Waiting for players..." . str_repeat(" ", 3));
         Scoreboard::setLine($player, 8, "   ");
         Scoreboard::setLine($player, 9, " " . TextFormat::YELLOW . "Mode: " . TextFormat::WHITE . substr(str_repeat($this->playersPerTeam . "v", count($this->teams)), 0, -1) . str_repeat(" ", 3));
         Scoreboard::setLine($player, 10, " " . TextFormat::YELLOW . "Version: " . TextFormat::WHITE . "v2.0" . str_repeat(" ", 3));
-        Scoreboard::setLine($player, 9, "=================");
+        Scoreboard::setLine($player, 9, " ");
         Scoreboard::setLine($player, 10, " " . TextFormat::LIGHT_PURPLE . $this->plugin->serverWebsite);
     }
 
@@ -711,15 +709,15 @@ class Game
                      $this->startTime--;
 
                      foreach ($this->players as $player) {
-                         $player->sendTip(TextFormat::YELLOW . "Starting in " . TextFormat::AQUA . gmdate("i:s", $this->startTime));
+                         $player->sendTip(TextFormat::YELLOW . "Starting in: " . TextFormat::AQUA . gmdate("i:s", $this->startTime));
                      }
 
                      switch ($this->startTime) {
                          case 30;
-                             $this->broadcastMessage(TextFormat::YELLOW . "Starting in " . TextFormat::RED . "30");
+                             $this->broadcastMessage(TextFormat::YELLOW . "Starting in: " . TextFormat::RED . "30");
                              break;
                          case 15;
-                             $this->broadcastMessage(TextFormat::YELLOW . "Starting in " . TextFormat::GOLD . "15");
+                             $this->broadcastMessage(TextFormat::YELLOW . "Starting in: " . TextFormat::GOLD . "15");
                              break;
                          case 5;
                          case 4;
@@ -737,25 +735,22 @@ class Game
                      }
                  } else {
                      foreach ($this->players as $player) {
-                         $player->sendTip(TextFormat::YELLOW . "Waiting for players (" . TextFormat::AQUA . ($this->minPlayers - count($this->players)) . TextFormat::YELLOW . ")");
+                         $player->sendTip(TextFormat::YELLOW . "Waiting for players... (" . TextFormat::AQUA . ($this->minPlayers - count($this->players)) . TextFormat::YELLOW . ")");
                      }
                  }
 
                  foreach (array_merge($this->players, $this->spectators) as $player) {
-                     \BedWars\utils\Scoreboard::new($player, 'bedwars', TextFormat::BOLD . TextFormat::GOLD . "Bed§eWars");
-                     \BedWars\utils\Scoreboard::setLine($player, 1, "=================");
-                     \BedWars\utils\Scoreboard::setLine($player, 2, "=================");
-                     \BedWars\utils\Scoreboard::setLine($player, 3, "§5Blossom §l§d»§r BedWars");
-                     \BedWars\utils\Scoreboard::setLine($player, 4, " ");
-                     \BedWars\utils\Scoreboard::setLine($player, 5, " " . TextFormat::YELLOW . "Map: " . TextFormat::WHITE . $this->mapName . str_repeat(" ", 3));
-                     \BedWars\utils\Scoreboard::setLine($player, 6, " " . TextFormat::YELLOW . "Players: " . TextFormat::WHITE . count($this->players) . "/" . $this->maxPlayers . str_repeat(" ", 3));
-                     \BedWars\utils\Scoreboard::setLine($player, 7, "  ");
-                     \BedWars\utils\Scoreboard::setLine($player, 8, " " . ($this->starting || $this->isForcedStart() ? TextFormat::AQUA . "Starting in:" . TextFormat::GREEN . $this->startTime . str_repeat(" ", 3) : TextFormat::GREEN . "Waiting for players..." . str_repeat(" ", 3)));
-                     \BedWars\utils\Scoreboard::setLine($player, 9, "   ");
-                     \BedWars\utils\Scoreboard::setLine($player, 10, " " . TextFormat::YELLOW . "Mode: " . TextFormat::WHITE . substr(str_repeat($this->playersPerTeam . "v", count($this->teams)), 0, -1) . str_repeat(" ", 3));
-                     \BedWars\utils\Scoreboard::setLine($player, 11, " " . TextFormat::YELLOW . "Version: " . TextFormat::WHITE . "v2.0" . str_repeat(" ", 3));
-                     \BedWars\utils\Scoreboard::setLine($player, 12, "=================");
-                     \BedWars\utils\Scoreboard::setLine($player, 13, " " . TextFormat::LIGHT_PURPLE . $this->plugin->serverWebsite);
+                     \BedWars\utils\Scoreboard::new($player, 'bedwars', TextFormat::BOLD . TextFormat::GOLD . "BED§gWARS");
+                     \BedWars\utils\Scoreboard::setLine($player, 1, " ");
+                     \BedWars\utils\Scoreboard::setLine($player, 2, " " . TextFormat::YELLOW . "Map: " . TextFormat::WHITE . $this->mapName . str_repeat(" ", 3));
+                     \BedWars\utils\Scoreboard::setLine($player, 3, " " . TextFormat::YELLOW . "Players: " . TextFormat::WHITE . count($this->players) . "/" . $this->maxPlayers . str_repeat(" ", 3));
+                     \BedWars\utils\Scoreboard::setLine($player, 4, "  ");
+                     \BedWars\utils\Scoreboard::setLine($player, 5, " " . ($this->starting || $this->isForcedStart() ? TextFormat::AQUA . "Starting in: " . TextFormat::GREEN . $this->startTime . str_repeat(" ", 3) : TextFormat::GREEN . "Waiting for players..." . str_repeat(" ", 3)));
+                     \BedWars\utils\Scoreboard::setLine($player, 6, "   ");
+                     \BedWars\utils\Scoreboard::setLine($player, 7, " " . TextFormat::YELLOW . "Mode: " . TextFormat::WHITE . substr(str_repeat($this->playersPerTeam . "v", count($this->teams)), 0, -1) . str_repeat(" ", 3));
+                     \BedWars\utils\Scoreboard::setLine($player, 8, " " . TextFormat::YELLOW . "Version: " . TextFormat::WHITE . "v2.0" . str_repeat(" ", 3));
+                     \BedWars\utils\Scoreboard::setLine($player, 9, " ");
+                     \BedWars\utils\Scoreboard::setLine($player, 10, " " . TextFormat::LIGHT_PURPLE . $this->plugin->serverWebsite);
                  }
 
                  break;
@@ -770,7 +765,7 @@ class Game
 
                      if (isset($this->deadQueue[$player->getName()])) {
                          $player->getInventory()->clearAll();
-                         $player->sendTitle(TextFormat::RED . "You died!", TextFormat::YELLOW . "You will respawn in " . TextFormat::RED . $this->deadQueue[$player->getName()] . " " . TextFormat::YELLOW . "seconds!");
+                         $player->sendTitle(TextFormat::RED . "You died!", TextFormat::YELLOW . "You will respawn in: " . TextFormat::RED . $this->deadQueue[$player->getName()] . " " . TextFormat::YELLOW . "seconds!");
                          $player->sendMessage(TextFormat::YELLOW . "You will respawn in " . TextFormat::RED . $this->deadQueue[$player->getName()] . " " . TextFormat::YELLOW . "seconds!");
 
                          
@@ -789,10 +784,10 @@ class Game
                  foreach (array_merge($this->players, $this->spectators) as $player) {
 
                      \BedWars\utils\Scoreboard::remove($player);
-                     \BedWars\utils\Scoreboard::new($player, 'bedwars', TextFormat::BOLD . TextFormat::YELLOW . "Bed Wars");
+                     \BedWars\utils\Scoreboard::new($player, 'bedwars', TextFormat::BOLD . TextFormat::YELLOW . "§6BED§gWARS");
 
                      \BedWars\utils\Scoreboard::setLine($player, 1, " ");
-                     \BedWars\utils\Scoreboard::setLine($player, 2, " " . TextFormat::WHITE . ucfirst($this->tierUpdateGen) . " Upgrade: " . TextFormat::GREEN . gmdate("i:s", $this->tierUpdate));
+                     \BedWars\utils\Scoreboard::setLine($player, 2, " " . TextFormat::YELLOW . ucfirst($this->tierUpdateGen) . " Upgrade: " . TextFormat::GREEN . gmdate("i:s", $this->tierUpdate));
                      \BedWars\utils\Scoreboard::setLine($player, 3, "  ");
 
                      $currentLine = 4;
@@ -800,9 +795,9 @@ class Game
                      foreach ($this->teams as $team) {
                          $status = "";
                          if ($team->hasBed()) {
-                             $status = TextFormat::GREEN . "[+]";
+                             $status = TextFormat::GREEN . "✔";
                          } elseif(count($team->getPlayers()) > $team->dead) {
-                             $status = count($team->getPlayers()) === 0 ? TextFormat::DARK_RED . "[-]" : TextFormat::GRAY . "[" . (count($team->getPlayers()) - $team->dead) . "]";
+                             $status = count($team->getPlayers()) === 0 ? TextFormat::DARK_RED . "✘" : TextFormat::GRAY . "[" . (count($team->getPlayers()) - $team->dead) . "]";
                          }elseif(count($team->getPlayers()) <= $team->dead){
                              $status = TextFormat::DARK_RED . "[-]";
                          }
@@ -824,7 +819,7 @@ class Game
 
                      \BedWars\utils\Scoreboard::setLine($player, " " . $currentLine, "   ");
                      $currentLine++;
-                     \BedWars\utils\Scoreboard::setLine($player, " " . $currentLine, " " . TextFormat::YELLOW . $this->plugin->serverWebsite);
+                     \BedWars\utils\Scoreboard::setLine($player, " " . $currentLine, " " . TextFormat::LIGHT_PURPLE . $this->plugin->serverWebsite);
                  }
 
 
@@ -861,14 +856,14 @@ class Game
              }
              foreach(array_merge($this->players, $this->spectators) as $player){
                      Scoreboard::remove($player);
-                     Scoreboard::new($player, 'bedwars', TextFormat::BOLD . TextFormat::GOLD . "Bed§eWars");
-                     Scoreboard::setLine($player, 1, "=================");
-                     Scoreboard::setLine($player, 2, "§5Blossom §l§d»§r BedWars");
-                     Scoreboard::setLine($player, 3, " ");
-                     Scoreboard::setLine($player, 4, "Winner: " . TextFormat::GREEN . $this->winnerTeam->getName());
+                     Scoreboard::new($player, 'bedwars', TextFormat::BOLD . TextFormat::GOLD . "BED§gWARS");
+                     Scoreboard::setLine($player, 1, " ");
+                     Scoreboard::setLine($player, 2, "§eWinner: " . TextFormat::GREEN . $this->winnerTeam->getName());
+                     Scoreboard::setLine($player, 3, "   ");
+                     Scoreboard::setLine($player, 4, "§eThanks for playing!");
                      Scoreboard::setLine($player, 5, "   ");
-                     Scoreboard::setLine($player, 6, "Restarting in: " . TextFormat::GREEN . $this->rebootTime);
-                     Scoreboard::setLine($player, 7, "=================");
+                     Scoreboard::setLine($player, 6, "§eRestarting in: " . TextFormat::GREEN . $this->rebootTime);
+                     Scoreboard::setLine($player, 7, "");
                      Scoreboard::setLine($player, 8, " " . TextFormat::LIGHT_PURPLE . $this->plugin->serverWebsite);
               }
              
