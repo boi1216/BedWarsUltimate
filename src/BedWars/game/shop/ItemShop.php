@@ -36,7 +36,7 @@ class ItemShop
         4 => ["name" => "Bows", "image" => ""],
         5 => ["name" => "Potions" ,"image" => ""],
         6 => ["name" => "Specials", "image" => ""],
-        7 => ["name" => "Tools", "image" => ""],
+        7 => ["name" => "Tools", "image" => ""]
     ];
 
     /**
@@ -69,7 +69,7 @@ class ItemShop
             "§6Enderpearl\n§l§e4 EMERALD" => ["image" => ""],
             "§6Water Bucker\n§l§e1 EMERALD" => ["image" => ""],
             "§6Bridge Egg\n§l§e4 EMERALD" => ["image" => ""],
-            "§6Compact Popup-Tower\n§l§e24 IRON" => ["image" => ""]
+            "§6Compact Popup-Tower\n§l§e24 IRON" => ["image" => ""]],
         6 => ["§7Iron Axe\n§l§e8 GOLD" => ["image" => ""],
             "§bDiamond Axe\n§l§e6 EMERALD" => ["image" => ""]
             "§7Iron Pickaxe\n§l§e8 GOLD" => ["image" => ""]
