@@ -1,7 +1,8 @@
-# BedWarsUltimate - PocketMine Plugin
+# BedWarsUltimate
 BedWars plugin with features you won't see anywhere else!
 
 **Author:** boi1216
+**Pocketmine:** 4
 
 ![Image from game](https://i.imgur.com/X9zSs1u.png)</br>
 
