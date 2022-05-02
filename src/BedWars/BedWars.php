@@ -69,9 +69,6 @@ class BedWars extends PluginBase
         "white" => TextFormat::WHITE,
         "pink" => TextFormat::LIGHT_PURPLE,
         "gray" => TextFormat::GRAY
-        "orange" => TextFormat::GOLD
-        "purple" => TextFormat::DARK_PURPLE
-        "cyan" => TextFormat::CYAN
     ];
 
     const GENERATOR_PRIORITIES = [
