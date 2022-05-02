@@ -169,7 +169,7 @@ class GameListener implements Listener
                 if($team->getColor() == $teamColor){
 
                     if(count($team->getPlayers()) >= $playerGame->playersPerTeam){
-                        $player->sendMessage(TextFormat::RED . "§l§9»§r§ac The team you are trying to join is full!");
+                        $player->sendMessage(TextFormat::RED . "§l§9»§r§a The team you are trying to join is full!");
                         return;
                     }
                     $team->add($player);
