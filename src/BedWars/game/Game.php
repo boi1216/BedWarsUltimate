@@ -770,7 +770,7 @@ class Game
                      }
 
                      if (isset($this->deadQueue[$player->getName()])) {
-
+                         $player->getInventory()->clearAll();
                          $player->sendTitle(TextFormat::RED . "You died!", TextFormat::YELLOW . "You will respawn in " . TextFormat::RED . $this->deadQueue[$player->getName()] . " " . TextFormat::YELLOW . "seconds!");
                          $player->sendMessage(TextFormat::YELLOW . "You will respawn in " . TextFormat::RED . $this->deadQueue[$player->getName()] . " " . TextFormat::YELLOW . "seconds!");
 
