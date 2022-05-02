@@ -158,10 +158,10 @@ class GameListener implements Listener
 
             $playerGame = $this->plugin->getPlayerGame($player);
             if($playerGame == null || $playerGame->getState() !== Game::STATE_LOBBY)return;
-
+ 
             $playerTeam = $this->plugin->getPlayerTeam($player);
             if($playerTeam !== null){
-                $player->sendMessage(BedWars::PREFIX . TextFormat::YELLOW . "You are already in a team!");
+                $player->sendMessage(TextFormat::RED . "§l§9»§r §cYou are already in a team!");
                 return;
             }
 
@@ -169,11 +169,11 @@ class GameListener implements Listener
                 if($team->getColor() == $teamColor){
 
                     if(count($team->getPlayers()) >= $playerGame->playersPerTeam){
-                        $player->sendMessage(BedWars::PREFIX . TextFormat::RED . "Team is full");
+                        $player->sendMessage(TextFormat::RED . "§l§9»§r§ac The team you are trying to join is full!");
                         return;
                     }
                     $team->add($player);
-                    $player->sendMessage(BedWars::PREFIX . TextFormat::GRAY . "You've joined team " . $teamColor . $team->getName());
+                    $player->sendMessage(TextFormat::GRAY . "§l§9» §r§aSuccessfully joined" . $teamColor . $team->getName() . TextFormat:YELLOW . "Team§6!");
                 }
             }
         }elseif($item->getId() == ItemIds::COMPASS){
@@ -217,7 +217,7 @@ class GameListener implements Listener
             }
           }else{
             foreach(array_merge($playerGame->getPlayers(), $playerGame->getSpectators()) as $p){
-                $p->sendMessage($playerTeam->getColor() . $player->getName() . TextFormat::GRAY . " > " . TextFormat::WHITE . substr($message, 1));
+                $p->sendMessage($playerTeam->getColor() . $player->getName() . TextFormat::GRAY . " §l»§r " . TextFormat::WHITE . substr($message, 1));
             }
           }
         }
@@ -296,7 +296,7 @@ class GameListener implements Listener
 
         if(isset($this->plugin->bedSetup[$player->getName()])){
             if(!$event->getBlock() instanceof Bed){
-                $player->sendMessage(BedWars::PREFIX . TextFormat::YELLOW . "The block is not bed!");
+                $player->sendMessage(BedWars::PREFIX . TextFormat::YELLOW . "The block is not a bed!");
                 return;
             }
             $setup = $this->plugin->bedSetup[$player->getName()];
@@ -365,7 +365,7 @@ class GameListener implements Listener
                     if($teamName !== ""){
                         $teamObject = $game->teams[$name];
                         if($teamName == $this->plugin->getPlayerTeam($player)->getName()){
-                            $player->sendMessage(TextFormat::RED . "You can't break your bed!");
+                            $player->sendMessage(TextFormat::RED . "§l§5» §r§cYou can't break your own bed!");
                             $event->cancel();
                             return;
                         }
@@ -498,7 +498,7 @@ class GameListener implements Listener
 
                         $playerTeam = $this->plugin->getPlayerTeam($damager)->getName();
                         if($npcTeam !== $playerTeam && $npcType == "upgrade"){
-                            $damager->sendMessage(TextFormat::RED . "You can upgrade only your base!");
+                            $damager->sendMessage(TextFormat::RED . "§l§5»§c§r You can only upgrade at your island!");
                             return;
                         }
 
@@ -523,7 +523,7 @@ class GameListener implements Listener
           $args = explode(" ", $event->getMessage());
 
           if($args[0] == '/fly' || isset($args[1]) && $args[1] == 'join'){
-              $player->sendMessage(TextFormat::RED . "You cannot run this in-game!");
+              $player->sendMessage(TextFormat::RED . "§l§5» §r§cYou cannot run this in-game!");
               $event->cancel();
           }
     }
