@@ -499,9 +499,9 @@ class Game
 
         $playerTeam = $this->plugin->getPlayerTeam($player);
 
-        $this->broadcastMessage(TextFormat::BOLD . TextFormat::RED . "(BED DESTRUCTION) §5» " . TextFormat::RESET .  $team->getColor() . $team->getName() . "'s " . TextFormat::GRAY . "bed was destroyed by " . $playerTeam->getColor() . $player->getName());
+        $this->broadcastMessage(TextFormat::BOLD . TextFormat::RED . "§5» " . TextFormat::RESET .  $team->getColor() . $team->getName() . "'s " . TextFormat::GRAY . "bed was destroyed by " . $playerTeam->getColor() . $player->getName());
         foreach($team->getPlayers() as $player){
-            $player->sendTitle(TextFormat::RED . "BED DESTROYED!", TextFormat::GRAY . "You will no longer respawn", 10);
+            $player->sendTitle(TextFormat::RED . "BED DESTROYED!", TextFormat::GRAY . "You will no longer respawn!", 10);
         }
     }
  
@@ -582,7 +582,7 @@ class Game
             if($cause instanceof EntityDamageByEntityEvent){
             $damager = $cause->getDamager();
             if($damager instanceof Player && $this->plugin->getPlayerTeam($damager) !== null){
-                $this->broadcastMessage($this->plugin->getPlayerTeam($player)->getColor() . $player->getName() . " " . TextFormat::GRAY . "was killed by " . $this->plugin->getPlayerTeam($damager)->getColor() . $damager->getName());
+                $this->broadcastMessage(TextFormat :: BOLD . "§l§5» §r" . $this->plugin->getPlayerTeam($player)->getColor() . $player->getName() . " " . TextFormat::GRAY . "was killed by " . $this->plugin->getPlayerTeam($damager)->getColor() . $damager->getName());
                }
             }
             break;
@@ -590,12 +590,12 @@ class Game
             if($cause instanceof EntityDamageByChildEntityEvent){
                 $damager = $cause->getDamager();
                 if($damager instanceof Player && $this->plugin->getPlayerTeam($damager) !== null){
-                $this->broadcastMessage($this->plugin->getPlayerTeam($player)->getColor() . $player->getName() . " " . TextFormat::GRAY . "was shot by " . $this->plugin->getPlayerTeam($damager)->getColor() . $damager->getName());
+                $this->broadcastMessage(TextFormat :: BOLD . "§l§5» §r" . $this->plugin->getPlayerTeam($player)->getColor() . $player->getName() . " " . TextFormat::GRAY . "was shot by " . $this->plugin->getPlayerTeam($damager)->getColor() . $damager->getName());
                 }
             }
             break;
             case EntityDamageEvent::CAUSE_FIRE;
-            $this->broadcastMessage($playerTeam->getColor() . $player->getName() . " " . TextFormat::GRAY . "went up in flameS");
+            $this->broadcastMessage(TextFormat :: BOLD . "§l§5» §r" . $playerTeam->getColor() . $player->getName() . " " . TextFormat::GRAY . "went up in flameS");
             break;
             case EntityDamageEvent::CAUSE_VOID;
             $spawnPos = $this->teamInfo[$playerTeam->getName()]['SpawnPos'];
@@ -603,16 +603,16 @@ class Game
             $player->teleport(new Vector3($player->getPosition()->getX(), $spawn->getY() + 10, $player->getPosition()->getZ()));
             break;
             case EntityDamageEvent::CAUSE_ENTITY_EXPLOSION;
-            $this->broadcastMessage($playerTeam->getColor() . $player->getName() . " " . TextFormat::GRAY . "was killed in an explosion");
+            $this->broadcastMessage(TextFormat :: BOLD . "§l§5» §r" . $playerTeam->getColor() . $player->getName() . " " . TextFormat::GRAY . "was killed in an explosion");
             break;
             case EntityDamageEvent::CAUSE_FALL;
-            $this->broadcastMessage($playerTeam->getColor() . $player->getName() . " " . TextFormat::GRAY . "fell from high place");
+            $this->broadcastMessage(TextFormat :: BOLD . "§l§5» §r" . $playerTeam->getColor() . $player->getName() . " " . TextFormat::GRAY . "fell from high place");
             break;
             case EntityDamageEvent::CAUSE_FIRE;
-            $this->broadcastMessage($playerTeam->getColor() . $player->getName() . " " . TextFormat::GRAY . "went up in flames");
+            $this->broadcastMessage(TextFormat :: BOLD . "§l§5» §r" . $playerTeam->getColor() . $player->getName() . " " . TextFormat::GRAY . "went up in flames");
             break;
             case EntityDamageEvent::CAUSE_SUFFOCATION;
-            $this->broadcastMessage($playerTeam->getColor() . $player->getName() . " " . TextFormat::GRAY . "suffocated in a wall");
+            $this->broadcastMessage(TextFormat :: BOLD . "§l§5» §r" . $playerTeam->getColor() . $player->getName() . " " . TextFormat::GRAY . "suffocated in a wall");
             break;
         }
 
