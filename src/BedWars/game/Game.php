@@ -440,7 +440,7 @@ class Game
              $item->setCustomName($team->getColor() . ucfirst($team->getName()) . TextFormat::WHITE . "Team");
              $player->getInventory()->addItem($item);
          }
-         $player->getInventory()->setItem(8, ItemFactory::getInstance()->get(ItemIds::WHITE_BED)->setCustomName(TextFormat::YELLOW . "Leave"));
+         $player->getInventory()->setItem(8, ItemFactory::getInstance()->get(ItemIds::COMPASS)->setCustomName(TextFormat::YELLOW . "Leave"));
          $player->setGamemode(GameMode::ADVENTURE());
          $this->checkLobby();
 
