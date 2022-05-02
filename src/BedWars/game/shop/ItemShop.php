@@ -36,6 +36,7 @@ class ItemShop
         4 => ["name" => "Bows", "image" => ""],
         5 => ["name" => "Potions" ,"image" => ""],
         6 => ["name" => "Specials", "image" => ""]
+        7 => ["name" => "Tools", "image" => ""]
     ];
 
     /**
@@ -44,10 +45,10 @@ class ItemShop
     public static $shopPages = [
         0 => ["§6Chainmal Armor\n§l§e40 IRON" => ["image" => ""],
             "§6Iron Armor §c[PERMANENT]\n§l§e12 GOLD" => ["image" => ""],
-            "§6Diamond Armor §c[PERMANENT]\n§l§e6 EMERALD" => ["image" => ""]],
+            "§6Diamond Armor §c[PERMANENT]\n§l§e10 EMERALD" => ["image" => ""]],
         1 => ["§6Stone Sword\n§l§e10 IRON" => ["image" => ""],
             "§6Iron Sword\n§l§e7 GOLD" => ["image" => ""],
-            "§6Diamond Sword\n§l§e7 EMERALD" => ["image" => ""],
+            "§6Diamond Sword\n§l§e5 EMERALD" => ["image" => ""],
             "§6Knockback Stick\n§l§e2 EMERALD" => ["image" => ""]],
         2 => ["§6Wool 16x\n§l§e4 IRON" => ["image" => ""],
             "§6Sandstone 16x\n§l§e12 IRON" => ["image" => ""],
@@ -69,6 +70,10 @@ class ItemShop
             "§6Water Bucker\n§l§e1 EMERALD" => ["image" => ""],
             "§6Bridge Egg\n§l§e4 EMERALD" => ["image" => ""],
             "§6Compact Popup-Tower\n§l§e24 IRON" => ["image" => ""]
+        6 => ["§7Iron Axe\n§l§e8 GOLD" => ["image" => ""],
+            "§bDiamond Axe\n§l§e6 EMERALD" => ["image" => ""]
+            "§7Iron Pickaxe\n§l§e8 GOLD" => ["image" => ""]
+            "§bDiamond Pickaxe\n§l§e6 EMERALD" => ["image" => ""]
         ],
     ];
 
@@ -108,6 +113,11 @@ class ItemShop
             5 => ["name" => "Water Bucket", "type" => self::PURCHASE_TYPE_EMERALD, "amount" => 1, "price" => 1, "item" => ["id" => 325, "damage" => 8]],
             6 => ["name" => "Bridge Egg", "type" => self::PURCHASE_TYPE_EMERALD, "amount" => 1, "price" => 4, "item" => ["id" => ItemIds::EGG, "damage" => 0, 'custom_name' => "§6Bridge Egg"]],
             7 => ["name" => "Compact Popup-Tower", "type" => self::PURCHASE_TYPE_IRON, "amount" => 1, "price" => 24, "item" => ["id" => ItemIds::CHEST, "damage" => 0, "custom_name" => "§bPopup Tower"]]
+        ],
+        6 => [0 => ["name" => "Iron Axe", "type" => self::PURCHASE_TYPE_GOLD, "amount" => 1, "price" => 8, "item" => ["id" => ItemIds::IRON_AXE, "damage" => 0]],
+            1 => ["name" => "Diamond Axe", "type" => self::PURCHASE_TYPE_EMERALD, "amount" => 1, "price" => 6, "item" => ["id" => ItemIds::DIAMOND_AXE, "damage" => 0]],
+            2 => ["name" => "Iron Pickaxe", "type" => self::PURCHASE_TYPE_GOLD, "amount" => 1, "price" => 8, "item" => ["id" => ItemIds::IRON_PICKAXE, "damage" => 0]],
+            3 => ["name" => "Diamond Pickaxe", "type" => self::PURCHASE_TYPE_EMERALD, "amount" => 1, "price" => 6, "item" => ["id" => ItemIds::DIAMOND_PICKAXE, "damage" => 0]]
         ]
     ];
 
