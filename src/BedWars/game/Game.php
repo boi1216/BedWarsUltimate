@@ -429,7 +429,7 @@ class Game
          $player->teleport($this->lobby);
          $this->players[$player->getName()] = $player;
 
-         $this->broadcastMessage(TextFormat::GRAY . $player->getName() . " " . TextFormat::YELLOW . "has joined the game " . TextFormat::GOLD . "(" . TextFormat::AQUA .  count($this->players) . TextFormat::YELLOW . "/" . TextFormat::AQUA .  $this->maxPlayers . TextFormat::YELLOW .  ")");
+         $this->broadcastMessage(TextFormat::GRAY . $player->getName() . " " . TextFormat::YELLOW . "has joined " . TextFormat::YELLOW . "(" . TextFormat::AQUA .  count($this->players) . TextFormat::YELLOW . "/" . TextFormat::AQUA .  $this->maxPlayers . TextFormat::YELLOW .  ")");
          $player->getInventory()->clearAll();
          $player->getArmorInventory()->clearAll();
          $player->getCraftingGrid()->clearAll();
@@ -546,7 +546,7 @@ class Game
     private function checkLobby() : void{
         if(!$this->starting && count($this->players) >= $this->minPlayers && !$this->isForcedStart()) {
             $this->starting = true;
-            $this->sendTitle(TextFormat::GREEN . "Countdown started!");
+            $this->broadcastMessage(TextFormat::GREEN . TextFormat::BOLD . "§l§5» §r§aCountdown started!");
         }
     }
 
@@ -714,16 +714,16 @@ class Game
 
                      switch ($this->startTime) {
                          case 30;
-                             $this->sendTitle(TextFormat::YELLOW . "Starting in: " . TextFormat::RED . "30");
+                             $this->broadcastMessage(TextFormat::YELLOW . "§l§5» §r§aStarting in: " . TextFormat::RED . "30");
                              break;
                          case 15;
-                             $this->sendTitle(TextFormat::YELLOW . "Starting in: " . TextFormat::GOLD . "15");
+                             $this->broadcastMessageTextFormat::YELLOW . "§l§5» §r§aStarting in: " . TextFormat::GOLD . "15");
                              break;
-                         case 5;
-                         case 4;
-                         case 3;
-                         case 2;
-                         case 1;
+                         case §g5;
+                         case §e4;
+                         case §e3;
+                         case §a2;
+                         case §21;
                              foreach ($this->players as $player) {
                                  $player->sendTitle(TextFormat::RED . $this->startTime);
                              }
