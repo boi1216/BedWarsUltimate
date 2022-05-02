@@ -173,7 +173,7 @@ class GameListener implements Listener
                         return;
                     }
                     $team->add($player);
-                    $player->sendMessage(TextFormat::GRAY . "§l§9» §r§aSuccessfully joined" . $teamColor . $team->getName() . TextFormat:YELLOW . "Team§6!");
+                    $player->sendMessage(TextFormat::GRAY . "§l§9» §r§aSuccessfully joined" . $teamColor . $team->getName() . TextFormat::YELLOW . "Team§6!");
                 }
             }
         }elseif($item->getId() == ItemIds::COMPASS){
