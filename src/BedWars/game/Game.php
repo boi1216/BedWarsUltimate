@@ -864,7 +864,7 @@ class Game
                      Scoreboard::setLine($player, 1, "     ");
                      Scoreboard::setLine($player, 2, "  ");
                      Scoreboard::setLine($player, 3, "§eWinner: " . TextFormat::RESET . $this->winnerTeam->getName());
-                     Scoreboard::setLine($player, 4, "§eWinners:" . TextFormat:RESET . $this->winnerTeam->getPlayers());
+                     Scoreboard::setLine($player, 4, "§eWinners: " . TextFormat:RESET . $this->winnerTeam->getPlayers);
                      Scoreboard::setLine($player, 5, "     ");
                      Scoreboard::setLine($player, 6, "§bRestarting in: " . TextFormat::GREEN . $this->rebootTime);
                      Scoreboard::setLine($player, 7, "");
