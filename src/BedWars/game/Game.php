@@ -717,7 +717,7 @@ class Game
                              $this->broadcastMessage(TextFormat::AQUA . "§l§5» §r§aStarting in: " . TextFormat::GREEN . "30");
                              break;
                          case 15;
-                             $this->broadcastMessageTextFormat::AQUA . "§l§5» §r§aStarting in: " . TextFormat::GREEN . "15");
+                             $this->broadcastMessage(TextFormat::AQUA . "§l§5» §r§aStarting in: " . TextFormat::GREEN . "15");
                              break;
                          case 5;
                          case 4;
