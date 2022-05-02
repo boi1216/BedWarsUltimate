@@ -804,9 +804,9 @@ class Game
                          if ($team->hasBed()) {
                              $status = TextFormat::GREEN . TextFormat::BOLD . "+";
                          } elseif(count($team->getPlayers()) > $team->dead) {
-                             $status = count($team->getPlayers()) === 0 ? TextFormat::DARK_RED . TextFormat::BOLD. "-" : TextFormat::GRAY . TextFormat::GRAY . "[" . (count($team->getPlayers()) - $team->dead) . "]";
+                             $status = count($team->getPlayers()) === 0 ? TextFormat::DARK_RED . TextFormat::BOLD. "X" : TextFormat::GRAY . TextFormat::GRAY . "[" . (count($team->getPlayers()) - $team->dead) . "]";
                          }elseif(count($team->getPlayers()) <= $team->dead){
-                             $status = TextFormat::DARK_RED . TextFormat::BOLD . "-";
+                             $status = TextFormat::DARK_RED . TextFormat::BOLD . "X";
                          }
                          $isPlayerTeam = $team->getName() == $playerTeam->getName() ? TextFormat::YELLOW . TextFormat::BOLD . "§7(YOU)" : "";
                          $stringFormat = TextFormat::BOLD . $team->getColor() . ucfirst($team->getName()[0]) . " " . TextFormat::WHITE . TextFormat::RESET . ucfirst($team->getName()) . ": " . $status . " " . $isPlayerTeam;
@@ -818,7 +818,7 @@ class Game
 
                      foreach($allTeams as $name => $color){
                         if(!isset($this->teams[$name])){
-                            \BedWars\utils\Scoreboard::setLine($player, "   " . $currentLine, TextFormat::BOLD . TextFormat::RESET . $color . ucfirst($name)[0] . " " . TextFormat::WHITE . ucfirst($name) . " " . TextFormat::DARK_RED . "-");
+                            \BedWars\utils\Scoreboard::setLine($player, "   " . $currentLine, TextFormat::BOLD . TextFormat::RESET . $color . ucfirst($name)[0] . " " . TextFormat::WHITE . ucfirst($name) . " " . TextFormat::DARK_RED . "X");
                             $currentLine++;
                         }
                      }
