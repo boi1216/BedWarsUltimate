@@ -781,7 +781,7 @@ class Game
 
                              $this->respawnPlayer($player);
                              $player->sendTitle(TextFormat::GREEN . "RESPAWNED!");
-                             $player->sendMessage(TextFormat::YELLOW . "You have respawned!");
+                             $player->sendMessage(TextFormat::YELLOW . "§l§5»§r§e You have respawned!");
                              return;
                          }
                          $this->deadQueue[$player->getName()] -= 1;
@@ -802,11 +802,11 @@ class Game
                      foreach ($this->teams as $team) {
                          $status = "";
                          if ($team->hasBed()) {
-                             $status = TextFormat::GREEN . TextFormat::BOLD . "✔";
+                             $status = TextFormat::GREEN . TextFormat::BOLD . "+";
                          } elseif(count($team->getPlayers()) > $team->dead) {
-                             $status = count($team->getPlayers()) === 0 ? TextFormat::DARK_RED . TextFormat::BOLD. "✘" : TextFormat::GRAY . TextFormat::GRAY . "[" . (count($team->getPlayers()) - $team->dead) . "]";
+                             $status = count($team->getPlayers()) === 0 ? TextFormat::DARK_RED . TextFormat::BOLD. "-" : TextFormat::GRAY . TextFormat::GRAY . "[" . (count($team->getPlayers()) - $team->dead) . "]";
                          }elseif(count($team->getPlayers()) <= $team->dead){
-                             $status = TextFormat::DARK_RED . TextFormat::BOLD . "✘";
+                             $status = TextFormat::DARK_RED . TextFormat::BOLD . "-";
                          }
                          $isPlayerTeam = $team->getName() == $playerTeam->getName() ? TextFormat::YELLOW . TextFormat::BOLD . "§7(YOU)" : "";
                          $stringFormat = TextFormat::BOLD . $team->getColor() . ucfirst($team->getName()[0]) . " " . TextFormat::WHITE . TextFormat::RESET . ucfirst($team->getName()) . ": " . $status . " " . $isPlayerTeam;
@@ -818,7 +818,7 @@ class Game
 
                      foreach($allTeams as $name => $color){
                         if(!isset($this->teams[$name])){
-                            \BedWars\utils\Scoreboard::setLine($player, "   " . $currentLine, TextFormat::BOLD . TextFormat::RESET . $color . ucfirst($name)[0] . " " . TextFormat::WHITE . ucfirst($name) . " " . TextFormat::DARK_RED . "✘");
+                            \BedWars\utils\Scoreboard::setLine($player, "   " . $currentLine, TextFormat::BOLD . TextFormat::RESET . $color . ucfirst($name)[0] . " " . TextFormat::WHITE . ucfirst($name) . " " . TextFormat::DARK_RED . "-");
                             $currentLine++;
                         }
                      }
