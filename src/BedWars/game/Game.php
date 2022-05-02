@@ -794,10 +794,8 @@ class Game
                      \BedWars\utils\Scoreboard::new($player, 'bedwars', TextFormat::BOLD . TextFormat::YELLOW . "§l§6Bed§gWars");
 
                      \BedWars\utils\Scoreboard::setLine($player, 1, "=================      ");
-                     \BedWars\utils\Scoreboard::setLine($player, 2, "§5Blossom §l§d»§r BedWars     ");
-                     \BedWars\utils\Scoreboard::setLine($player, 3, "§dMid Spring");
-                     \BedWars\utils\Scoreboard::setLine($player, 4, " " . TextFormat::AQUA . ucfirst($this->tierUpdateGen) . " Upgrade: " . TextFormat::GREEN . gmdate("i:s", $this->tierUpdate));
-                     \BedWars\utils\Scoreboard::setLine($player, 5, "           ");
+                     \BedWars\utils\Scoreboard::setLine($player, 2, " " . TextFormat::AQUA . ucfirst($this->tierUpdateGen) . " Upgrade: " . TextFormat::GREEN . gmdate("i:s", $this->tierUpdate));
+                     \BedWars\utils\Scoreboard::setLine($player, 3, "           ");
 
                      $currentLine = 4;
                      $playerTeam = $this->plugin->getPlayerTeam($player);
