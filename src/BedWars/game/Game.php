@@ -714,18 +714,18 @@ class Game
 
                      switch ($this->startTime) {
                          case 30;
-                             $this->broadcastMessage(TextFormat::YELLOW . "§l§5» §r§aStarting in: " . TextFormat::RED . "30");
+                             $this->broadcastMessage(TextFormat::AQUA . "§l§5» §r§aStarting in: " . TextFormat::GREEN . "30");
                              break;
                          case 15;
-                             $this->broadcastMessageTextFormat::YELLOW . "§l§5» §r§aStarting in: " . TextFormat::GOLD . "15");
+                             $this->broadcastMessageTextFormat::AQUA . "§l§5» §r§aStarting in: " . TextFormat::GREEN . "15");
                              break;
-                         case §g5;
-                         case §e4;
-                         case §e3;
-                         case §a2;
-                         case §21;
+                         case 5;
+                         case 4;
+                         case 3;
+                         case 2;
+                         case 1;
                              foreach ($this->players as $player) {
-                                 $player->sendTitle(TextFormat::RED . $this->startTime);
+                                 $player->sendTitle(TextFormat::GREEN . $this->startTime);
                              }
                              break;
                      }
