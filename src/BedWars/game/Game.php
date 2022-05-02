@@ -328,7 +328,7 @@ class Game
     }
 
     public function start() : void{
-         $this->broadcastMessage(TextFormat::GREEN . "Game has started!");
+         $this->broadcastMessage(TextFormat::GREEN . "§l§b» §r§6Bed§gWars§3 has started! §bCollect resources from generators to purchase items from the shop, or to upgrade your team from team upgrades! §eDestroy all opponents' beds! §cLast alive wins! §6Good Luck!");
          $this->state = self::STATE_RUNNING;
          foreach($this->players as $player){
             $player->sendTitle("");
@@ -421,7 +421,7 @@ class Game
      */
     public function join(Player $player) : void{
          if($this->state !== self::STATE_LOBBY){
-             $player->sendMessage(BedWars::PREFIX . TextFormat::YELLOW . "Arena is full!");
+             $player->sendMessage(BedWars::PREFIX . TextFormat::YELLOW . "§5» §cArena is full! Try again later!");
              return;
          }
 
@@ -437,10 +437,10 @@ class Game
          foreach($this->teams as $team){
             //  $player->getInventory()->addItem($i = new Item(new ItemIdentifier(ItemIds::WOOL, Utils::colorIntoWool($team->getColor()))));
              $item = ItemFactory::getInstance()->get(ItemIds::WOOL, Utils::colorIntoWool($team->getColor()));
-             $item->setCustomName($team->getColor() . ucfirst($team->getName()) . "'s " . TextFormat::WHITE . "Team");
+             $item->setCustomName($team->getColor() . ucfirst($team->getName()) . TextFormat::WHITE . "Team");
              $player->getInventory()->addItem($item);
          }
-         $player->getInventory()->setItem(8, ItemFactory::getInstance()->get(ItemIds::COMPASS)->setCustomName(TextFormat::YELLOW . "Leave"));
+         $player->getInventory()->setItem(8, ItemFactory::getInstance()->get(ItemIds::WHITE_BED)->setCustomName(TextFormat::YELLOW . "Leave"));
          $player->setGamemode(GameMode::ADVENTURE());
          $this->checkLobby();
 
