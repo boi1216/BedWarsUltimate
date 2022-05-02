@@ -498,7 +498,7 @@ class Game
 
         $playerTeam = $this->plugin->getPlayerTeam($player);
 
-        $this->broadcastMessage(TextFormat::BOLD . TextFormat::WHITE . "BED DESTRUCTION > " . TextFormat::RESET .  $team->getColor() . $team->getName() . "'s " . TextFormat::GRAY . "bed was destroyed by " . $playerTeam->getColor() . $player->getName());
+        $this->broadcastMessage(TextFormat::BOLD . TextFormat::RED . "BED DESTRUCTION §f» " . TextFormat::RESET .  $team->getColor() . $team->getName() . "'s " . TextFormat::GRAY . "bed was destroyed by " . $playerTeam->getColor() . $player->getName());
         foreach($team->getPlayers() as $player){
             $player->sendTitle(TextFormat::RED . "BED DESTROYED!", TextFormat::GRAY . "You will no longer respawn", 10);
         }
