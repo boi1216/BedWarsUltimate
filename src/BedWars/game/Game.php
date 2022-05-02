@@ -429,7 +429,7 @@ class Game
          $player->teleport($this->lobby);
          $this->players[$player->getName()] = $player;
 
-         $this->broadcastMessage(TextFormat::GRAY . "§3»" . TextFormat::MINECOIN_GOLD . "$player->getName()" . TextFormat::YELLOW . "has joined " . TextFormat::GOLD . "(" . TextFormat::AQUA .  count($this->players) . TextFormat::YELLOW . "/" . TextFormat::AQUA .  $this->maxPlayers . TextFormat::GOLD .  ")");
+         $this->broadcastMessage(TextFormat::GRAY . "§3»" . TextFormat::AQUA . $player->getName() . TextFormat::YELLOW . "has joined " . TextFormat::GOLD . "(" . TextFormat::AQUA .  count($this->players) . TextFormat::YELLOW . "/" . TextFormat::AQUA .  $this->maxPlayers . TextFormat::GOLD .  ")");
          $player->getInventory()->clearAll();
          $player->getArmorInventory()->clearAll();
          $player->getCraftingGrid()->clearAll();
@@ -786,7 +786,7 @@ class Game
                  foreach (array_merge($this->players, $this->spectators) as $player) {
 
                      \BedWars\utils\Scoreboard::remove($player);
-                     \BedWars\utils\Scoreboard::new($player, 'bedwars', TextFormat::BOLD . TextFormat::YELLOW . "§5» §6Bed§gWars §5«");
+                     \BedWars\utils\Scoreboard::new($player, 'bedwars', TextFormat::BOLD . TextFormat::YELLOW . "§3» §6Bed§gWars §3«");
 
                      \BedWars\utils\Scoreboard::setLine($player, 1, "    ");
                      \BedWars\utils\Scoreboard::setLine($player, 1, "     ");
@@ -859,16 +859,18 @@ class Game
              }
              foreach(array_merge($this->players, $this->spectators) as $player){
                      Scoreboard::remove($player);
-                     Scoreboard::new($player, 'bedwars', TextFormat::BOLD . TextFormat::GOLD . "§5» §6Bed§gWars §5«");
+                     Scoreboard::new($player, 'bedwars', TextFormat::BOLD . TextFormat::GOLD . "§3» §6Bed§gWars §3«");
                  
                      Scoreboard::setLine($player, 1, "     ");
                      Scoreboard::setLine($player, 2, "  ");
                      Scoreboard::setLine($player, 3, "§eWinner: " . TextFormat::RESET . $this->winnerTeam->getName());
-                     Scoreboard::setLine($player, 4, "§eWinners: " . TextFormat::RESET . $this->winnerTeam->getPlayers());
+                     Scoreboard::setLine($player, 4, "      ");
                      Scoreboard::setLine($player, 5, "     ");
                      Scoreboard::setLine($player, 6, "§bRestarting in: " . TextFormat::GREEN . $this->rebootTime);
-                     Scoreboard::setLine($player, 7, "");
-                     Scoreboard::setLine($player, 8, " " . TextFormat::LIGHT_PURPLE . $this->plugin->serverWebsite);
+                     Scoreboard::setLine($player, 7, "     ");
+                     Scoreboard::setLine($player, 8, "§5Thanks for playing!");
+                     Scoreboard::setLine($player, 9, "");
+                     Scoreboard::setLine($player, 10, " " . TextFormat::LIGHT_PURPLE . $this->plugin->serverWebsite);
               }
              
 
