@@ -457,7 +457,7 @@ class Game
         Scoreboard::setLine($player, 9, " " . TextFormat::YELLOW . "Mode: " . TextFormat::WHITE . substr(str_repeat($this->playersPerTeam . "v", count($this->teams)), 0, -1) . str_repeat(" ", 3));
         Scoreboard::setLine($player, 10, " " . TextFormat::YELLOW . "Version: " . TextFormat::WHITE . "v2.0" . str_repeat(" ", 3));
         Scoreboard::setLine($player, 9, "=================");
-        Scoreboard::setLine($player, 10, " " . TextFormat::PINK . $this->plugin->serverWebsite);
+        Scoreboard::setLine($player, 10, " " . TextFormat::MAGENTA . $this->plugin->serverWebsite);
     }
 
     /**
@@ -755,7 +755,7 @@ class Game
                      \BedWars\utils\Scoreboard::setLine($player, 9, " " . TextFormat::YELLOW . "Mode: " . TextFormat::WHITE . substr(str_repeat($this->playersPerTeam . "v", count($this->teams)), 0, -1) . str_repeat(" ", 3));
                      \BedWars\utils\Scoreboard::setLine($player, 10, " " . TextFormat::YELLOW . "Version: " . TextFormat::WHITE . "v2.0" . str_repeat(" ", 3));
                      \BedWars\utils\Scoreboard::setLine($player, 11, "=================");
-                     \BedWars\utils\Scoreboard::setLine($player, 12, " " . TextFormat::PINK . $this->plugin->serverWebsite);
+                     \BedWars\utils\Scoreboard::setLine($player, 12, " " . TextFormat::MAGENTA . $this->plugin->serverWebsite);
                  }
 
                  break;
@@ -869,7 +869,7 @@ class Game
                      Scoreboard::setLine($player, 5, "   ");
                      Scoreboard::setLine($player, 6, "Restarting in: " . TextFormat::GREEN . $this->rebootTime);
                      Scoreboard::setLine($player, 7, "    ");
-                     Scoreboard::setLine($player, 8, " " . TextFormat::PINK . $this->plugin->serverWebsite);
+                     Scoreboard::setLine($player, 8, " " . TextFormat::MAGENTA . $this->plugin->serverWebsite);
               }
              
 
