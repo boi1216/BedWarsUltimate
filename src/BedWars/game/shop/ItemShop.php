@@ -36,7 +36,7 @@ class ItemShop
         4 => ["name" => "Bows", "image" => ""],
         5 => ["name" => "Potions" ,"image" => ""],
         6 => ["name" => "Specials", "image" => ""],
-        7 => ["name" => "Tools", "image" => ""]
+        7 => ["name" => "Tools", "image" => ""],
     ];
 
     /**
