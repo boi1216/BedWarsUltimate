@@ -7,15 +7,26 @@ BedWars plugin with features you won't see anywhere else!
 ![Image from game](https://i.imgur.com/X9zSs1u.png)</br>
 
 ## Features
-- All basics of BedWars game
-- Spectator mode
-- In-Game scoreboard
-- Team upgrades 
-- Custom generators (like Hypixel's)
-- Hypixel famous Popup-Tower
-- More cool items
-- API 4.2.3 support
-- New updates every week
+- [X] All basics of BedWars game
+- [X] Spectator mode
+- [X] In-Game scoreboard
+- [X] Team upgrades 
+- [X] Custom generators (like Hypixel's)
+- [X] Hypixel famous Popup-Tower
+- [X] More cool items
+- [X] API 4.2.3 support
+- [X] New updates every week
+- [ ] Fix cool items
+- [ ] Generator Upgrades
+- [ ] Armor Bugs
+
+## What I Added
+
+- [X] Better ReadMe
+- [X] Better Scoreboard
+- [X] Better Language
+- [X] Check and X signs for Bed Status
+- [X] Better Teams
 
 ## How to setup
 - It is recommended to have installed MultiWorld by CzechPMDevs to make the setup easier.
