@@ -741,7 +741,8 @@ class Game
 
                  foreach (array_merge($this->players, $this->spectators) as $player) {
                      \BedWars\utils\Scoreboard::new($player, 'bedwars', TextFormat::BOLD . TextFormat::GOLD . "BED§gWARS");
-                     \BedWars\utils\Scoreboard::setLine($player, 1, " ");
+                     
+                     \BedWars\utils\Scoreboard::setLine($player, 1, "  ");
                      \BedWars\utils\Scoreboard::setLine($player, 2, " " . TextFormat::YELLOW . "Map: " . TextFormat::WHITE . $this->mapName . str_repeat(" ", 3));
                      \BedWars\utils\Scoreboard::setLine($player, 3, " " . TextFormat::YELLOW . "Players: " . TextFormat::WHITE . count($this->players) . "/" . $this->maxPlayers . str_repeat(" ", 3));
                      \BedWars\utils\Scoreboard::setLine($player, 4, "  ");
@@ -786,8 +787,8 @@ class Game
                      \BedWars\utils\Scoreboard::remove($player);
                      \BedWars\utils\Scoreboard::new($player, 'bedwars', TextFormat::BOLD . TextFormat::YELLOW . "§6BED§gWARS");
 
-                     \BedWars\utils\Scoreboard::setLine($player, 1, " ");
-                     \BedWars\utils\Scoreboard::setLine($player, 2, " " . TextFormat::YELLOW . ucfirst($this->tierUpdateGen) . " Upgrade: " . TextFormat::GREEN . gmdate("i:s", $this->tierUpdate));
+                     \BedWars\utils\Scoreboard::setLine($player, 1, "  ");
+                     \BedWars\utils\Scoreboard::setLine($player, 2, " " . TextFormat::AQUA . ucfirst($this->tierUpdateGen) . " Upgrade: " . TextFormat::GREEN . gmdate("i:s", $this->tierUpdate));
                      \BedWars\utils\Scoreboard::setLine($player, 3, "  ");
 
                      $currentLine = 4;
@@ -795,14 +796,14 @@ class Game
                      foreach ($this->teams as $team) {
                          $status = "";
                          if ($team->hasBed()) {
-                             $status = TextFormat::GREEN . "✔";
+                             $status = TextFormat::GREEN . TextFormat::BOLD . "✔";
                          } elseif(count($team->getPlayers()) > $team->dead) {
-                             $status = count($team->getPlayers()) === 0 ? TextFormat::DARK_RED . "✘" : TextFormat::GRAY . "[" . (count($team->getPlayers()) - $team->dead) . "]";
+                             $status = count($team->getPlayers()) === 0 ? TextFormat::DARK_RED . TextFormat::BOLD. "✖" : TextFormat::GRAY . TextFormat::BOLD . "[" . (count($team->getPlayers()) - $team->dead) . "]";
                          }elseif(count($team->getPlayers()) <= $team->dead){
-                             $status = TextFormat::DARK_RED . "[-]";
+                             $status = TextFormat::BLACK . TextFormat::BOLD . "☠";
                          }
-                         $isPlayerTeam = $team->getName() == $playerTeam->getName() ? TextFormat::GRAY . "(YOU)" : "";
-                         $stringFormat = TextFormat::BOLD . $team->getColor() . ucfirst($team->getName()[0]) . " " . TextFormat::RESET . TextFormat::WHITE . ucfirst($team->getName()) . ": " . $status . " " . $isPlayerTeam;
+                         $isPlayerTeam = $team->getName() == $playerTeam->getName() ? TextFormat::YELLOW . TextFormat::BOLD . " ★ §7(YOU)" : "";
+                         $stringFormat = TextFormat::BOLD . $team->getColor() . ucfirst($team->getName()[0]) . " " . TextFormat::WHITE . ucfirst($team->getName()) . ": " . $status . " " . $isPlayerTeam;
                          \BedWars\utils\Scoreboard::setLine($player, " " . $currentLine, $stringFormat);
                          $currentLine++;
                      }
@@ -811,7 +812,7 @@ class Game
 
                      foreach($allTeams as $name => $color){
                         if(!isset($this->teams[$name])){
-                            \BedWars\utils\Scoreboard::setLine($player, " " . $currentLine, TextFormat::BOLD . $color . ucfirst($name)[0] . " " . TextFormat::RESET . TextFormat::WHITE . ucfirst($name) . " " . TextFormat::DARK_RED . "[-]");
+                            \BedWars\utils\Scoreboard::setLine($player, " " . $currentLine, TextFormat::BOLD . $color . ucfirst($name)[0] . " " . TextFormat::WHITE . ucfirst($name) . " " . TextFormat::DARK_RED . "[-]");
                             $currentLine++;
                         }
                      }
@@ -857,12 +858,13 @@ class Game
              foreach(array_merge($this->players, $this->spectators) as $player){
                      Scoreboard::remove($player);
                      Scoreboard::new($player, 'bedwars', TextFormat::BOLD . TextFormat::GOLD . "BED§gWARS");
+                 
                      Scoreboard::setLine($player, 1, " ");
                      Scoreboard::setLine($player, 2, "§eWinner: " . TextFormat::GREEN . $this->winnerTeam->getName());
                      Scoreboard::setLine($player, 3, "   ");
-                     Scoreboard::setLine($player, 4, "§eThanks for playing!");
+                     Scoreboard::setLine($player, 4, "§3Thanks for playing!");
                      Scoreboard::setLine($player, 5, "   ");
-                     Scoreboard::setLine($player, 6, "§eRestarting in: " . TextFormat::GREEN . $this->rebootTime);
+                     Scoreboard::setLine($player, 6, "§bRestarting in: " . TextFormat::GREEN . $this->rebootTime);
                      Scoreboard::setLine($player, 7, "");
                      Scoreboard::setLine($player, 8, " " . TextFormat::LIGHT_PURPLE . $this->plugin->serverWebsite);
               }
