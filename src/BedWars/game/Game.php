@@ -712,7 +712,7 @@ class Game
                          $player->sendTip(TextFormat::YELLOW . "Starting in: " . TextFormat::AQUA . gmdate("i:s", $this->startTime));
                      }
 
-                     switch ($this->startTime) (
+                     switch ($this->startTime) {
                          case 30;
                              $this->broadcastMessage(TextFormat::YELLOW . "§l§5» §r§aStarting in: " . TextFormat::RED . "30");
                              break;
