@@ -786,7 +786,7 @@ class Game
                  foreach (array_merge($this->players, $this->spectators) as $player) {
 
                      \BedWars\utils\Scoreboard::remove($player);
-                     \BedWars\utils\Scoreboard::new($player, 'bedwars', TextFormat::BOLD . TextFormat::YELLOW . "§6BED§gWARS");
+                     \BedWars\utils\Scoreboard::new($player, 'bedwars', TextFormat::BOLD . TextFormat::YELLOW . "§5» §6Bed§gWars §5«");
 
                      \BedWars\utils\Scoreboard::setLine($player, 1, "    ");
                      \BedWars\utils\Scoreboard::setLine($player, 1, "     ");
@@ -800,9 +800,9 @@ class Game
                          if ($team->hasBed()) {
                              $status = TextFormat::GREEN . TextFormat::BOLD . "✔";
                          } elseif(count($team->getPlayers()) > $team->dead) {
-                             $status = count($team->getPlayers()) === 0 ? TextFormat::DARK_RED . TextFormat::BOLD. "✖" : TextFormat::GRAY . TextFormat::BOLD . "[" . (count($team->getPlayers()) - $team->dead) . "]";
+                             $status = count($team->getPlayers()) === 0 ? TextFormat::DARK_RED . TextFormat::BOLD. "✘" : TextFormat::GRAY . TextFormat::GRAY . "[" . (count($team->getPlayers()) - $team->dead) . "]";
                          }elseif(count($team->getPlayers()) <= $team->dead){
-                             $status = TextFormat::BLACK . TextFormat::BOLD . "✖";
+                             $status = TextFormat::DARK_RED . TextFormat::BOLD . "✘";
                          }
                          $isPlayerTeam = $team->getName() == $playerTeam->getName() ? TextFormat::YELLOW . TextFormat::BOLD . "§7(YOU)" : "";
                          $stringFormat = TextFormat::BOLD . $team->getColor() . ucfirst($team->getName()[0]) . " " . TextFormat::WHITE . TextFormat::RESET . ucfirst($team->getName()) . ": " . $status . " " . $isPlayerTeam;
@@ -814,7 +814,7 @@ class Game
 
                      foreach($allTeams as $name => $color){
                         if(!isset($this->teams[$name])){
-                            \BedWars\utils\Scoreboard::setLine($player, "   " . $currentLine, TextFormat::BOLD . TextFormat::RESET . $color . ucfirst($name)[0] . " " . TextFormat::WHITE . ucfirst($name) . " " . TextFormat::DARK_RED . "✖");
+                            \BedWars\utils\Scoreboard::setLine($player, "   " . $currentLine, TextFormat::BOLD . TextFormat::RESET . $color . ucfirst($name)[0] . " " . TextFormat::WHITE . ucfirst($name) . " " . TextFormat::DARK_RED . "✘");
                             $currentLine++;
                         }
                      }
@@ -864,13 +864,14 @@ class Game
                      Scoreboard::setLine($player, 1, "     ");
                      Scoreboard::setLine($player, 2, "  ");
                      Scoreboard::setLine($player, 3, "§eWinner: " . TextFormat::GREEN . $this->winnerTeam->getName());
-                     Scoreboard::setLine($player, 4, "     ");
-                     Scoreboard::setLine($player, 5, "     ");
-                     Scoreboard::setLine($player, 6, "§3Thanks for playing!");
-                     Scoreboard::setLine($player, 7, "     ");
-                     Scoreboard::setLine($player, 8, "§bRestarting in: " . TextFormat::GREEN . $this->rebootTime);
-                     Scoreboard::setLine($player, 9, "");
-                     Scoreboard::setLine($player, 10, " " . TextFormat::LIGHT_PURPLE . $this->plugin->serverWebsite);
+                     Scoreboard::setLine($player, 4, "       ");
+                     Scoreboard::setLine($player, 5, "    ");
+                     Scoreboard::setLine($player, 6, "     ");
+                     Scoreboard::setLine($player, 7, "§3Thanks for playing!");
+                     Scoreboard::setLine($player, 8, "     ");
+                     Scoreboard::setLine($player, 9, "§bRestarting in: " . TextFormat::GREEN . $this->rebootTime);
+                     Scoreboard::setLine($player, 10, "");
+                     Scoreboard::setLine($player, 11, " " . TextFormat::LIGHT_PURPLE . $this->plugin->serverWebsite);
               }
              
 
