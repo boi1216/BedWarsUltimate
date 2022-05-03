@@ -818,7 +818,7 @@ class Game
 
                      foreach($allTeams as $name => $color){
                         if(!isset($this->teams[$name])){
-                            \BedWars\utils\Scoreboard::setLine($player, "   " . $currentLine, TextFormat::BOLD . TextFormat::RESET . $color . ucfirst($name)[0] . " " . TextFormat::WHITE . ucfirst($name) . " " . TextFormat::DARK_RED . "X");
+                            \BedWars\utils\Scoreboard::setLine($player, "   " . $currentLine, TextFormat::BOLD . TextFormat::RESET . $color . ucfirst($name)[0] . " " . TextFormat::WHITE . ucfirst($name) . " " . TextFormat::DARK_RED . "❌");
                             $currentLine++;
                         }
                      }
