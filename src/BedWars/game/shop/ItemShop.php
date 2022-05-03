@@ -196,7 +196,7 @@ class ItemShop
             }
           }
         }
-        $p->sendMessage(TextFormat::GREEN . "§l§5»§r§aYou purchased " . TextFormat::YELLOW .  $itemData['name']);
+        $p->sendMessage(TextFormat::GREEN . "§l§5»§r§a  You purchased " . TextFormat::YELLOW .  $itemData['name']);
         if($wasPurchased){
             return;
         }
