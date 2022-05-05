@@ -804,12 +804,12 @@ class Game
                          if ($team->hasBed()) {
                              $status = TextFormat::GREEN . TextFormat::BOLD . "[+]";
                          } elseif(count($team->getPlayers()) > $team->dead) {
-                             $status = count($team->getPlayers()) === 0 ? TextFormat::DARK_RED . TextFormat::BOLD. "[-]" : TextFormat::RESET . TextFormat::GRAY . "[" . (count($team->getPlayers()) - $team->dead) . "]";
+                             $status = count($team->getPlayers()) === 0 ? TextFormat::DARK_RED . TextFormat::BOLD. "[-]" : TextFormat::BOLD . TextFormat::GRAY . "[" . (count($team->getPlayers()) - $team->dead) . "]";
                          }elseif(count($team->getPlayers()) <= $team->dead){
                              $status = TextFormat::DARK_RED . TextFormat::BOLD . "[-]";
                          }
                          $isPlayerTeam = $team->getName() == $playerTeam->getName() ? TextFormat::YELLOW . TextFormat::GRAY . "§7(YOU)" : "";
-                         $stringFormat = TextFormat::BOLD . $team->getColor() . ucfirst($team->getName()[0]) . "" . TextFormat::WHITE . TextFormat::RESET . ucfirst($team->getName()) . ": " . $status . " " . $isPlayerTeam;
+                         $stringFormat = TextFormat::BOLD . $team->getColor() . ucfirst($team->getName()[0]) . " " . TextFormat::WHITE . TextFormat::RESET . ucfirst($team->getName()) . ": " . $status . " " . $isPlayerTeam;
                          \BedWars\utils\Scoreboard::setLine($player, " " . $currentLine, $stringFormat);
                          $currentLine++;
                      }
