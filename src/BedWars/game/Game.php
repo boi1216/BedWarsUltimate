@@ -873,7 +873,7 @@ class Game
                      Scoreboard::setLine($player, 6, " §eVersion: §rv3.0 ");
                      Scoreboard::setLine($player, 7, "     ");
                      Scoreboard::setLine($player, 8, " §bRestarting in: " . TextFormat::GREEN . $this->rebootTime);
-                     Scoreboard::setLine($player, 9, " §3Run /bwui to queue again!");
+                     Scoreboard::setLine($player, 9, " §3Run /bwui to re-queue!");
                      Scoreboard::setLine($player, 10, "                     ");
                      Scoreboard::setLine($player, 11, " " . TextFormat::LIGHT_PURPLE . $this->plugin->serverWebsite);
               }
