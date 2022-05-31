@@ -456,7 +456,7 @@ class Game
         Scoreboard::setLine($player, 8, " " . count($this->players) >= $this->minPlayers ? TextFormat::AQUA . "Starting in: " . TextFormat::GREEN .  $this-> startTime . str_repeat(" ", 3) : TextFormat::GREEN . "Waiting for players..." . str_repeat(" ", 3));
         Scoreboard::setLine($player, 9, "   ");
         Scoreboard::setLine($player, 10, " " . TextFormat::YELLOW . "Mode: " . TextFormat::WHITE . substr(str_repeat($this->playersPerTeam . "v", count($this->teams)), 0, -1) . str_repeat(" ", 3));
-        Scoreboard::setLine($player, 11, " " . TextFormat::YELLOW . "Version: " . TextFormat::WHITE . "v2.0" . str_repeat(" ", 3));
+        Scoreboard::setLine($player, 11, " " . TextFormat::YELLOW . "Version: " . TextFormat::WHITE . "v3.0" . str_repeat(" ", 3));
         Scoreboard::setLine($player, 12, "           ");
         Scoreboard::setLine($player, 13, " " . TextFormat::LIGHT_PURPLE . $this->plugin->serverWebsite);
     }
@@ -793,7 +793,7 @@ class Game
                      \BedWars\utils\Scoreboard::remove($player);
                      \BedWars\utils\Scoreboard::new($player, 'bedwars', TextFormat::BOLD . TextFormat::YELLOW . "§l§6Bed§gWars");
 
-                     \BedWars\utils\Scoreboard::setLine($player, 1, "=================      ");
+                     \BedWars\utils\Scoreboard::setLine($player, 1, "        ");
                      \BedWars\utils\Scoreboard::setLine($player, 2, " " . TextFormat::AQUA . ucfirst($this->tierUpdateGen) . " Upgrade: " . TextFormat::GREEN . gmdate("i:s", $this->tierUpdate));
                      \BedWars\utils\Scoreboard::setLine($player, 3, "           ");
 
@@ -824,7 +824,7 @@ class Game
                      }
 
 
-                     \BedWars\utils\Scoreboard::setLine($player, " " . $currentLine, "=================       ");
+                     \BedWars\utils\Scoreboard::setLine($player, " " . $currentLine, "          ");
                      $currentLine++;
                      \BedWars\utils\Scoreboard::setLine($player, " " . $currentLine, " " . TextFormat::LIGHT_PURPLE . $this->plugin->serverWebsite);
                  }
