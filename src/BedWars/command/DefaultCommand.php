@@ -509,7 +509,6 @@ class DefaultCommand extends \pocketmine\command\Command
      * @param CommandSender $sender
      */
 	private function sendHelp(CommandSender $sender) {
-	        }
 		$sender->sendMessage(TextFormat::BOLD . TextFormat::YELLOW . "§b-----§eBedWars Commands§b----- \n§a/bw create \n§a/bw delete \n§a/bw setlobby \n§a§a/bw addteam \n§a/bw setbed \n§a/bw addsafearea \n§a/bw setpos \n§a/bw addgenerator \n/§abw load \n§a/bw list \n§a/bw join \n§a/bw random \n§a/bw start");
 	}
 }
