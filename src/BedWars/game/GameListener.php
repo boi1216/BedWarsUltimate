@@ -105,10 +105,10 @@ class GameListener implements Listener
     }
 
     public function onExhaust(PlayerExhaustEvent $ev) : void{
-    	$player = $ev->getPlayer();
-    	if($this->plugin->getPlayerGame($player) !== null){
-    		$ev->cancel();
-    	}
+        $player = $ev->getPlayer();
+        if($this->plugin->getPlayerGame($player) !== null){
+            $ev->cancel();
+        }
     }
 
     public function onExplode(EntityExplodeEvent $ev) : void{
