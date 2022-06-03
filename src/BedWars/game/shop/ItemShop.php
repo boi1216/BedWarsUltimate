@@ -42,7 +42,7 @@ class ItemShop
      * @var array $shopPages
      */
     public static $shopPages = [
-        0 => ["§6Chainmal Armor\n§l§e40 IRON" => ["image" => "https://lh3.googleusercontent.com/i8OJvH_x9a1SFd-F358jlCKe9KAXrpw0WO_22SuQRHWjLyFcOy0GFQyBFqlcENNEzXktnruwr71KBzP-j87zYg"],
+        0 => ["§6Chainmail Armor\n§l§e40 IRON" => ["image" => "https://lh3.googleusercontent.com/i8OJvH_x9a1SFd-F358jlCKe9KAXrpw0WO_22SuQRHWjLyFcOy0GFQyBFqlcENNEzXktnruwr71KBzP-j87zYg"],
             "§6Iron Armor §c[PERMANENT]\n§l§e12 GOLD" => ["image" => "https://static.wikia.nocookie.net/minecraft_gamepedia/images/e/e0/Iron_Chestplate_%28item%29_JE2_BE2.png/revision/latest?cb=20190406141220"],
             "§6Diamond Armor §c[PERMANENT]\n§l§e6 EMERALD" => ["image" => "https://www.seekpng.com/png/full/819-8194450_minecraft-diamond-chestplate-chestplate-minecraft.png"]],
         1 => ["§6Stone Sword\n§l§e10 IRON" => ["image" => "https://static.wikia.nocookie.net/minecraft_gamepedia/images/b/b1/Stone_Sword_JE2_BE2.png/revision/latest/scale-to-width-down/160?cb=20200217235849"],
