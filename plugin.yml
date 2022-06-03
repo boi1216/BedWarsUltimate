@@ -2,7 +2,7 @@ name: BedWarsUltimate
 version: "3.0 Blossom"
 api: 4.0.0
 main: BedWars\BedWars 
-author: boi1216 Tuvqlu
+author: boi1216 Tuvqlu Faizx511x
 
 permissions:
   bedwars.command.help:
