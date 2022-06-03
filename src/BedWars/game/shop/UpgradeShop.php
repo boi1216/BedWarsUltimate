@@ -28,11 +28,11 @@ class UpgradeShop
      * @var array $shopWindows
      */
     public static $shopWindows = [
-        1 => ["name" => "Sharpened Swords", "image" => ""],
-        2 => ["name" => "Reinforced Armor", "image" => ""],
-        3 => ["name" => "Maniac Miner", "image" => ""],
-        4 => ["name" => "Iron Forge", "image" => ""],
-        5 => ["name" => "Heal Pool", "image" => ""]
+        1 => ["name" => "Sharpened Swords", "image" => "https://static.wikia.nocookie.net/minecraft_gamepedia/images/6/6a/Diamond_Sword_JE2_BE2.png/revision/latest?cb=20200217235945"],
+        2 => ["name" => "Reinforced Armor", "image" => "https://www.seekpng.com/png/full/819-8194450_minecraft-diamond-chestplate-chestplate-minecraft.png"],
+        3 => ["name" => "Maniac Miner", "image" => "https://static.wikia.nocookie.net/minecraft_gamepedia/images/a/a6/Golden_Pickaxe_JE4_BE3.png/revision/latest/scale-to-width-down/160?cb=20200226194041"],
+        4 => ["name" => "Iron Forge", "image" => "https://cdn.nookazon.com/hypixel/Accessories/Dungeon_Chest_Key.png"],
+        5 => ["name" => "Heal Pool", "image" => "https://static.wikia.nocookie.net/minecraft_gamepedia/images/e/e2/Feather_JE3_BE2.png/revision/latest/scale-to-width-down/160?cb=20190430052113"]
     ];
 
     public static $page_ids = [
@@ -52,12 +52,12 @@ class UpgradeShop
     ];
 
     const UPGRADE_DESCRIPTION = [
-        1 => TextFormat::YELLOW . "Your team gets Protection on all armor pieces\n\n" . TextFormat::AQUA . "Protection I " . TextFormat::BOLD . TextFormat::YELLOW . "2 Diamonds\n" . TextFormat::RESET . TextFormat::AQUA . "Protection II " . TextFormat::BOLD . TextFormat::YELLOW . "4 Diamonds\n" . TextFormat::RESET . TextFormat::AQUA . "Protection III " . TextFormat::BOLD . TextFormat::YELLOW . "6 diamonds",
-        0 => TextFormat::YELLOW . "Your team gets Sharpness I on all swords and axes!\n\n" . TextFormat::BOLD . TextFormat::YELLOW . "2 Diamonds",
-        2 => TextFormat::YELLOW . "All players on your team permanently gain Haste\n\n" . TextFormat::AQUA . "Haste I " . TextFormat::BOLD . TextFormat::YELLOW . "2 Diamonds\n" .
+        1 => TextFormat::YELLOW . "§l§b» §r§eYour team gets Protection on all armor pieces\n\n" . TextFormat::AQUA . "Protection I " . TextFormat::BOLD . TextFormat::YELLOW . "2 Diamonds\n" . TextFormat::RESET . TextFormat::AQUA . "Protection II " . TextFormat::BOLD . TextFormat::YELLOW . "4 Diamonds\n" . TextFormat::RESET . TextFormat::AQUA . "Protection III " . TextFormat::BOLD . TextFormat::YELLOW . "6 diamonds",
+        0 => TextFormat::YELLOW . "§l§b» §r§eYour team gets Sharpness I on all swords and axes!\n\n" . TextFormat::BOLD . TextFormat::YELLOW . "2 Diamonds",
+        2 => TextFormat::YELLOW . "§l§b» §r§eAll players on your team permanently gain Haste\n\n" . TextFormat::AQUA . "Haste I " . TextFormat::BOLD . TextFormat::YELLOW . "2 Diamonds\n" .
             TextFormat::RESET . TextFormat::AQUA . "Haste II " . TextFormat::BOLD . TextFormat::YELLOW . "4 Diamonds",
-        3 => TextFormat::YELLOW . "Upgrade resource spawning on your island\n\n" . TextFormat::AQUA . "+50% resources " . TextFormat::BOLD . TextFormat::YELLOW . "2 Diamonds\n" . TextFormat::RESET . TextFormat::AQUA . "+100% resources " . TextFormat::BOLD . TextFormat::YELLOW . "4 Diamonds\n" . TextFormat::RESET . TextFormat::AQUA . "Spawn emeralds " . TextFormat::BOLD . TextFormat::YELLOW . "8 Diamonds\n" . TextFormat::RESET . TextFormat::AQUA . "+200% resources " . TextFormat::BOLD . TextFormat::YELLOW . "16 Diamonds",
-        4 => TextFormat::YELLOW . "Creates a regeneration field around your base\n\n" . TextFormat::AQUA . "1 Diamond" 
+        3 => TextFormat::YELLOW . "§l§b» §r§eUpgrade resource spawning on your island\n\n" . TextFormat::AQUA . "+50% resources " . TextFormat::BOLD . TextFormat::YELLOW . "2 Diamonds\n" . TextFormat::RESET . TextFormat::AQUA . "+100% resources " . TextFormat::BOLD . TextFormat::YELLOW . "4 Diamonds\n" . TextFormat::RESET . TextFormat::AQUA . "Spawn emeralds " . TextFormat::BOLD . TextFormat::YELLOW . "8 Diamonds\n" . TextFormat::RESET . TextFormat::AQUA . "+200% resources " . TextFormat::BOLD . TextFormat::YELLOW . "16 Diamonds",
+        4 => TextFormat::YELLOW . "§l§b» §r§eCreates a regeneration field around your base\n\n" . TextFormat::AQUA . "1 Diamond" 
     ];
 
     const MAX_LEVELS = [
@@ -116,7 +116,7 @@ class UpgradeShop
 
         $player->getInventory()->removeItem(ItemFactory::getInstance()->get(ItemIds::DIAMOND, 0, $cost));
 
-        $player->sendMessage(TextFormat::GREEN . "Upgraded!");
+        $player->sendMessage(TextFormat::GREEN . "§l§b» §r§aUpgraded!");
 
         switch ($upgradeData['identifier']) {
             case 'sharpenedSwords';
