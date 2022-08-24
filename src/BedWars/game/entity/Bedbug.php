@@ -81,8 +81,6 @@ class Bedbug extends Living {
             return false;
 
         }
-        $this->updateNametag();
-
         $this->updateMove($tickDiff);
 
         if($this->target instanceof Player){
