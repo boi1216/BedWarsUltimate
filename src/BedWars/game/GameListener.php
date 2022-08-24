@@ -33,7 +33,7 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemIds;
 use pocketmine\entity\object\PrimedTNT;
 use BedWars\game\structure\popup_tower\PopupTower;
-use pocketmine\entity\projectile\Egg;
+use pocketmine\entity\projectile\{Egg, Snowball};
 use BedWars\game\entity\{Fireball, Golem, Bedbug};
 use pocketmine\network\mcpe\protocol\ModalFormResponsePacket;
 use pocketmine\player\Player;
@@ -54,6 +54,7 @@ use pocketmine\nbt\tag\ByteArrayTag;
 use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\ListTag;
+use pocketmine\events\entity\{ProjectileLaunchEvent, ProjectileHitEntityEvent};
 
 class GameListener implements Listener
 {
@@ -69,7 +70,7 @@ class GameListener implements Listener
     {
         $this->plugin = $plugin;
     }
-
+	
     public function createBaseNBT(Vector3 $pos, ?Vector3 $motion = null, float $yaw = 0.0, float $pitch = 0.0): CompoundTag
     {
         return CompoundTag::create()
@@ -88,7 +89,7 @@ class GameListener implements Listener
                 new FloatTag($pitch)
             ]));
     }	
-	
+
     /**
      * @param SignChangeEvent $event
      */
@@ -158,7 +159,7 @@ class GameListener implements Listener
         }
         $ev->setBlockList($newList);
     }
-
+	
     public function projectileLaunchevent(ProjectileLaunchEvent $event)
     {
         $pro = $event->getEntity();
@@ -172,10 +173,9 @@ class GameListener implements Listener
             }
         }
     }
-
+	
     public function spawnGolem($pos, $world, $player)
     {
-        if ($this->phase !== self::PHASE_GAME) return;
         $nbt = $this->createBaseNBT($pos);
         $entity = new Golem($world, $nbt);
         $entity->arena = $this;
@@ -185,7 +185,6 @@ class GameListener implements Listener
 
     public function spawnBedbug($pos, $world, $player)
     {
-        if ($this->phase !== self::PHASE_GAME) return;
         $nbt = $this->createBaseNBT($pos);
         $entity = new Bedbug($world, $nbt);
         $entity->arena = $this;
@@ -197,13 +196,13 @@ class GameListener implements Listener
     public function spawnFireball($pos, $world, $player)
     {
         $nbt = $this->createBaseNBT($pos, $player->getDirectionVector(), ($player->getLocation()->getYaw > 180 ? 360 : 0) - $player->getLocation()->getYaw, -$player->getLocation()->getPictch);
-        $entity = new Fireball($world, $nbt, $player);
+        $entity = new Fireball($world, $nbt);
         $entity->setMotion($player->getDirectionVector()->normalize()->multiply(0.4));
         $entity->spawnToAll();
         $entity->arena = $this;
         $entity->owner = $player;
     }	
-	
+
     /**
      * @param PlayerInteractEvent $event
      */
@@ -222,14 +221,14 @@ class GameListener implements Listener
                 }
             }
         }
-
+	    
         if($item->getId() == ItemIds::SPAWN_EGG && $item->getMeta() == 14){
             $this->spawnGolem($block->add(0, 1), $player->world, $player);
             $ih->setCount($ih->getCount() - 1);
             $player->getInventory()->setItemInHand($ih); 
             $event->cancel();
         }	    
-
+	    
         if($item->getId() == ItemIds::FIRE_CHARGE){
              $this->spawnFireball($player->add(0, $player->getEyeHeight()), $player->world, $player);
              $this->addSound($player, 'mob.blaze.shoot');
@@ -237,7 +236,7 @@ class GameListener implements Listener
              $player->getInventory()->setItemInHand($ih); 
              $event->cancel();
         }	    
-	    
+
         $item = $event->getItem();
 
         if($item->getId() == ItemIds::WOOL){
@@ -245,7 +244,7 @@ class GameListener implements Listener
 
             $playerGame = $this->plugin->getPlayerGame($player);
             if($playerGame == null || $playerGame->getState() !== Game::STATE_LOBBY)return;
- 
+
             $playerTeam = $this->plugin->getPlayerTeam($player);
             if($playerTeam !== null){
                 $player->sendMessage(TextFormat::RED . "§l§9»§r §cYou are already in a team!");
