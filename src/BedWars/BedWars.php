@@ -99,7 +99,7 @@ class BedWars extends PluginBase
         EntityFactory::getInstance()->register(BridgeEgg::class, function(World $world, CompoundTag $nbt) : BridgeEgg{
             return new BridgeEgg(EntityDataHelper::parseLocation($nbt, $world), null, $nbt);
         }, ["Egg"]);
-         EntityFactory::getInstance()->register(Golem::class, function(World $world, CompoundTag $nbt) : Golem{
+        EntityFactory::getInstance()->register(Golem::class, function(World $world, CompoundTag $nbt) : Golem{
             return new Golem(EntityDataHelper::parseLocation($nbt, $world), $nbt);
         }, ["Golem"]);
         EntityFactory::getInstance()->register(Fireball::class, function(World $world, CompoundTag $nbt) : Fireball{
