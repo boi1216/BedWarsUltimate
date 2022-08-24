@@ -13,7 +13,6 @@ use pocketmine\scheduler\Task;
 use pocketmine\tile\Sign;
 use pocketmine\utils\TextFormat;
 use pocketmine\math\Vector3;
-use pocketmine\world\World;
 use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginBase;
 use pocketmine\entity\EntityFactory;
@@ -101,13 +100,13 @@ class BedWars extends PluginBase
             return new BridgeEgg(EntityDataHelper::parseLocation($nbt, $world), null, $nbt);
         }, ["Egg"]);
          EntityFactory::getInstance()->register(Golem::class, function(World $world, CompoundTag $nbt) : Golem{
-            return new Golem(EntityDataHelper::parseLocation($nbt, $world), null, $nbt);
+            return new Golem(EntityDataHelper::parseLocation($nbt, $world), $nbt);
         }, ["Golem"]);
         EntityFactory::getInstance()->register(Fireball::class, function(World $world, CompoundTag $nbt) : Fireball{
-            return new Fireball(EntityDataHelper::parseLocation($nbt, $world), null, $nbt);
+            return new Fireball(EntityDataHelper::parseLocation($nbt, $world), $nbt);
         }, ["Fireball"]);   
         EntityFactory::getInstance()->register(Bedbug::class, function(World $world, CompoundTag $nbt) : Bedbug{
-            return new Bedbug(EntityDataHelper::parseLocation($nbt, $world), null, $nbt);
+            return new Bedbug(EntityDataHelper::parseLocation($nbt, $world), $nbt);
         }, ["Bedbug"]);        
 
         //register items
