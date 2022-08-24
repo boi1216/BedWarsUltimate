@@ -7,7 +7,7 @@ namespace BedWars;
 use pocketmine\block\utils\SignText;
 use pocketmine\item\Item;
 use pocketmine\item\ItemIds;
-use pocketmine\level\Level;
+use pocketmine\world\World;
 use pocketmine\player\Player;
 use pocketmine\scheduler\Task;
 use pocketmine\tile\Sign;
