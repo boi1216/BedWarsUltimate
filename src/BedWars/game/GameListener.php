@@ -34,6 +34,7 @@ use pocketmine\item\ItemIds;
 use pocketmine\entity\object\PrimedTNT;
 use BedWars\game\structure\popup_tower\PopupTower;
 use pocketmine\entity\projectile\Egg;
+use BedWars\game\entity\{Fireball, Golem, Bedbug};
 use pocketmine\network\mcpe\protocol\ModalFormResponsePacket;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
@@ -47,6 +48,12 @@ use pocketmine\event\player\PlayerDropItemEvent;
 use pocketmine\item\enchantment\ItemFlags;
 use pocketmine\item\ItemFactory;
 use pocketmine\inventory\ArmorInventory;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\StringTag;
+use pocketmine\nbt\tag\ByteArrayTag;
+use pocketmine\nbt\tag\DoubleTag;
+use pocketmine\nbt\tag\FloatTag;
+use pocketmine\nbt\tag\ListTag;
 
 class GameListener implements Listener
 {
@@ -63,6 +70,25 @@ class GameListener implements Listener
         $this->plugin = $plugin;
     }
 
+    public function createBaseNBT(Vector3 $pos, ?Vector3 $motion = null, float $yaw = 0.0, float $pitch = 0.0): CompoundTag
+    {
+        return CompoundTag::create()
+            ->setTag("Pos", new ListTag([
+                new DoubleTag($pos->x),
+                new DoubleTag($pos->y),
+                new DoubleTag($pos->z)
+            ]))
+            ->setTag("Motion", new ListTag([
+                new DoubleTag($motion !== null ? $motion->x : 0.0),
+                new DoubleTag($motion !== null ? $motion->y : 0.0),
+                new DoubleTag($motion !== null ? $motion->z : 0.0)
+            ]))
+            ->setTag("Rotation", new ListTag([
+                new FloatTag($yaw),
+                new FloatTag($pitch)
+            ]));
+    }	
+	
     /**
      * @param SignChangeEvent $event
      */
@@ -133,6 +159,51 @@ class GameListener implements Listener
         $ev->setBlockList($newList);
     }
 
+    public function projectileLaunchevent(ProjectileLaunchEvent $event)
+    {
+        $pro = $event->getEntity();
+        $player = $pro->getOwningEntity();
+        $playerGame = $this->plugin->getPlayerGame($player);
+        if ($player instanceof Player) {
+            if ($playerGame !== null) {
+                if ($pro instanceof Snowball) {
+                    $this->spawnBedbug($pro->getPosition()->asVector3(), $player->getWorld(), $player);
+                }
+            }
+        }
+    }
+
+    public function spawnGolem($pos, $world, $player)
+    {
+        if ($this->phase !== self::PHASE_GAME) return;
+        $nbt = $this->createBaseNBT($pos);
+        $entity = new Golem($world, $nbt);
+        $entity->arena = $this;
+        $entity->owner = $player;
+        $entity->spawnToAll();
+    }
+
+    public function spawnBedbug($pos, $world, $player)
+    {
+        if ($this->phase !== self::PHASE_GAME) return;
+        $nbt = $this->createBaseNBT($pos);
+        $entity = new Bedbug($world, $nbt);
+        $entity->arena = $this;
+        $entity->owner = $player;
+        $entity->spawnToAll();
+    }
+
+
+    public function spawnFireball($pos, $world, $player)
+    {
+        $nbt = $this->createBaseNBT($pos, $player->getDirectionVector(), ($player->getLocation()->getYaw > 180 ? 360 : 0) - $player->getLocation()->getYaw, -$player->getLocation()->getPictch);
+        $entity = new Fireball($world, $nbt, $player);
+        $entity->setMotion($player->getDirectionVector()->normalize()->multiply(0.4));
+        $entity->spawnToAll();
+        $entity->arena = $this;
+        $entity->owner = $player;
+    }	
+	
     /**
      * @param PlayerInteractEvent $event
      */
@@ -152,6 +223,21 @@ class GameListener implements Listener
             }
         }
 
+        if($item->getId() == ItemIds::SPAWN_EGG && $item->getMeta() == 14){
+            $this->spawnGolem($block->add(0, 1), $player->world, $player);
+            $ih->setCount($ih->getCount() - 1);
+            $player->getInventory()->setItemInHand($ih); 
+            $event->cancel();
+        }	    
+
+        if($item->getId() == ItemIds::FIRE_CHARGE){
+             $this->spawnFireball($player->add(0, $player->getEyeHeight()), $player->world, $player);
+             $this->addSound($player, 'mob.blaze.shoot');
+             $ih->setCount($ih->getCount() - 1);
+             $player->getInventory()->setItemInHand($ih); 
+             $event->cancel();
+        }	    
+	    
         $item = $event->getItem();
 
         if($item->getId() == ItemIds::WOOL){
