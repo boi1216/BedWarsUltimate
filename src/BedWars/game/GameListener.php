@@ -210,6 +210,7 @@ class GameListener implements Listener
     public function onInteract(PlayerInteractEvent $event) : void{
         $player = $event->getPlayer();
         $block = $event->getBlock();
+	$item = $event->getItem();
         $playerGame = $this->plugin->getPlayerGame($player);
 
         foreach($this->plugin->signs as $arena => $positions){
@@ -230,15 +231,13 @@ class GameListener implements Listener
             $event->cancel();
         }	    
 	    
-        if($item->getId() == ItemIds::FIRE_CHARGE){
+        if($item->getCustomName() == "§l§cFireBall"){
              $this->spawnFireball($player->add(0, $player->getEyeHeight()), $player->world, $player);
              $this->addSound($player, 'mob.blaze.shoot');
              $ih->setCount($ih->getCount() - 1);
              $player->getInventory()->setItemInHand($ih); 
              $event->cancel();
         }	    
-
-        $item = $event->getItem();
 
         if($item->getId() == ItemIds::WOOL){
             $teamColor = Utils::woolIntoColor($item->getMeta());
