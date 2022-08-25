@@ -293,9 +293,6 @@ class Golem extends Living{
                 if($entity === $this || !($entity instanceof Player) || $entity instanceof self){
                     continue;
                 }
-                if($this->distanceSquared($entity) > self::TARGET_MAX_DISTANCE){
-                    continue;
-                }
                 if($entity->getGamemode() !== GameMode::ADVENTURE() && $entity->getGamemode() !== GameMode::SURVIVAL()){
                      continue;
                 }
