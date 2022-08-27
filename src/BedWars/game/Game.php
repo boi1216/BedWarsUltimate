@@ -421,7 +421,7 @@ class Game
      */
     public function join(Player $player) : void{
          if($this->state !== self::STATE_LOBBY){
-             $player->sendMessage(BedWars::PREFIX . TextFormat::YELLOW . "§5» §cArena is full! Try again later!");
+             $player->sendMessage(BedWars::PREFIX . TextFormat::YELLOW . "§l§5»§r §cArena is full! Try again later!");
              return;
          }
 
@@ -429,7 +429,7 @@ class Game
          $player->teleport($this->lobby);
          $this->players[$player->getName()] = $player;
 
-         $this->broadcastMessage(TextFormat::GRAY . TextFormat::BOLD .  "§3» " . TextFormat::RESET . TextFormat::AQUA . $player->getName() . TextFormat::YELLOW . " has joined " . TextFormat::GOLD . "(" . TextFormat::AQUA .  count($this->players) . TextFormat::YELLOW . "/" . TextFormat::AQUA .  $this->maxPlayers . TextFormat::GOLD .  ")");
+         $this->broadcastMessage(TextFormat::GRAY . TextFormat::BOLD .  "§l§3»§r " . TextFormat::RESET . TextFormat::AQUA . $player->getName() . TextFormat::YELLOW . " has joined " . TextFormat::GOLD . "(" . TextFormat::AQUA .  count($this->players) . TextFormat::YELLOW . "/" . TextFormat::AQUA .  $this->maxPlayers . TextFormat::GOLD .  ")");
          $player->getInventory()->clearAll();
          $player->getArmorInventory()->clearAll();
          $player->getCraftingGrid()->clearAll();
@@ -444,7 +444,7 @@ class Game
          $player->setGamemode(GameMode::ADVENTURE());
          $this->checkLobby();
 
-        Scoreboard::new($player, 'bedwars', TextFormat::BOLD . TextFormat::YELLOW . "blossom");
+        Scoreboard::new($player, 'bedwars', TextFormat::BOLD . TextFormat::RESET . "blossom");
 
         Scoreboard::setLine($player, 1, " §5Blossom §l§d»§r BedWars");
         Scoreboard::setLine($player, 2, "  §dMid Spring");
@@ -742,7 +742,7 @@ class Game
                  }
 
                  foreach (array_merge($this->players, $this->spectators) as $player) {
-                     \BedWars\utils\Scoreboard::new($player, 'bedwars', TextFormat::BOLD . TextFormat::GOLD . "blossom");
+                     \BedWars\utils\Scoreboard::new($player, 'bedwars', TextFormat::BOLD . TextFormat::RESET . "blossom");
                                                                         
                      \BedWars\utils\Scoreboard::setLine($player, 1, " §5Blossom §l§d»§r BedWars");
                      \BedWars\utils\Scoreboard::setLine($player, 2, " §dMid Spring");
@@ -789,7 +789,7 @@ class Game
                  foreach (array_merge($this->players, $this->spectators) as $player) {
 
                      \BedWars\utils\Scoreboard::remove($player);
-                     \BedWars\utils\Scoreboard::new($player, 'bedwars', TextFormat::BOLD . TextFormat::YELLOW . "blossom");
+                     \BedWars\utils\Scoreboard::new($player, 'bedwars', TextFormat::BOLD . TextFormat::RESET . "blossom");
 
                      \BedWars\utils\Scoreboard::setLine($player, 1, " " . TextFormat::AQUA . ucfirst($this->tierUpdateGen) . " Upgrade: " . TextFormat::GREEN . gmdate("i:s", $this->tierUpdate));
                      \BedWars\utils\Scoreboard::setLine($player, 2, "           ");
@@ -860,7 +860,7 @@ class Game
              }
              foreach(array_merge($this->players, $this->spectators) as $player){
                      Scoreboard::remove($player);
-                     Scoreboard::new($player, 'bedwars', TextFormat::BOLD . TextFormat::GOLD . "blossom");
+                     Scoreboard::new($player, 'bedwars', TextFormat::BOLD . TextFormat::RESET . "blossom");
                  
                      Scoreboard::setLine($player, 1, " §5Blossom §l§d»§r BedWars     ");
                      Scoreboard::setLine($player, 2, " §dMid Spring");
