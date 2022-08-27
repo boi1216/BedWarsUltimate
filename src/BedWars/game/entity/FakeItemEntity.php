@@ -27,10 +27,6 @@ class FakeItemEntity extends Human
 	if($this->isClosed()){
 			return false;
         }
-	    
-        if($this->isClosed()){
-			return false;
-        }
         if($this->location->yaw >= 360){
             $this->location->yaw = 0;
         }
