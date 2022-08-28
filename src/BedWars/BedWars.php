@@ -102,9 +102,6 @@ class BedWars extends PluginBase
         EntityFactory::getInstance()->register(Golem::class, function(World $world, CompoundTag $nbt) : Golem{
             return new Golem(EntityDataHelper::parseLocation($nbt, $world), $nbt);
         }, ["Golem"]);
-        EntityFactory::getInstance()->register(Fireball::class, function(World $world, CompoundTag $nbt) : Fireball{
-            return new Fireball(EntityDataHelper::parseLocation($nbt, $world), $nbt);
-        }, ["Fireball"]);   
         EntityFactory::getInstance()->register(Bedbug::class, function(World $world, CompoundTag $nbt) : Bedbug{
             return new Bedbug(EntityDataHelper::parseLocation($nbt, $world), $nbt);
         }, ["Bedbug"]);        
