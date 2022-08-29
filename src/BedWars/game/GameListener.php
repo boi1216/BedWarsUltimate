@@ -298,7 +298,6 @@ class GameListener implements Listener
             foreach(array_merge($playerGame->getPlayers(), $playerGame->getSpectators()) as $p){
                 $p->sendMessage($playerTeam->getColor() . $player->getName() . TextFormat::GRAY . " §l»§r " . TextFormat::WHITE . substr($message, 1));
             }
-          }
         }
     }
 
