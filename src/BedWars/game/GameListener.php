@@ -193,17 +193,6 @@ class GameListener implements Listener
         $entity->spawnToAll();
     }
 
-
-    public function spawnFireball($pos, $world, $player)
-    {
-        $nbt = $this->createBaseNBT($pos, $player->getDirectionVector(), ($player->getLocation()->getYaw > 180 ? 360 : 0) - $player->getLocation()->getYaw, -$player->getLocation()->getPictch);
-        $entity = new Fireball($world, $nbt);
-        $entity->setMotion($player->getDirectionVector()->normalize()->multiply(0.4));
-        $entity->spawnToAll();
-        $entity->arena = $this;
-        $entity->owner = $player;
-    }	
-
     /**
      * @param PlayerInteractEvent $event
      */
@@ -306,11 +295,6 @@ class GameListener implements Listener
                 }
             }
         }else{
-          if($message[0] !== "!"){
-            foreach($playerTeam->getPlayers() as $p){
-                $p->sendMessage(TextFormat::GRAY . "[TEAM] " . $playerTeam->getColor() . $player->getName() . TextFormat::GRAY . " §l»§r " . TextFormat::WHITE . $message);
-            }
-          }else{
             foreach(array_merge($playerGame->getPlayers(), $playerGame->getSpectators()) as $p){
                 $p->sendMessage($playerTeam->getColor() . $player->getName() . TextFormat::GRAY . " §l»§r " . TextFormat::WHITE . substr($message, 1));
             }
