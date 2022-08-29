@@ -128,7 +128,7 @@ class ItemShop
         return self::$shopWindows[$category];
     }
 
-    public static function handleTransaction(int $id, $data, Player $p, BedWars $plugin, int $formId){
+    public static function handleTransaction(int $id, array $data, Player $p, BedWars $plugin, int $formId){
         if(is_null($data)){
             return;
         }
