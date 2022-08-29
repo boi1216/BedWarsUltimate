@@ -229,16 +229,22 @@ class ItemShop
             case 0;
                 $boots = ItemFactory::getInstance()->get(ItemIds::CHAIN_BOOTS, 0, 1);
                 $leggings = ItemFactory::getInstance()->get(ItemIds::CHAIN_LEGGINGS, 0, 1);
+                $chestplate = ItemFactory::getInstance()->get(ItemIds::CHAIN_CHESTPLATE, 0, 1); 
+                $helmet = ItemFactory::getInstance()->get(ItemIds::CHAIN_HELMET, 0, 1);
                 $team->setArmor($p, 'chain');
                 break;
             case 1;
                 $boots = ItemFactory::getInstance()->get(ItemIds::IRON_BOOTS);
                 $leggings = ItemFactory::getInstance()->get(ItemIds::IRON_LEGGINGS);
+                $chestplate = ItemFactory::getInstance()->get(ItemIds::IRON_CHESTPLATE, 0, 1); 
+                $helmet = ItemFactory::getInstance()->get(ItemIds::IRON_HELMET, 0, 1);
                 $team->setArmor($p, 'iron');
                 break;
             case 2;
                 $boots = ItemFactory::getInstance()->get(ItemIds::DIAMOND_BOOTS);
                 $leggings = ItemFactory::getInstance()->get(ItemIds::DIAMOND_LEGGINGS);
+                $chestplate = ItemFactory::getInstance()->get(ItemIds::DIAMOND_CHESTPLATE, 0, 1); 
+                $helmet = ItemFactory::getInstance()->get(ItemIds::DIAMOND_HELMET, 0, 1);
                 $team->setArmor($p, 'diamond');
         }
         if(($enchLevel = $team->getUpgrade('armorProtection')) > 0){
